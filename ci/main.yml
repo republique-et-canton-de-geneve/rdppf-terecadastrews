@@ -9,13 +9,13 @@ artifact_id: "{{ app }}"
 artifact_ext: 'zip'
 artifact_classifier: ""
 artifact_file_name: "{{ artifact_id }}-{{ version }}.{{ artifact_ext }}"
-deploy_releases_folder_suffix: '_test2'
+deploy_releases_folder_suffix: ''
 deploy_releases_folder: "D:\\exploitation\\{{ app }}{{ deploy_releases_folder_suffix }}"
 deploy_releases_folders_mode: '0755'
 deploy_releases_files_mode: '0644'
 
 win_iis_webapppool_name: '9888_terecadastrews'
-win_iis_webapplication_name: 'terecadastrews_test2'
+win_iis_webapplication_name: 'terecadastrews'
 win_iis_webapplication_site: 'DEV'
 win_iis_webapppool_attributes: 'managedRuntimeVersion:v4.0|enable32BitAppOnWin64:false'
 
