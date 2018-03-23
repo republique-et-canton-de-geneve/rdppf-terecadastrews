@@ -1,0 +1,6 @@
+.idea
+/src/web.config
+/src/logs/*.log
+
+
+src2

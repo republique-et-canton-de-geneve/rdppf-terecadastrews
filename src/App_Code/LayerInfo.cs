@@ -1,0 +1,133 @@
+﻿/* $Rev: 14634 $ */
+using System;
+using System.Web.Script.Serialization;
+using System.Net;
+using System.Text;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using ESRI.ArcGIS.SOAP;
+using Topomat.Web.Common;
+
+public class LayerInfo
+{
+    private IDictionary<string, MapLayerInfo> layerInfos = new Dictionary<string, MapLayerInfo>();
+    private IDictionary<int, LayerInfoJson.Layer> jsonLayerInfos = new Dictionary<int, LayerInfoJson.Layer>();
+
+    public LayerInfo(string token, string mapServiceUrl)
+    {
+
+        MapServerProxy mapService = new MapServerProxy();
+        if (string.IsNullOrEmpty(token))
+        {
+            mapService.Url = mapServiceUrl.Replace("/rest/", "/");
+        }
+        else
+        {
+            mapService.Url = string.Format("{0}?token={1}", mapServiceUrl.Replace("/rest/", "/"), token);
+        }
+
+        string defaultMapName = mapService.GetDefaultMapName();
+
+        MapServerInfo serverInfo = mapService.GetServerInfo(defaultMapName);
+
+        foreach (MapLayerInfo mlInfo in serverInfo.MapLayerInfos)
+        {
+            this.layerInfos.Add(mlInfo.Name, mlInfo);
+        }
+
+        LayerInfoJson.LayerInfo info = this.RequestLayerInfoAsJson(token, mapServiceUrl);
+
+        foreach (LayerInfoJson.Layer layer in info.layers)
+        {
+            this.jsonLayerInfos.Add(layer.id, layer);
+        }
+    }
+
+    public MapLayerInfo GetLayerInfo(string name)
+    {
+        MapLayerInfo info = null;
+        if (this.layerInfos.TryGetValue(name, out info))
+        {
+            return info;
+        }
+        else
+        {
+            throw new WsUserException(string.Format(Resources.Resource.LAYER_NOT_FOUND, name));
+        }
+    }
+    
+    public string GetFieldAlias(MapLayerInfo info, string fieldName)
+    {
+        return info.Fields.FieldArray.First(f => f.Name == fieldName).AliasName;
+    }
+
+    public LayerInfoJson.Layer GetLayerInfoAsJson(int id)
+    {
+        LayerInfoJson.Layer info = null;
+        if (this.jsonLayerInfos.TryGetValue(id, out info))
+        {
+            return info;
+        }
+        else
+        {
+            throw new WsUserException(string.Format(Resources.Resource.LAYER_NOT_FOUND, id));
+        }
+    }
+
+    private LayerInfoJson.LayerInfo RequestLayerInfoAsJson(string token, string mapServiceUrl)
+    {
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        serializer.MaxJsonLength = Int32.MaxValue;
+
+        using (WebClient client = new WebClient())
+        {
+            NameValueCollection values = new NameValueCollection();
+
+            values = new NameValueCollection();
+            values["f"] = "json";
+
+            string url = string.Format("{0}/layers{1}", mapServiceUrl, Helper.AddTokenToUrl(token));
+            byte[] response = client.UploadValues(url, values);
+            string resp = Encoding.UTF8.GetString(response);
+
+            LayerInfoJson.LayerInfo result = serializer.Deserialize<LayerInfoJson.LayerInfo>(resp);
+
+            return result;
+        }
+    }
+}
+
+namespace LayerInfoJson
+{
+    public class LayerInfo
+    {
+        public Layer[] layers;
+    }
+
+    public class Layer
+    {
+        public int id;
+        public string name;
+        public DrawingInfo drawingInfo;
+    }
+
+    public class DrawingInfo
+    {
+        public Renderer renderer;
+    }
+
+    public class Renderer
+    {
+        public string type;
+        public string label;
+        public string field1;
+        public UniqueValueInfo[] uniqueValueInfos;
+    }
+
+    public class UniqueValueInfo
+    {
+        public string value;
+        public string label;
+    }
+}

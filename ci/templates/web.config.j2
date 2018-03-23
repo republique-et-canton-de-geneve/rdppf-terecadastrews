@@ -1,0 +1,94 @@
+﻿<?xml version="1.0"?>
+<!-- $Rev: 14634 $ -->
+<!--
+  For more information on how to configure your ASP.NET application, please visit
+  http://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+<configuration>
+  <system.web>
+    <compilation debug="true" targetFramework="4.0"/>
+    <customErrors mode="Off"/>
+  </system.web>
+  <appSettings>
+    <!-- Paramètres globaux -->
+    <add key="ReverseProxyAGS" value="{{ stages[stage]['ReverseProxyAGS'] }}"/>
+    <add key="ApplicationPath" value="D:\exploitation\9888"/>
+    <add key="WebsiteUrl" value="{{ stages[stage]['WebsiteUrl'] }}"/>
+    <!-- Paramètres des fichiers et répertoires -->
+    <add key="ErrorLog" value="{#ApplicationPath#}\logs\Errors.log"/>
+    <add key="UseTrace" value="{{ stages[stage]['UseTrace'] }}"/>
+    <add key="ProcessTraceLog" value="{#ApplicationPath#}\logs\ProcessTrace.log"/>
+    <add key="ConfigPath" value="{#ApplicationPath#}\config"/>
+    <add key="LogoPath" value="{#ApplicationPath#}\logos"/>
+    <add key="LogoUrl" value="{#WebsiteUrl#}/logos"/>
+    <add key="LegendPath" value="{#ApplicationPath#}\legends"/>
+    <add key="LegendUrl" value="{#WebsiteUrl#}/legends"/>
+    <add key="MainLegendName" value="cadastre"/>
+    <!--Parametres pour accéder au service cartographique -->
+    <!--<add key="RequestServiceUrl" value="{#ReverseProxyAGS#}/rest/services/ECADASTRE_rdppf_map/MapServer"/>-->
+    <add key="MapServiceUrl" value="{#ReverseProxyAGS#}/rest/services/ECADASTRE_rdppf_map/MapServer"/>
+    <add key="TokenServerUrl" value="{#ReverseProxyAGS#}/tokens"/>
+    <add key="GeometryServiceUrl" value="{#ReverseProxyAGS#}/rest/services/Utilities/Geometry/GeometryServer"/>
+    <add key="TokenExpiration" value="10"/>
+    <!-- Laisser les valeurs à vide si le service carto n'est pas sécurisé. -->
+    <add key="TokenServerUser" value=""/>
+    <add key="TokenServerPwd" value=""/>
+    <!-- Noms des couches et champs -->
+    <add key="ParcelleLayerName" value="CAD_PARCELLE_MENSU"/>
+    <add key="ParcelleEGRIDFieldName" value="EGRID"/>
+    <add key="ParcelleNoFieldName" value="NO_PARCELLE"/>
+    <add key="ParcelleNoCommFieldName" value="NO_COMM"/>
+    <add key="ParcelleAreaFieldName" value="SHAPE.AREA"/>
+    <add key="ParcelleSurfaceFieldName" value="SURFACE"/>
+    <add key="AdresseLayerName" value="CAD_ADRESSE"/>
+    <add key="AdresseNPAFieldName" value="NO_POSTAL"/>
+    <add key="AdresseVoieFieldName" value="NOMVOI"/>
+    <add key="AdresseNumFieldName" value="NO_ADRESSE"/>
+    <add key="AdresseEGIDFieldName" value="EGID"/>
+    <add key="BatimentHSLayerName" value="CAD_BATIMENT_HORSOL"/>
+    <add key="BatimentHSEGIDFieldName" value="EGID"/>
+    <add key="BatimentSSLayerName" value="CAD_BATIMENT_SOUS_SOL"/>
+    <add key="BatimentSSEGIDFieldName" value="EGID"/>
+    <add key="DateDmoLayerName" value="CAD_COMMUNE"/>
+    <add key="DateDmoFieldName" value="DATE_DMO"/>
+  </appSettings>
+  <system.serviceModel>
+    <services>
+      <service name="RdppfSVC">
+        <endpoint address=""
+                  binding="webHttpBinding"
+                  bindingConfiguration="secureHttpBinding"
+                  behaviorConfiguration="restfulBehavior"
+                  contract="IRdppfSVC"/>
+      </service>
+    </services>
+    <bindings>
+      <webHttpBinding>
+        <binding name="secureHttpBinding">
+          <security mode="Transport">
+            <transport clientCredentialType="None"/>
+          </security>
+        </binding>
+      </webHttpBinding>
+    </bindings>
+    <behaviors>
+      <endpointBehaviors>
+        <behavior name="restfulBehavior">
+          <webHttp />
+        </behavior>
+      </endpointBehaviors>
+      <serviceBehaviors>
+        <behavior>
+          <!-- To avoid disclosing metadata information, set the value below to false and remove the metadata endpoint above before deployment -->
+          <serviceMetadata httpsGetEnabled="true"/>
+          <!-- To receive exception details in faults for debugging purposes, set the value below to true.  Set to false before deployment to avoid disclosing exception information -->
+          <serviceDebug includeExceptionDetailInFaults="false"/>
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+    <serviceHostingEnvironment multipleSiteBindingsEnabled="true" />
+  </system.serviceModel>
+  <system.webServer>
+    <modules runAllManagedModulesForAllRequests="true"/>
+  </system.webServer>
+</configuration>

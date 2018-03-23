@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- $Rev: 14634 $ -->
+<!-- donnees complementaires utilisees pour generer automatiquement le fichier request.xml -->
+<StaticConfig>
+  <!-- Donnees reprises telle quel -->
+  <RealEstate>
+    <Number>NO_PARCELLE</Number>
+    <IdentDN>NO_COMM</IdentDN>
+    <EGRID>EGRID</EGRID>
+    <Municipality>COMMUNE</Municipality>
+    <FosNr>NUFECO</FosNr>
+    <LandRegistryArea>SURFACE</LandRegistryArea>
+    <MetadataOfGeographicalBaseData>
+      http://ge.ch/sitg/sitg_catalog/data_details/575b9f91-bd6e-462d-acbf-76a95ab78db6/xhtml_raw
+    </MetadataOfGeographicalBaseData>
+  </RealEstate>
+  <DefaultLawstatusField>STATUT_JUR</DefaultLawstatusField> <!-- Nom par defaut du champ 'status juridique' -->
+  <RestrictionOnLandownership layer="RDPPF_ZONES_SYNT">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <LawstatusField></LawstatusField>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_ZONES_PRIM">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_ZONES_DEV">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PLQ">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PS">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PDZI">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PLA">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PUS">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PLCP">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_EXTRACTION_GRAVIERES">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_SI">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PNP">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_RS">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_ZP">
+    <ThemeCode>LandUsePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_SECU_AERO">
+    <ThemeCode>AirportsSecurityZonePlans</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_AERO">
+    <ThemeCode>AirportsProjectPlanningZones</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CADASTRE_SITES_POLLUES">
+    <ThemeCode>ContaminatedSites</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_AERO_S">
+    <ThemeCode>ContaminatedCivilAviationSites</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_TP">
+    <ThemeCode>ContaminatedPublicTransportSites</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_ZONES_PROTECTION_EAUX">
+    <ThemeCode>GroundwaterProtectionZones</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_DSOPB">
+    <ThemeCode>NoiseSensitivityLevels</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_LIMITE_FORET">
+    <ThemeCode>ForestPerimeters</ThemeCode>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_DISTANCES_FORET_S">
+    <ThemeCode>ForestDistanceLines</ThemeCode>
+    <LawstatusField>STATUT_JURIDIQUE</LawstatusField>
+    <MetadataOfGeographicalBaseData></MetadataOfGeographicalBaseData>
+  </RestrictionOnLandownership>
+</StaticConfig>

@@ -1,0 +1,815 @@
+﻿<html>
+<head>
+<title>Cadastre RDPPF - République et canton de Genève</title>
+<link href="arcgis_rest.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div>
+<img style="float: left;" src="../logos/LOGORCGE_rvb300dpi_FRU.jpg" alt="Logo" width="80" />
+<h1><div>Cadastre RDPPF</div><div>République et canton de Genève</div></h1>
+</div>
+<br />
+<h2>Légende</h2>
+<div class="rbody">
+<table class="formTable">
+<tr><td>
+<b>1002_PLIM</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABJQTFRF/v//rq6ukZGRxsbG3Nzc////kBfzDwAAAAZ0Uk5TAP//////enng/gAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAChJREFUKJFjYBgF2AEjExMjDhlmVlYW7HJMrEDARKoUHgPxOGMUMAAAiRkAY4eg3XEAAAAASUVORK5CYII=" /></td>
+<td>borne</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAB5QTFRF/v//7e7u29zcx8fHkJCQaWlpkZGRr6+vxsbG////cq0aYQAAAAp0Uk5TAP///////////36JFFYAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAmSURBVCiRY2AYBTgAIxMuGWY2dhYcUqycnBzMJEuBDGQk2RmjAACgIwB0+lcJbwAAAABJRU5ErkJggg==" /></td>
+<td>cheville</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABhQTFRF/v//7e7u29zcrq6ukZGRkJCQr6+v////DuWRVgAAAAh0Uk5TAP/////////VylQyAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAL0lEQVQokWNgGMmAEYlEA8zMMAKLHAsrC3YZBiY2djYmkqVwG4jHGRCzsDp+pAAAnRkAchmIcnoAAAAASUVORK5CYII=" /></td>
+<td>croix</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABVQTFRF/v///v///v///v//////xsbG////N/kYkAAAAAd0Uk5TAP///////6V/pvsAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAmSURBVCiRY2AYBTgAIxMuGWY2NhYcUixsrGzMJEuBDGQk2RmjAACB/gBeBJBHJQAAAABJRU5ErkJggg==" /></td>
+<td>non matérial</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABhQTFRF/v//7e7u29zckZGRkJCQaWlp7u7u////V8BREQAAAAh0Uk5TAP/////////VylQyAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAH0lEQVQokWNgGAUkAyYWZkYcUqzsbMykS+ExcBTgAQBXywA/E8PQZwAAAABJRU5ErkJggg==" /></td>
+<td>pieu</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1002_PLIM_TERR</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAD9QTFRF/v//7u7u29zcxsfHrq+v29zcx8fHkZKSkZKSrq+vrq6u////kpKS7u7u3Nzcx8fHkZGRr6+vxsbG7u7u////HS7BRgAAABV0Uk5TAP//////////////////////////ULD6LwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAGhJREFUKJHV0EkOgCAMBVCGanHCIr3/Wa0GFwgSl/pXJC9tylfqR7GICLoCBvuF2Q9Yipv4jHd3wiRikAt0zJGINrFZF0MUmYPYanOSoXCsI3nAa3pe2DijcXzry1dRY1mUSvWamnw1O3SyCRXR7i28AAAAAElFTkSuQmCC" /></td>
+<td>borne</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAEVQTFRF/v//7u7u29zcxsfHrq+v29zcx8fHkZKSkZKSrq+vrq6u////kpKS7u7u3Nzcx8fHaWlpkZGRr6+vxsbG3Nzc7u7u////mBapXgAAABd0Uk5TAP////////////////////////////+wi3PfAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAaUlEQVQokWNgGEKAmZ2dnYURiwQTOxuvmBgfJzumDAe3GBjwcaBLsUNlgHIsqDIsrCBREVEQycOIqUlQSFAYSPEzo0oBhYSB4gJAWpSFaCncBuJxBh7H4/MyLKC4MAOKARq8TNhkBisAAH7ECdftaXRgAAAAAElFTkSuQmCC" /></td>
+<td>cheville</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAEJQTFRF/v//7u7u29zcxsfHrq+v29zcx8fHkZKSkZKSrq+vrq6u////kpKS7u7u3Nzcx8fHaWlpkZGRr6+v3Nzc7u7u////t8d9hQAAABZ0Uk5TAP///////////////////////////1SBjaMAAAAJcEhZcwAADsQAAA7EAZUrDhsAAABqSURBVCiR1dBJDoAgDAVQwGpRFAfo/a8qJbpgkLjUv2DBC035QvwoHSKCrIDCYSGyI5aiDcVYnRMaH8WThVSgJ7cH4WOW2SO+Dgm8dinxsI3cwTPhNT0PbKzRWL715buoqSxKXPWqmnw1J9+dCWNZLNkPAAAAAElFTkSuQmCC" /></td>
+<td>croix</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAEJQTFRF/v//7u7u29zcxsfHrq+v29zcx8fHkZKSkZKSrq+vrq6u////kpKS7u7u3Nzcx8fHaWlpkZGRr6+v3Nzc7u7u////t8d9hQAAABZ0Uk5TAP///////////////////////////1SBjaMAAAAJcEhZcwAADsQAAA7EAZUrDhsAAABmSURBVCiRY2AYQoCZnZ2dhRGLBBM7G6+oKB8nO6YMB7coGPBxoEuxQ2WAciyoMiysonDAw4ipSVhQUARI8TOjSoGUC4gKCwEpERaipXAbiMcZeByPz8uwgOLCDCgGaPAyYZMZrAAAGVMJjZcRe4IAAAAASUVORK5CYII=" /></td>
+<td>pieu</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABVQTFRF/v///v///v///v//////xsbG////N/kYkAAAAAd0Uk5TAP///////6V/pvsAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAmSURBVCiRY2AYBTgAIxMuGWY2NhYcUixsrGzMJEuBDGQk2RmjAACB/gBeBJBHJQAAAABJRU5ErkJggg==" /></td>
+<td>non matérial</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1160_ADRESSE</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAANQTFRF/v//pgZx/wAAAAF0Uk5TAEDm2GYAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAPSURBVCiRY2AYBaNgqAIAAr4AAU6byIwAAAAASUVORK5CYII=" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1180_Limite territoriale</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABhQTFRF/v//xsfHrq+vkZKSAAAAaWlpxsbG////onEYIgAAAAh0Uk5TAP/////////VylQyAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAL0lEQVQokWNgGKmAmRE7GwhYmLCzcUqxs7OysrKwsLKysbMjs/FLkWcXIcePJAAAyf8BTVj8LtoAAAAASUVORK5CYII=" /></td>
+<td>limite d'état</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABVQTFRF/v//29zcxsfHrq+vkZKSaWlpAAAAzCQpBAAAAAd0Uk5TAP///////6V/pvsAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAoSURBVCiRY2AYBWiAGc5iZESTYoGzmJjQpNhY4YAEKTwG4nHGKIACAMdXAI/qNGyZAAAAAElFTkSuQmCC" /></td>
+<td>limite de canton</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1170_NOM_COURS_EAU</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAANQTFRF/v//pgZx/wAAAAF0Uk5TAEDm2GYAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAPSURBVCiRY2AYBaNgqAIAAr4AAU6byIwAAAAASUVORK5CYII=" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1151_Evénements CONS_ADM.GMO_FERRO_EV_LI_OUVRAGE_ART</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAANQTFRF/v//pgZx/wAAAAF0Uk5TAEDm2GYAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAPSURBVCiRY2AYBaNgqAIAAr4AAU6byIwAAAAASUVORK5CYII=" /></td>
+<td>Pont</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABpJREFUKJFjYBgFtAVMjExMjOiYaaBdNTwAAC+RACMAslxhAAAAAElFTkSuQmCC" /></td>
+<td>Tranchée couverte</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABpJREFUKJFjYBgFtAVMjExMjOiYaaBdNTwAAC+RACMAslxhAAAAAElFTkSuQmCC" /></td>
+<td>Tunnel</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1150_GMO_FERROVIAIRE</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1140_GRAPHE_VOIES_OFFICIELLES</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAANQTFRF/v//pgZx/wAAAAF0Uk5TAEDm2GYAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAPSURBVCiRY2AYBaNgqAIAAr4AAU6byIwAAAAASUVORK5CYII=" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1130_COMMUNE</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADpJREFUKJFjYCATMDIxMTGiAKAAE1wKAzBCpTBNIizFhE2KiTZS5LlwVApVCmcCYEJJLlCaEdMk4gAAaOkBBJJSvjsAAAAASUVORK5CYII=" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1122_BIENS_FONDS_SPECIAL</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABpJREFUKJFjYBgFtAVMjMiACQhA1EC7angAACeUAB1ug2PfAAAAAElFTkSuQmCC" /></td>
+<td>limite litigieuse</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1121_BIENS_FONDS</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAG0lEQVQokWNgIBMwYgUQKazqR6VGpfAmGzIAAHXqAFUODW1dAAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1110_PLAN</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADZJREFUKJFjYCATMAIBExAwojAgUljV45ZiQiKpKEWqM+gpRSMvY5UaJF6GCGImGRADm3piAACkWQB4QgnGQAAAAABJRU5ErkJggg==" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>692_Nom_local</b>
+<table>
+</table>
+</tr></td>
+<tr><td>
+<b>1072_CTSS_PRIMAIRE_CONDUITE_H/S</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Electricité HT, hors-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Electricité HT, sous-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Gazoduc, sous-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Oléoduc, hors-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Oléoduc, sous-sol</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1071_CTSS_PRIMAIRE_CONDUITE_S/S</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Electricité HT, hors-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Electricité HT, sous-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Gazoduc, sous-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Oléoduc, hors-sol</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>Oléoduc, sous-sol</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1070_CTSS_DIVERS_SURFACE</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxgRAahkhhVQ8mmUiUImggqXYxjdo1oHZhJhkQwqaeGAAAsAQAgPF5QWIAAAAASUVORK5CYII=" /></td>
+<td>Bassin, réservoir enterré, citerne</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxgRAahkhhVQ8mmUiUImggqXYxjdo1oHZhJhkQwqaeGAAAsAQAgPF5QWIAAAAASUVORK5CYII=" /></td>
+<td>Galerie eau souterraine</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxgRAahkhhVQ8mmUiUImggqXYxjdo1oHZhJhkQwqaeGAAAsAQAgPF5QWIAAAAASUVORK5CYII=" /></td>
+<td>Galerie technique</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1063_CAD_PISCINE</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAG0lEQVQokWNgIBMwYgUQKazqR6VGpfAmGzIAAHXqAFUODW1dAAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1062_CAD_MARQUISE</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADVJREFUKJFjYCATMDIyMjExMaJRECms6sEkE4lSTLgNxCNF0BlUd+Go44l1IZZ0w4hVPTEAAKSKAHdR3+4tAAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1061_CAD_COUVERT</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADVJREFUKJFjYCATMDIyMjExMaJRECms6sEkE4lSTLgNxCNF0BlUd+Go44l1IZZ0w4hVPTEAAKSKAHdR3+4tAAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1040_DOMROUTIER_SURFACES_NIV_1</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxgRAahkhhVQ8mmUiUImggqXYxjdo1oHZhJhkQwqaeGAAAsAQAgPF5QWIAAAAASUVORK5CYII=" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1040_DOMROUTIER_SURFACES_NIV0</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAG0lEQVQokWNgIBMwYgUQKazqR6VGpfAmGzIAAHXqAFUODW1dAAAAAElFTkSuQmCC" /></td>
+<td><toutes les autres valeurs></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1040_DOMROUTIER_SURFACES_NIV1</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxgRAahkhhVQ8mmUiUImggqXYxjdo1oHZhJhkQwqaeGAAAsAQAgPF5QWIAAAAASUVORK5CYII=" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1021_CAD_NATURE_SOL</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAG0lEQVQokWNgIBMwYgUQKazqR6VGpfAmGzIAAHXqAFUODW1dAAAAAElFTkSuQmCC" /></td>
+<td>eau</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxMYIAlILSECms6smSYqLAQCaypOjj+BHrL9TkgpJsyAAAkdsAamxc4EAAAAAASUVORK5CYII=" /></td>
+<td>revêtement dur</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1020_COUVERTURE_SOL_BASSE_SYM</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABJQTFRF/v//8fLy4+TkxMTEAAAA////PZvZYwAAAAZ0Uk5TAP//////enng/gAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADpJREFUKJFjYCATsLCysoAAlILSECms6smSYqXAQFaypOjj+CHjLyYsUlDHMzOSJAV1IUpyQUk2ZAAA8FQBcLWKhToAAAAASUVORK5CYII=" /></td>
+<td>Roselière</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAG0lEQVQokWNgIBMwYgUQKazqR6VGpfAmGzIAAHXqAFUODW1dAAAAAElFTkSuQmCC" /></td>
+<td>Etang</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxMYIAlILSECms6smSYqLAQCaypOjj+BHrL9TkgpJsyAAAkdsAamxc4EAAAAAASUVORK5CYII=" /></td>
+<td>Vigne</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC5JREFUKJFjYCATMDIxMYIAlILSECms6smSYqLAQCaypOjj+BHrL9TkgpJsyAAAkdsAamxc4EAAAAAASUVORK5CYII=" /></td>
+<td>Gravière, décharge</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAB5QTFRF/v//8fLy4+Tk1dbWxMTEsrKynZ2dAAAAgoKC////M8FZ2gAAAAp0Uk5TAP///////////36JFFYAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAClSURBVCiRnZJbDsQgCEV5WIr73/AUBYEm81MSo/EI90IE+Bj3nLeFb75v9KyhSnZGfz4SqSqvK2eSSHQ0EZkHEXV9yqylY4lIWC5nPMUlKlhQKYbhxws+Zw7GHUGglW5izI7wpJy6mOaLbSzejnnXsrKj9bXagu7w9LWzhP6gmH0xj9AjkRXhazwNwZ51H6+oRldv8xqo9rWF+OJE7rB9l/ZtPsQPgJMD7uSu/N0AAAAASUVORK5CYII=" /></td>
+<td>Eboulis, sable</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1010_FFP_CADASTRE_FORET</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEJJREFUKJFjYCATMDIxMYIAlILSEClGmBokihFZBM0o3FJMZOliRNJLqhSSYxEeoLrjB8BfdIkUgv5CTS4oyYYMAACgRQBzgCKtvAAAAABJRU5ErkJggg==" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1001_PFP_1_2</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAACpQTFRF/v//7e7u29zcx8fHrq6ukZGRkJCQaWlpkZGRr6+vxsbG3Nzc7u7u////olFF+QAAAA50Uk5TAP////////////////9XStsUAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAV0lEQVQokeWPQQ7AIAgEVdSuwP7/u7VJD03FBzSdcJsssCn9gCJb1Y+dEbUamwwSOVTVSG9xyAEbJVDN4XP6asrgpahrgT4PzYXkUkCgN+NdQB6E/3+ME9SMAmnn92/fAAAAAElFTkSuQmCC" /></td>
+<td>accessible</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAC1QTFRF/v//7e7u29zcx8fHrq6ukZGRkJCQaWlpaWlpkZGRr6+vxsbG3Nzc7u7u////ejERCwAAAA90Uk5TAP//////////////////5Y2epgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAItJREFUKJHNkcESwyAIRGOilkXd///cQNLpDNqc2z144MHOgtv2f0rpoZ4BQdlXcmAQMqhlIUp27f5OLIGkzw2yHQHlbqVGDm95BVStKgMwT1JDUGtWL8sQG98jMitHbDqh6gHc0MNEw6zobzXEGEnaRxLDXyvfmle+D+VaD2WeBaqoX8570YdP+alOxVsHImzxG2kAAAAASUVORK5CYII=" /></td>
+<td>inaccessible</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1001_PFP3</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAACRQTFRF/v//7e7u29zcrq6ukZGRkJCQkZGRr6+vxsbG3Nzc7u7u////C+1KqQAAAAx0Uk5TAP//////////////CcRQJgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEpJREFUKJHdjzEOwDAMAt3YgcT8/7/t0C1upK659QQCs+Np0btflXGklGhFhiJAYc1FYkpjTF8UBD1A8Ue9hSwKNzPM+TV+d/ksblUIAm28UaV2AAAAAElFTkSuQmCC" /></td>
+<td>borne</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAACFQTFRF/v//7e7u29zcrq6ukZGRkJCQkZGRr6+v3Nzc7u7u////bHiTiAAAAAt0Uk5TAP////////////99dn3VAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAARklEQVQokd2PMQ4AIAgDUbBI//9g2VUSV7termlFvk+3MbSdiCLIQD84niAhds+CcDinbgic6WWpvaCisJgh6rfx1eW/sgA4FQJY7Uv97AAAAABJRU5ErkJggg==" /></td>
+<td>cheville</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAACFQTFRF/v//7e7u29zcrq6ukZGRkJCQaWlpkZGR3Nzc7u7u////AMyK/AAAAAt0Uk5TAP////////////99dn3VAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAARUlEQVQokd2PMQ4AIAwC1VZR/v9gaxyrTVxl5AKBlL5X0Voln4hgkAPlkMFG8DldtuEuDoGEUVJfkBW2S2EwIxgfXf5LEztkAloupXjLAAAAAElFTkSuQmCC" /></td>
+<td>croix</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAACRQTFRF/v//7e7u29zcrq6ukZGRkJCQaWlpkZGRr6+v3Nzc7u7u////vImFWgAAAAx0Uk5TAP//////////////CcRQJgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEZJREFUKJHdj8EOABAMQ8dGWf//f4krlrjq9eU1rcj3yVaKphNROOnIB6dxBbtnzo4pdt0QyDr7SHtBQWEwQ7TdxkeX/8oAmtUCoD3E0cIAAAAASUVORK5CYII=" /></td>
+<td>clou</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABhQTFRF/v//7e7u29zckZGRkJCQaWlp7u7u////V8BREQAAAAh0Uk5TAP/////////VylQyAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAH0lEQVQokWNgGAUkAyYWZkYcUqzsbMykS+ExcBTgAQBXywA/E8PQZwAAAABJRU5ErkJggg==" /></td>
+<td>pieu</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAABVQTFRF/v///v///v///v//////xsbG////N/kYkAAAAAd0Uk5TAP///////6V/pvsAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAmSURBVCiRY2AYBTgAIxMuGWY2NhYcUixsrGzMJEuBDGQk2RmjAACB/gBeBJBHJQAAAABJRU5ErkJggg==" /></td>
+<td>Signalisatio</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1001_PFA1_PFA2</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAACpQTFRF/v//7e7u29zcx8fHrq6ukZGRkJCQAAAAaWlpkZGRr6+vxsbG3Nzc7u7uVYTjgAAAAA50Uk5TAP////////////////9XStsUAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPElEQVQokeWOwQ0AIAjERBQEZP91jf8LC9Bvk6ZjtIYXExQkkdcmUjvjeApSlqoajpKF+kHDwWKjmG/DAxvAAYhWi4O0AAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1001_PFA3</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAACpQTFRF/v//7e7u29zcx8fHrq6ukZGRkJCQAAAAaWlpkZGRr6+vxsbG3Nzc7u7uVYTjgAAAAA50Uk5TAP////////////////9XStsUAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAPElEQVQokeWOwQ0AIAjERBQEZP91jf8LC9Bvk6ZjtIYXExQkkdcmUjvjeApSlqoajpKF+kHDwWKjmG/DAxvAAYhWi4O0AAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1060_OBJETDIVERS_FACADE</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>antenne, mât, pylone</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>autre corps bâtiment</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>axe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>bloc erratique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>cheminée</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>débarcadère</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>escalier, rampe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>façade</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>fontaine</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>marche escalier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>monument</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>mur</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAF0lEQVQokWNgGAU0BoxAhI4H2k3DBAAAD+0AC3R3EDsAAAAASUVORK5CYII=" /></td>
+<td>mur mitoyen</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ouvrage prot. rives</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pilier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pont, passerelle</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>quai CFF</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ru</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ruine, objet archéologique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>sentier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>seuil</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//+jMHTMIGTgAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFklEQVQokWNgGAVEA0YsgFZSo4AIAABwbgBRdeRB2wAAAABJRU5ErkJggg==" /></td>
+<td>symbole religieux</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>terrain de sport</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABpJREFUKJFjYBgFtAVMjExMjOiYaaBdNTwAAC+RACMAslxhAAAAAElFTkSuQmCC" /></td>
+<td>tunnel, passage inférieur</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1060_OBJETDIVERS_AUTRE_CORPS_BATI</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>antenne, mât, pylone</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>autre corps bâtiment</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>axe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>bloc erratique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>cheminée</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>débarcadère</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>escalier, rampe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>façade</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>fontaine</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>marche escalier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>monument</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>mur</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAF0lEQVQokWNgGAU0BoxAhI4H2k3DBAAAD+0AC3R3EDsAAAAASUVORK5CYII=" /></td>
+<td>mur mitoyen</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ouvrage prot. rives</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pilier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pont, passerelle</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>quai CFF</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ru</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ruine, objet archéologique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>sentier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>seuil</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//+jMHTMIGTgAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFklEQVQokWNgGAVEA0YsgFZSo4AIAABwbgBRdeRB2wAAAABJRU5ErkJggg==" /></td>
+<td>symbole religieux</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>terrain de sport</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABpJREFUKJFjYBgFtAVMjExMjOiYaaBdNTwAAC+RACMAslxhAAAAAElFTkSuQmCC" /></td>
+<td>tunnel, passage inférieur</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1060_OBJETDIVERS__MUR_MITOYEN</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>antenne, mât, pylone</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>autre corps bâtiment</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>axe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>bloc erratique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>cheminée</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>débarcadère</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>escalier, rampe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>façade</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>fontaine</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>marche escalier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>monument</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>mur</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAF0lEQVQokWNgGAU0BoxAhI4H2k3DBAAAD+0AC3R3EDsAAAAASUVORK5CYII=" /></td>
+<td>mur mitoyen</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ouvrage prot. rives</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pilier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pont, passerelle</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>quai CFF</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ru</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ruine, objet archéologique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>sentier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>seuil</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//+jMHTMIGTgAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFklEQVQokWNgGAVEA0YsgFZSo4AIAABwbgBRdeRB2wAAAABJRU5ErkJggg==" /></td>
+<td>symbole religieux</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>terrain de sport</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABpJREFUKJFjYBgFtAVMjExMjOiYaaBdNTwAAC+RACMAslxhAAAAAElFTkSuQmCC" /></td>
+<td>tunnel, passage inférieur</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1050_BATIMENT_HORS_SOL</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAAs7OzM7LiGgAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABxJREFUKJFjYCATMGIFECkmLGBUalQKf7IhAwAAvwYDdd8LbKYAAAAASUVORK5CYII=" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1030_CAD_OBJETDIVERS symbole religieux</b>
+<table>
+</table>
+</tr></td>
+<tr><td>
+<b>1030_CAD_OBJETDIVERS</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>antenne, mât, pylone</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABdJREFUKJFjYBgFtAVMjFgA00C7angAACJiABlofV9dAAAAAElFTkSuQmCC" /></td>
+<td>axe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>bloc erratique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>cheminée</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>débarcadère</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>escalier, rampe</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>fontaine</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>marche escalier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>monument</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>mur</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ouvrage prot. rives</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pilier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>pont, passerelle</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>quai CFF</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ru</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>ruine, objet archéologique</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB5JREFUKJFjYBgFtAVMjIyMTEwgEkExMg20q4YHAAAs6gAhqv+UAgAAAABJRU5ErkJggg==" /></td>
+<td>sentier</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>seuil</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAZQTFRF/v//AAAAnp4A2wAAAAJ0Uk5TAP9bkSK1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQokWNgGAW0BYxYwUC7angAAB+/ABeuicGgAAAAAElFTkSuQmCC" /></td>
+<td>terrain de sport</td>
+</tr>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAlQTFRF/v//AAAA////aZSbDAAAAAN0Uk5TAP//RFDWIQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABpJREFUKJFjYBgFtAVMjExMjOiYaaBdNTwAAC+RACMAslxhAAAAAElFTkSuQmCC" /></td>
+<td>tunnel, passage inférieur</td>
+</tr>
+</table>
+</tr></td>
+<tr><td>
+<b>1000_BATIMENT_SOUS_SOL</b>
+<table>
+<tr valign="middle">
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAAXNSR0IB2cksfwAAAAxQTFRF/v//AAAA4eHh////xfhoJQAAAAR0Uk5TAP///7MtQIgAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAuSURBVCiRY2AgEzAyM4MQGoZIMWEBjGApZhKlCBpIql3Mo3YNqF2YSQaEyE2EADNJA8tmPZv4AAAAAElFTkSuQmCC" /></td>
+<td></td>
+</tr>
+</table>
+</tr></td>
+</table>
+<br />
+</div>
+</body>
+</html>
