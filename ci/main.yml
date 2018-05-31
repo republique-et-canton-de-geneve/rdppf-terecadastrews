@@ -25,16 +25,16 @@ stages:
     ReverseProxyAGS: "https://dev.etat-ge.ch/terags"
     WebsiteUrl: "https://dev.etat-ge.ch/terecadastrews"
     UseTrace: "false"
-#  rec:
-#    hosts: "geoweb02"
-#    ReverseProxyAGS: "https://rec.etat-ge.ch/terags"
-#    WebsiteUrl: "https://rec.etat-ge.ch/terecadastrews"
-#    UseTrace: "true"
-#  prod:
-#    hosts: "geoweb01"
-#    ReverseProxyAGS: "https://prod.etat-ge.ch/terags"
-#    WebsiteUrl: "https://prod.etat-ge.ch/terecadastrews"
-#    UseTrace: "true"
+  rec:
+    hosts: "geoappweb02"
+    ReverseProxyAGS: "https://rec.etat-ge.ch/terags"
+    WebsiteUrl: "https://rec.etat-ge.ch/terecadastrews"
+    UseTrace: "true"
+  prod:
+    hosts: "geoappweb01"
+    ReverseProxyAGS: "https://prod.etat-ge.ch/terags"
+    WebsiteUrl: "https://prod.etat-ge.ch/terecadastrews"
+    UseTrace: "true"
 
 # secure_env_variables:
 #   - db_password
