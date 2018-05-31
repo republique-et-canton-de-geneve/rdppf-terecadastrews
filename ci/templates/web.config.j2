@@ -12,23 +12,23 @@
   <appSettings>
     <!-- Paramètres globaux -->
     <add key="ReverseProxyAGS" value="{{ stages[stage]['ReverseProxyAGS'] }}"/>
-    <add key="ApplicationPath" value="D:\exploitation\9888"/>
+    <add key="ApplicationPath" value="{{ stages[stage]['ApplicationPath'] }}"/>
     <add key="WebsiteUrl" value="{{ stages[stage]['WebsiteUrl'] }}"/>
     <!-- Paramètres des fichiers et répertoires -->
-    <add key="ErrorLog" value="{#ApplicationPath#}\logs\Errors.log"/>
+    <add key="ErrorLog" value="{{ stages[stage]['ApplicationPath'] }}\logs\Errors.log"/>
     <add key="UseTrace" value="{{ stages[stage]['UseTrace'] }}"/>
-    <add key="ProcessTraceLog" value="{#ApplicationPath#}\logs\ProcessTrace.log"/>
-    <add key="ConfigPath" value="{#ApplicationPath#}\config"/>
-    <add key="LogoPath" value="{#ApplicationPath#}\logos"/>
-    <add key="LogoUrl" value="{#WebsiteUrl#}/logos"/>
-    <add key="LegendPath" value="{#ApplicationPath#}\legends"/>
-    <add key="LegendUrl" value="{#WebsiteUrl#}/legends"/>
+    <add key="ProcessTraceLog" value="{{ stages[stage]['ApplicationPath'] }}\logs\ProcessTrace.log"/>
+    <add key="ConfigPath" value="{{ stages[stage]['ApplicationPath'] }}\config"/>
+    <add key="LogoPath" value="{{ stages[stage]['ApplicationPath'] }}\logos"/>
+    <add key="LogoUrl" value="{{ stages[stage]['WebsiteUrl'] }}/logos"/>
+    <add key="LegendPath" value="{{ stages[stage]['ApplicationPath'] }}\legends"/>
+    <add key="LegendUrl" value="{{ stages[stage]['WebsiteUrl'] }}/legends"/>
     <add key="MainLegendName" value="cadastre"/>
     <!--Parametres pour accéder au service cartographique -->
-    <!--<add key="RequestServiceUrl" value="{#ReverseProxyAGS#}/rest/services/ECADASTRE_rdppf_map/MapServer"/>-->
-    <add key="MapServiceUrl" value="{#ReverseProxyAGS#}/rest/services/ECADASTRE_rdppf_map/MapServer"/>
-    <add key="TokenServerUrl" value="{#ReverseProxyAGS#}/tokens"/>
-    <add key="GeometryServiceUrl" value="{#ReverseProxyAGS#}/rest/services/Utilities/Geometry/GeometryServer"/>
+    <!--<add key="RequestServiceUrl" value="{{ stages[stage]['ReverseProxyAGS'] }}/rest/services/ECADASTRE_rdppf_map/MapServer"/>-->
+    <add key="MapServiceUrl" value="{{ stages[stage]['ReverseProxyAGS'] }}/rest/services/ECADASTRE_rdppf_map/MapServer"/>
+    <add key="TokenServerUrl" value="{{ stages[stage]['ReverseProxyAGS'] }}/tokens"/>
+    <add key="GeometryServiceUrl" value="{{ stages[stage]['ReverseProxyAGS'] }}/rest/services/Utilities/Geometry/GeometryServer"/>
     <add key="TokenExpiration" value="10"/>
     <!-- Laisser les valeurs à vide si le service carto n'est pas sécurisé. -->
     <add key="TokenServerUser" value=""/>

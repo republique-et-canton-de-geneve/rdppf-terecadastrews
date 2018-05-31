@@ -25,6 +25,7 @@ stages:
     hosts: "geoweb03"
     ReverseProxyAGS: "https://dev.etat-ge.ch/terags"
     WebsiteUrl: "https://dev.etat-ge.ch/terecadastrews"
+    ApplicationPath: "D:\\exploitation\\9888"
     UseTrace: "false"
   rec:
     hosts: "geoappweb02"
