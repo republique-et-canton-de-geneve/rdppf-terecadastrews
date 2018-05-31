@@ -31,11 +31,13 @@ stages:
     hosts: "geoappweb02"
     ReverseProxyAGS: "https://rec.etat-ge.ch/terags"
     WebsiteUrl: "https://rec.etat-ge.ch/terecadastrews"
+    ApplicationPath: "D:\\exploitation\\9888"
     UseTrace: "true"
   prod:
     hosts: "geoappweb01"
     ReverseProxyAGS: "https://prod.etat-ge.ch/terags"
     WebsiteUrl: "https://prod.etat-ge.ch/terecadastrews"
+    ApplicationPath: "D:\\exploitation\\9888"
     UseTrace: "true"
 
 # secure_env_variables:
