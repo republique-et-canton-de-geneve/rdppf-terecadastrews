@@ -20,7 +20,6 @@ win_iis_webapplication_site: 'DEV'
 win_iis_webapplication_path: ''
 win_iis_webapppool_attributes:
   managedRuntimeVersion: v4.0
-  enable32BitAppOnWin64: false
 
 stages:
   dev:
