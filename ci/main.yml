@@ -18,7 +18,9 @@ win_iis_webapppool_name: '9888_terecadastrews'
 win_iis_webapplication_name: 'terecadastrews'
 win_iis_webapplication_site: 'DEV'
 win_iis_webapplication_path: ''
-win_iis_webapppool_attributes: 'managedRuntimeVersion:v4.0|enable32BitAppOnWin64:0'
+win_iis_webapppool_attributes:
+  managedRuntimeVersion: v4.0
+  enable32BitAppOnWin64: false
 
 stages:
   dev:
