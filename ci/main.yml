@@ -10,7 +10,7 @@ artifact_ext: 'zip'
 artifact_classifier: ""
 artifact_file_name: "{{ artifact_id }}-{{ version }}.{{ artifact_ext }}"
 deploy_releases_folder_suffix: ''
-deploy_releases_folder: "D:\\exploitation\\{{ app }}{{ deploy_releases_folder_suffix }}"
+deploy_releases_folder: "D:\\data\\9888"
 deploy_releases_folders_mode: '0755'
 deploy_releases_files_mode: '0644'
 
@@ -26,19 +26,19 @@ stages:
     hosts: "geoweb03"
     ReverseProxyAGS: "https://dev.etat-ge.ch/terags"
     WebsiteUrl: "https://dev.etat-ge.ch/terecadastrews"
-    ApplicationPath: "D:\\exploitation\\9888"
+    ApplicationPath: "{{ deploy_releases_folder }}"
     UseTrace: "false"
   rec:
     hosts: "geoappweb02"
     ReverseProxyAGS: "https://rec.etat-ge.ch/terags"
     WebsiteUrl: "https://rec.etat-ge.ch/terecadastrews"
-    ApplicationPath: "D:\\exploitation\\9888"
+    ApplicationPath: "{{ deploy_releases_folder }}"
     UseTrace: "true"
   prod:
     hosts: "geoappweb01"
     ReverseProxyAGS: "https://prod.etat-ge.ch/terags"
     WebsiteUrl: "https://prod.etat-ge.ch/terecadastrews"
-    ApplicationPath: "D:\\exploitation\\9888"
+    ApplicationPath: "{{ deploy_releases_folder }}"
     UseTrace: "true"
 
 # secure_env_variables:
