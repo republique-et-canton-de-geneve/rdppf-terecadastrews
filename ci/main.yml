@@ -16,7 +16,7 @@ deploy_releases_files_mode: '0644'
 
 win_iis_webapppool_name: '9888_terecadastrews'
 win_iis_webapplication_name: 'terecadastrews'
-win_iis_webapplication_site: 'DEV'
+win_iis_webapplication_site: 'Default Web Site'
 win_iis_webapplication_path: ''
 win_iis_webapppool_attributes:
   managedRuntimeVersion: v4.0
@@ -24,25 +24,23 @@ win_iis_webapppool_attributes:
 stages:
   dev:
     hosts: "geoweb03"
+    win_iis_webapplication_site: 'DEV'
     ReverseProxyAGS: "https://dev.etat-ge.ch/terags"
     WebsiteUrl: "https://dev.etat-ge.ch/terecadastrews"
     ApplicationPath: "{{ deploy_releases_folder }}"
     UseTrace: "false"
-    win_iis_webapplication_site: 'DEV'
   rec:
     hosts: "geoappweb02"
     ReverseProxyAGS: "https://rec.etat-ge.ch/terags"
     WebsiteUrl: "https://rec.etat-ge.ch/terecadastrews"
     ApplicationPath: "{{ deploy_releases_folder }}"
     UseTrace: "true"
-    win_iis_webapplication_site: 'Default Web Site'
   prod:
     hosts: "geoappweb01"
     ReverseProxyAGS: "https://prod.etat-ge.ch/terags"
     WebsiteUrl: "https://prod.etat-ge.ch/terecadastrews"
     ApplicationPath: "{{ deploy_releases_folder }}"
     UseTrace: "true"
-    win_iis_webapplication_site: 'Default Web Site'
 
 # secure_env_variables:
 #   - db_password
