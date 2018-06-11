@@ -10,7 +10,7 @@ artifact_ext: 'zip'
 artifact_classifier: ""
 artifact_file_name: "{{ artifact_id }}-{{ version }}.{{ artifact_ext }}"
 deploy_releases_folder_suffix: ''
-deploy_releases_folder: "D:\\data\\9888"
+deploy_releases_folder: "D:\\exploitation\\9888"
 deploy_releases_folders_mode: '0755'
 deploy_releases_files_mode: '0644'
 
