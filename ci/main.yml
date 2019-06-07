@@ -18,7 +18,7 @@ app_log_folder: "D:\\logs\\{{ app }}"
 
 win_iis_webapppool_name: "{{ app }}_{{ app_name }}"
 win_iis_webapplication_name: 'terecadastrews'
-# win_iis_webapplication_site: 'Default Web Site'
+win_iis_webapplication_site: "{{ stage|upper }}"
 # win_iis_managedRuntimeVersion: v4.0
 
 
