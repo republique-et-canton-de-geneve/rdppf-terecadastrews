@@ -1,40 +1,36 @@
-﻿/* $Rev: 14634 $ */
-using Topomat.Web.Common;
-using System.Xml;
+﻿/* $Rev: 20981 $ */
 using System.IO;
 using System;
 using System.Text;
+using Topomat.Web.Common;
 
 public class Helper
 {
+    private static log4net.ILog traceLogger = null;
 
     #region Public methods
 
-    public static void AppendToLog(WsUserException ex)
+    public static void LogError(WsUserException ex)
     {
-        AppendToLog(ex.ToString());
+        Helper.GetLogger().Error(ex.ToString());
     }
 
-    public static void AppendToLog(string txt)
+    public static void LogInfo(string className, string message)
     {
-        string path = WebHelper.GetConfigValue("ErrorLog");
-        LogWriter writer = new LogWriter(path, 100000);
-        writer.Append(txt);
+        string info = string.Format("({0}) {1}", className, message);
+        Helper.GetLogger().Info(info);
     }
 
-    public static void AppendToTrace(string message)
+    public static void LogInfo(string className, string message, long ms)
     {
-        string useTrace = WebHelper.GetConfigValue("UseTrace");
-        if (useTrace == "true")
-        {
-            string path = WebHelper.GetConfigValue("ProcessTraceLog");
-            LogWriter writer = new LogWriter(path, 100000);
+        string info = string.Format("({0}) {1} : {2} ms.", className, message, ms);
+        Helper.GetLogger().Info(info);
+    }
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(message);
-
-            writer.Append(sb.ToString());
-        }
+    public static string GetReportConfigFilePath(string fileName)
+    {
+        string path = Path.Combine(WebHelper.GetConfigValue("ConfigPath"), "report");
+        return Path.Combine(path, fileName);
     }
 
     public static void CleanDirectory(string path, int hours)
@@ -65,13 +61,18 @@ public class Helper
 
     public static string AddTokenToUrl(string token)
     {
+        return Helper.AddTokenToUrl(token, "?");
+    }
+
+    public static string AddTokenToUrl(string token, string delimiter)
+    {
         if (string.IsNullOrEmpty(token))
         {
             return string.Empty;
         }
         else
         {
-            return string.Format("?token={0}", token);
+            return string.Format("{0}token={1}", delimiter, token);
         }
     }
 
@@ -79,14 +80,38 @@ public class Helper
     {
         var sb = new StringBuilder();
 
-        var bytes = Encoding.Unicode.GetBytes(input);
+        var bytes = Encoding.Unicode.GetBytes(input.Replace(" ", string.Empty));
         foreach (var t in bytes)
         {
-            sb.Append(t.ToString("X"));
+            string tStr = t.ToString("X");
+            if (tStr.Length == 2)
+            {
+                sb.Append(tStr);
+            }
         }
 
         return sb.ToString();
     }
 
+    public static double dotsToMM(int dots, int dpi)
+    {
+        return (dots / (double)dpi) * 25.4;
+    }
+
+    public static int mmToDots(double millimeters, int dpi)
+    {
+        return (int)Math.Round((millimeters / 25.4) * dpi);
+    }
+
     #endregion
+
+    private static log4net.ILog GetLogger()
+    {
+        if (traceLogger == null)
+        {
+            log4net.Config.XmlConfigurator.Configure();
+            Helper.traceLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        }
+        return Helper.traceLogger;
+    }
 }

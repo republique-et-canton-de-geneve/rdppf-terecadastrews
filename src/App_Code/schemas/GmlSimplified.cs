@@ -1,9 +1,4 @@
-﻿/* $Rev: 14634 $ */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
+﻿/* $Rev: 19053 $ */
 namespace DataExtract.Gml.Simplified
 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.opengis.net/gml/3.2")]

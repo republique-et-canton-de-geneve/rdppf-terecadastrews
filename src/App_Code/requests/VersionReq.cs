@@ -1,12 +1,8 @@
-﻿/* $Rev: 14634 $ */
-using System;
+﻿/* $Rev: 19578 $ */
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Topomat.Web.Common;
-using System.Xml.Serialization;
 using System.Xml;
-using System.Text;
 
 public class VersionReq
 {
@@ -21,7 +17,12 @@ public class VersionReq
         baseUrl = WebHelper.GetConfigValue("WebsiteUrl");
 	}
 
-    public XmlElement GetVersions()
+    public XmlElement GetVersionsAsXml()
+    {
+        return XmlHelper.GetXmlElement(GetVersions());
+    }
+
+    public GetVersionsResponseType GetVersions()
     {
         GetVersionsResponseType GetVersionsResponse = new GetVersionsResponseType();
 
@@ -35,6 +36,6 @@ public class VersionReq
         }
         GetVersionsResponse.supportedVersion = versionList.ToArray();
 
-        return XmlHelper.GetXmlElement(GetVersionsResponse);
+        return GetVersionsResponse;
     }
 }

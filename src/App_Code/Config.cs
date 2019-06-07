@@ -1,4 +1,4 @@
-﻿/* $Rev: 14634 $ */
+﻿/* $Rev: 19264 $ */
 using System.Xml.Serialization;
 
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
@@ -20,4 +20,29 @@ public partial class CommuneCfg
 
     [System.Xml.Serialization.XmlAttributeAttribute()]
     public bool hasData { get; set; }
+}
+
+public class MapPrintConfig
+{
+    public double Factor { get; set; }
+    public double Width { get; set; }
+    public double Height { get; set; }
+    public string Scales { get; set; }
+    public int Dpi { get; set; }
+    public ScaleBarConfig ScaleBar { get; set; }
+    public NorthArrowConfig NorthArrow { get; set; }
+}
+
+public class ScaleBarConfig
+{
+    public string TopLeftPoint { get; set; }
+    public double Width { get; set; }
+    public double Height { get; set; }
+}
+
+public class NorthArrowConfig
+{
+    public string TopCenterPoint { get; set; }
+    public double Scale { get; set; }
+    public string AlignWithScaleBar { get; set; }
 }

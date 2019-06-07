@@ -1,4 +1,4 @@
-﻿/* $Rev: 14634 $ */
+﻿/* $Rev: 19034 $ */
 using System;
 using System.Xml;
 using System.Text;
@@ -22,6 +22,17 @@ public class XmlHelper
         using (StreamReader reader = new StreamReader(communeCfgFile))
         {
             return (CommuneConfig)serializer.Deserialize(reader);
+        }
+    }
+
+    public static MapPrintConfig GetMapPrintConfig()
+    {
+        string cfgFile = Path.Combine(WebHelper.GetConfigValue("ConfigPath"), "mapPrintConfig.xml");
+
+        XmlSerializer serializer = new XmlSerializer(typeof(MapPrintConfig));
+        using (StreamReader reader = new StreamReader(cfgFile))
+        {
+            return (MapPrintConfig)serializer.Deserialize(reader);
         }
     }
 
@@ -75,8 +86,44 @@ public class XmlHelper
 
     public static XmlNode GetNodeByAttribute(XmlNode root, string name, string attribute, string value)
     {
-        string xpath = string.Format("{0}[@{1}='{2}']", name, attribute, value);
-        return root.SelectSingleNode(xpath);
+        foreach (XmlNode node in root.SelectNodes(name))
+        {
+            if (XmlHelper.GetXmlAttribute(node, attribute, true) == value)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public static string GetAttributeFromNode(QueryResultFeature feature, XmlNode parent, string name)
+    {
+        string result = string.Empty;
+
+        XmlNode node = parent.SelectSingleNode(name);
+        if (node != null && !string.IsNullOrEmpty(node.InnerText))
+        {
+            result = feature.attributes[node.InnerText];
+        }
+
+        return result;
+    }
+
+    public static string GetAttributeFromAttribute(IDictionary<string, string> attributes, XmlNode node, string attribute)
+    {
+        string result = string.Empty;
+
+        string xmlAttribute = XmlHelper.GetXmlAttribute(node, attribute, false);
+        if (!string.IsNullOrEmpty(xmlAttribute))
+        {
+            string value = attributes[xmlAttribute];
+            if (!(string.IsNullOrEmpty(value) || string.Compare(value, "Null") == 0))
+            {
+                result = value;
+            }
+        }
+
+        return result;
     }
 
     public static XmlElement AppendElement(XmlDocument doc, XmlElement parent, string name)

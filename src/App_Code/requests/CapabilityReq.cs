@@ -1,16 +1,16 @@
-﻿/* $Rev: 14634 $ */
+﻿/* $Rev: 19578 $ */
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
-using DataExtract.Extract;
+using ExtractData_v103;
 
 [XmlRoot("CommuneConfig")]
 public class CapabilityReq
 {
     private static IList<string> flavours = new List<string>
     {
-        { "REDUCED" }
+        { "REDUCED" }, { "FULL" }, { "EMBADDABLE" }
     };
     public static IList<string> languages = new List<string>
     {
@@ -30,7 +30,12 @@ public class CapabilityReq
         this.requestConfig = XmlHelper.GetConfig("request.xml", "RequestConfig");
 	}
 
-    public XmlElement GetCapabilities()
+    public XmlElement GetCapabilitiesAsXml()
+    {
+        return XmlHelper.GetXmlElement(GetCapabilities());
+    }
+
+    public GetCapabilitiesResponseType GetCapabilities()
     {
         GetCapabilitiesResponseType GetCapabilitiesResponse = new GetCapabilitiesResponseType();
 
@@ -40,8 +45,9 @@ public class CapabilityReq
             Theme theme = new Theme();
             theme.Code = XmlHelper.GetXmlElementValue(node, "Theme/Code");
             theme.Text = new LocalisedText();
+            theme.Text.LanguageSpecified = true;
             theme.Text.Language = LanguageCode.fr;
-            theme.Text.Text = XmlHelper.GetXmlElementValue(node, "SubTheme");
+            theme.Text.Text = XmlHelper.GetXmlElementValue(node, "Theme/Text");
             themes.Add(theme);
         }
 
@@ -60,6 +66,6 @@ public class CapabilityReq
         GetCapabilitiesResponse.language = languages.ToArray();
         GetCapabilitiesResponse.crs = crs.ToArray();
 
-        return XmlHelper.GetXmlElement(GetCapabilitiesResponse);
+        return GetCapabilitiesResponse;
     }
 }

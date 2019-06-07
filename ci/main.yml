@@ -10,9 +10,8 @@ artifact_ext: 'zip'
 artifact_classifier: ""
 artifact_file_name: "{{ artifact_id }}-{{ version }}.{{ artifact_ext }}"
 deploy_releases_folder_suffix: ''
-deploy_releases_folder: "D:\\exploitation\\9888"
-deploy_releases_folders_mode: '0755'
-deploy_releases_files_mode: '0644'
+# deploy_releases_folder: "D:\\data\\{{ app }}"
+app_log_folder: "D:\\logs\\{{ app }}"
 
 win_iis_webapppool_name: '9888_terecadastrews'
 win_iis_webapplication_name: 'terecadastrews'

@@ -1,0 +1,1 @@
+Ouvrir dans un navigateur la page {#EnvironmentUrl#}/terecadastrews/utilities/BuildLegends.ashx

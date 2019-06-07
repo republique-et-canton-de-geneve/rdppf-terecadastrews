@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<!-- $Rev: 17030 $ -->
+<!-- $Rev: 21426 $ -->
 <RequestConfig>
+  <markerMapLayer>marker</markerMapLayer>
   <addMapLayer>1002_PLIM</addMapLayer>
   <addMapLayer>1002_PLIM_TERR</addMapLayer>
   <addMapLayer>1160_ADRESSE</addMapLayer>
@@ -31,7 +32,7 @@
   <mainMapLayer>1060_OBJETDIVERS_SUR_BATIMENTS</mainMapLayer>
   <mainMapLayer>1015_CAD_CARTE_OTEMO</mainMapLayer>
   <mainMapLayer>1016_CAD_CARTE_OTEMO</mainMapLayer>
-  <mainMapLayer>1050_BATIMENT_HORS_SOL</mainMapLayer>	
+  <mainMapLayer>1050_BATIMENT_HORS_SOL</mainMapLayer>
   <mainMapLayer>1030_CAD_OBJETDIVERS Symbole religieux</mainMapLayer>
   <mainMapLayer>1030_CAD_OBJETDIVERS</mainMapLayer>
   <mainMapLayer>1000_BATIMENT_SOUS_SOL</mainMapLayer>
@@ -59,7 +60,7 @@
     <MetadataOfGeographicalBaseData />
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZONES_PRIM" complete="true">
@@ -89,7 +90,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZONES_DEV" complete="false">
@@ -119,7 +120,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PLQ" complete="false">
@@ -151,7 +152,7 @@
     <informationId>LIEN_DOSSIER_SAD_CONSULT</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PS" complete="false">
@@ -181,7 +182,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
-      <OfficeAtWeb>http://www.ge.ch/patrimoine/</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PDZI" complete="false">
@@ -214,7 +215,7 @@
     <informationId>LIEN_DOSSIER_SAD_CONSULT</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PLA" complete="false">
@@ -246,7 +247,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PUS" complete="false">
@@ -272,7 +273,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PLCP" complete="false">
@@ -301,7 +302,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_EXTRACTION_GRAVIERES" complete="false">
@@ -324,7 +325,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
-      <OfficeAtWeb>http://ge.ch/deta/directions-et-services/dg-de-lenvironnement/service-de-geologie-sols-et-dechets</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_SI" complete="false">
@@ -347,7 +348,7 @@
     <lawId>REaux-GE</lawId>
     <ResponsibleOffice>
       <Name>Direction générale de l'eau</Name>
-      <OfficeAtWeb>http://ge.ch/deta/directions-et-services/dg-de-leau</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/oceau-service-planification-eau</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PNP" complete="false">
@@ -378,7 +379,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
-      <OfficeAtWeb>http://www.ge.ch/patrimoine/</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_RS" complete="false">
@@ -402,7 +403,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
-      <OfficeAtWeb>http://www.ge.ch/patrimoine/</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZP" complete="false">
@@ -431,7 +432,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
-      <OfficeAtWeb>http://www.ge.ch/patrimoine/</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZR" complete="false">
@@ -454,14 +455,122 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_ROUTES_NAT" complete="false">
+    <Information>Routes_nationales-87</Information>
+    <Theme>
+      <Code>MotorwaysProjectPlaningZones</Code>
+      <Text>Zones réservées des routes nationales</Text>
+    </Theme>
+    <SubTheme>alignements_routes_nationales</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <regulationId></regulationId>
+    <lawId>LRN</lawId>
+    <lawId>ONR</lawId>
+    <informationId></informationId>
+    <ResponsibleOffice>
+      <Name>Office fédérale des routes</Name>
+      <OfficeAtWeb>https://www.astra.admin.ch/astra/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ALIGNE_ROUTE_NATION" complete="false">
+    <Information>Routes_nationales-88</Information>
+    <Theme>
+      <Code>MotorwaysBuildingLines</Code>
+      <Text>Alignements des routes nationales</Text>
+    </Theme>
+    <SubTheme>alignements_routes_nationales</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
+    <regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
+    <lawId>LRN</lawId>
+    <lawId>ONR</lawId>
+    <informationId>LIEN_INFOS_COMPL</informationId>
+    <ResponsibleOffice>
+      <Name>Office fédérale des routes</Name>
+      <OfficeAtWeb>https://www.astra.admin.ch/astra/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_FER" complete="false">
+    <Information>Installations ferroviaires-96</Information>
+    <Theme>
+      <Code>RailwaysProjectPlanningZones</Code>
+      <Text>Zones réservées des installations ferroviaires</Text>
+    </Theme>
+    <SubTheme>zone_reservee_installation_ferroviaire</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <regulationId></regulationId>
+    <lawId>LCdF</lawId>
+    <informationId></informationId>
+    <ResponsibleOffice>
+      <Name>Office fédérale des transports</Name>
+      <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_FER" complete="false">
+    <Information>Alignement installations ferroviaires-97</Information>
+    <Theme>
+      <Code>RailwaysBuildingLines</Code>
+      <Text>Alignements des installations ferroviaires</Text>
+    </Theme>
+    <SubTheme>alignement_installation_ferroviaire</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <regulationId></regulationId>
+    <lawId>LCdF</lawId>
+    <informationId></informationId>
+    <ResponsibleOffice>
+      <Name>Office fédérale des transports</Name>
+      <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_AEROPORT" complete="false">
+    <Information>Aeroport-104</Information>
+    <Theme>
+      <Code>AirportsBuildingLines</Code>
+      <Text>Alignements des installations aéroportuaires</Text>
+    </Theme>
+    <SubTheme>alignement_installation_aeroport</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <regulationId></regulationId>
+    <lawId>LA</lawId>
+    <lawId>OSIA</lawId>
+    <informationId></informationId>
+    <ResponsibleOffice>
+      <Name>Office fédéral de l'aviation civile</Name>
+      <OfficeAtWeb>http://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_AERO" complete="false">
+    <Information>Aeroport-103</Information>
+    <Theme>
+      <Code>AirportsProjectPlanningZones</Code>
+      <Text>Zones réservées des installations aéroportuaires</Text>
+    </Theme>
+    <SubTheme>zone_reservee_installation_aeroport</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
+    <regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
+    <lawId>LA</lawId>
+    <lawId>OSIA</lawId>
+    <informationId>LIEN_INFOS_COMPL</informationId>
+    <ResponsibleOffice>
+      <Name>Office fédéral de l'aviation civile</Name>
+      <OfficeAtWeb>http://www.bazl.admin.ch?lang=fr</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_SECU_AERO" complete="false">
     <Information>Aeroport-108</Information>
     <Theme>
       <Code>AirportsSecurityZonePlans</Code>
-      <Text>Plan de la zone de sécurité de l'aéroport</Text>
+      <Text>Plan de la zone de sécurité</Text>
     </Theme>
     <SubTheme>plan_zone_securite</SubTheme>
     <Lawstatus field="STATUT_JUR" />
@@ -476,25 +585,6 @@
       <OfficeAtWeb>http://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_AERO" complete="false">
-    <Information>Aeroport-103</Information>
-    <Theme>
-      <Code>AirportsProjectPlanningZones</Code>
-      <Text>Zones réservées des installations aéroportuaires</Text>
-    </Theme>
-    <SubTheme>plan_zone_reservee</SubTheme>
-    <Lawstatus field="STATUT_JUR" />
-    <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
-    <lawId>LA</lawId>
-    <lawId>OSIA</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
-    <ResponsibleOffice>
-      <Name>Office fédéral de l'aviation civile</Name>
-      <OfficeAtWeb>http://www.bazl.admin.ch?lang=fr</OfficeAtWeb>
-    </ResponsibleOffice>
-  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CADASTRE_SITES_POLLUES" complete="false">
     <Information>Geologie-116</Information>
     <Theme>
@@ -504,12 +594,13 @@
     <SubTheme>cadastre_sites_pollues</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
+    <lawId>LPE</lawId>
     <lawId>Osites</lawId>
     <lawId>LaLSC</lawId>
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
-      <OfficeAtWeb>http://ge.ch/deta/directions-et-services/dg-de-lenvironnement/service-de-geologie-sols-et-dechets</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechetslogie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_AERO_S" complete="false" additionalLayers="RDPPF_CH_SITES_POLLUES_AERO_P">
@@ -522,9 +613,9 @@
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
+    <regulationId>LIEN_INFOS_COMPL</regulationId>
     <lawId>LA</lawId>
     <lawId>OSIA</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
       <OfficeAtWeb>http://www.bazl.admin.ch?lang=fr</OfficeAtWeb>
@@ -566,14 +657,14 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
-      <OfficeAtWeb>http://ge.ch/deta/directions-et-services/dg-de-lenvironnement/service-de-geologie-sols-et-dechets</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_DSOPB" complete="false">
     <Information>Amenagement-145</Information>
     <Theme>
       <Code>NoiseSensitivityLevels</Code>
-      <Text>Degré de sensibilité au bruit</Text>
+      <Text>Degré de sensibilité au bruit (dans les zones d'affectation)</Text>
     </Theme>
     <SubTheme>degre_sensibilite_bruit</SubTheme>
     <Lawstatus field="STATUT_JUR" />
@@ -597,24 +688,24 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_LIMITE_FORET" complete="false" additionalLayers="FFP_CADASTRE_FORET_COUL">
     <Information>Amenagement_157</Information>
     <Theme>
       <Code>ForestPerimeters</Code>
-      <Text>Limites de la forêt (en zone à bâtir)</Text>
+      <Text>Limites statiques de la forêt</Text>
     </Theme>
     <SubTheme>limite_foret</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <regulationId>DATE_ADOPT_INSTANCE</regulationId>
+    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
     <regulationId>LIEN_PLAN</regulationId>
     <regulationId>LIEN_LOI</regulationId>
     <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
     <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <regulationId>LIEN_INFOS_COMPL</regulationId>
     <lawId>LAT</lawId>
@@ -625,14 +716,14 @@
     <lawId>RForêt</lawId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_DISTANCES_FORET_S" complete="false" overlap="true" additionalLayers="RDPPF_DISTANCES_FORET_L,FFP_CADASTRE_FORET_COUL">
     <Information>Foret-159</Information>
     <Theme>
       <Code>ForestDistanceLines</Code>
-      <Text>Distance par rapport à la forêt</Text>
+      <Text>Distances par rapport à la forêt</Text>
     </Theme>
     <SubTheme>distance_rapport_foret</SubTheme>
     <Lawstatus field="STATUT_JURIDIQUE" />
@@ -648,7 +739,7 @@
     <lawId>RForêt</lawId>
     <ResponsibleOffice>
       <Name>Direction générale de l'agriculture et de la nature</Name>
-      <OfficeAtWeb>http://ge.ch/deta/dg-de-lagriculture-et-de-la-nature</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
 </RequestConfig>

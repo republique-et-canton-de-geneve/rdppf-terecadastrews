@@ -1,4 +1,4 @@
-﻿/* $Rev: 14634 $ */
+﻿/* $Rev: 21379 $ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Web;
 
 public class GetExtractParamReq
 {
-    private static string[] federalTopics = { "LandUsePlans",  "MotorwaysProjectPlaningZones", "MotorwaysBuildingLines", "RailwaysProjectPlanningZones", "RailwaysBuildingLines", "AirportsProjectPlanningZones", "AirportsBuildingLines", "AirportsSecurityZonePlans", "ContaminatedSites", "ContaminatedMilitarySites", "ContaminatedCivilAviationSites", "ContaminatedPublicTransportSites", "GroundwaterProtectionZones", "GroundwaterProtectionSites", "NoiseSensitivityLevels", "ForestPerimeters", "ForestDistanceLines" };
+    private static string[] federalTopics = { "MotorwaysProjectPlaningZones", "MotorwaysBuildingLines", "RailwaysProjectPlanningZones", "RailwaysBuildingLines", "AirportsProjectPlanningZones", "AirportsBuildingLines", "AirportsSecurityZonePlans", "ContaminatedMilitarySites", "ContaminatedCivilAviationSites", "ContaminatedPublicTransportSites" };
     public string lang;
     public bool allTopics;
     public IList<string> topics;
@@ -66,7 +66,6 @@ public class GetExtractParamReq
         }
 
         param.withImages = withImages;
-
 
         return param;
     }

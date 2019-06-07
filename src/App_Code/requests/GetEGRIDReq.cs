@@ -1,11 +1,8 @@
-﻿/* $Rev: 14634 $ */
+﻿/* $Rev: 19122 $ */
 using System.Linq;
-using System.Xml;
-using System.ServiceModel.Web;
 using Topomat.Web.Common;
 using System.Collections.Generic;
-using System.Web.Script.Serialization;
-using System;
+using ExtractData_v103;
 
 public class GetEGRIDReq
 {
@@ -28,32 +25,38 @@ public class GetEGRIDReq
         this.queryWorker = new QueryWorker(token);
     }
 
-    public XmlElement GetEGRID(double x, double y, bool isGNSS)
+    public QueryResult GetEGRID(GetEGRIDParamReq paramReq)
     {
-        QueryResult qResult = null;
-        if (isGNSS == true)
+        string jsonGeometry = string.Empty;
+
+        if (paramReq.isGNSS == true)
         {
-            qResult = GetEGRIDFromGNSS(x, y);
+            string geometries = string.Format("{0},{1}", paramReq.coordY, paramReq.coordX);
+            jsonGeometry = this.queryWorker.BufferRequest(geometries, QueryWorker.WKID_WGS84, QueryWorker.WKID_MN95, 1.0);
         }
         else
         {
-            qResult = GetEGRIDFromMN(x, y);
+            if (paramReq.coordX < 1000000 && paramReq.coordY < 1000000)
+            {
+                paramReq.coordX += 2000000;
+                paramReq.coordY += 1000000;
+            }
+            string geometries = string.Format("{0},{1}", paramReq.coordX, paramReq.coordY);
+            jsonGeometry = this.queryWorker.BufferRequest(geometries, QueryWorker.WKID_MN95, QueryWorker.WKID_MN95, 1.0);
         }
 
-        return this.GetEGRIDResponse(qResult);
+        return this.SendGeomRequest(jsonGeometry);
     }
 
-    public XmlElement GetEGRIDByID(string identdn, string number)
+    public QueryResult GetEGRIDByID(string identdn, string number)
     {
         string clause = string.Format("{0}={1} AND {2}={3}", WebHelper.GetConfigValue("ParcelleNoCommFieldName"), identdn,
             WebHelper.GetConfigValue("ParcelleNoFieldName"), number);
 
-        QueryResult qResult = this.queryWorker.QueryAttrRequest(this.parcelleLayerId, clause, false);
-
-        return this.GetEGRIDResponse(qResult);
+        return this.queryWorker.QueryAttrRequest(this.parcelleLayerId, clause, false);
     }
 
-    public XmlElement GetEGRIDByLocalisation(string postalCode, string localisation, string number)
+    public QueryResult GetEGRIDByLocalisation(string postalCode, string localisation, string number)
     {
         // attribute request on adresses
         string clause = string.Format("{0}={1} AND UPPER({2}) LIKE '%{3}%' AND {4}='{5}'",
@@ -84,16 +87,33 @@ public class GetEGRIDReq
                 string jsonGeometry = this.queryWorker.BufferPolygonRequest(batFeatures.ToArray(),
                     QueryWorker.WKID_MN95, QueryWorker.WKID_MN95, -0.1);
 
-                QueryResult qr = this.queryWorker.QueryGeomRequest(this.parcelleLayerId, 
-                    "esriGeometryPolygon", jsonGeometry, false);
-
-                return this.GetEGRIDResponse(qr);
+                return this.queryWorker.QueryGeomRequest(this.parcelleLayerId, "esriGeometryPolygon", jsonGeometry, false);
             }
         }
 
-        return XmlHelper.GetXmlElement(new ErrorResponseType(204));
+        return new QueryResult();
     }
 
+    public GetEGRIDResponseType GetEGRIDResponse(QueryResult qResult)
+    {
+        List<string> egrids = new List<string>();
+        List<string> numbers = new List<string>();
+        List<string> identdns = new List<string>();
+        foreach (QueryResultFeature feature in qResult.features)
+        {
+            egrids.Add(feature.attributes[WebHelper.GetConfigValue("ParcelleEGRIDFieldName")]);
+            numbers.Add(feature.attributes[WebHelper.GetConfigValue("ParcelleNoFieldName")]);
+            identdns.Add(feature.attributes[WebHelper.GetConfigValue("ParcelleNoCommFieldName")]);
+        }
+
+        return new GetEGRIDResponseType
+        {
+            egrid = egrids.ToArray(),
+            number = numbers.ToArray(),
+            identDN = identdns.ToArray()
+        };
+    }
+    
     private QueryResult GetEGRIDFromGNSS(double x, double y)
     {
         string geometries = string.Format("{0},{1}", y, x);
@@ -118,32 +138,5 @@ public class GetEGRIDReq
     private QueryResult SendGeomRequest(string jsonGeometry)
     {
         return this.queryWorker.QueryGeomRequest(this.parcelleLayerId, "esriGeometryPolygon", jsonGeometry, false);
-    }
-
-    private XmlElement GetEGRIDResponse(QueryResult qResult)
-    {
-        if (qResult.features.Length > 0)
-        {
-            GetEGRIDResponseType GetEGRIDResponse = new GetEGRIDResponseType();
-
-            List<string> egrids = new List<string>();
-            List<string> numbers = new List<string>();
-            List<string> identdns = new List<string>();
-            foreach (QueryResultFeature feature in qResult.features)
-            {
-                egrids.Add(feature.attributes[WebHelper.GetConfigValue("ParcelleEGRIDFieldName")]);
-                numbers.Add(feature.attributes[WebHelper.GetConfigValue("ParcelleNoFieldName")]);
-                identdns.Add(feature.attributes[WebHelper.GetConfigValue("ParcelleNoCommFieldName")]);
-            }
-            GetEGRIDResponse.egrid = egrids.ToArray();
-            GetEGRIDResponse.number = numbers.ToArray();
-            GetEGRIDResponse.identDN = identdns.ToArray();
-
-            return XmlHelper.GetXmlElement(GetEGRIDResponse);
-        }
-        else
-        {
-            return XmlHelper.GetXmlElement(new ErrorResponseType(204));
-        }
-    }
+    }       
 }

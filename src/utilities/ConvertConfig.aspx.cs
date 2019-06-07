@@ -10,7 +10,7 @@ using Topomat.Web.Common;
 
 public partial class ConvertConfig : System.Web.UI.Page
 {
-    private static string xmlStaticFile = @"D:\exploitation\9888\utilities\StaticConfig.xml";
+    private static string xmlStaticFile = @"D:\Develop\9444-DGSI-RDPPF-ServiceXML\Source\ws\utilities\StaticConfig.xml";
 
     private static IDictionary<int, string> dictLaws = new Dictionary<int, string>
     {

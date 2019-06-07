@@ -1,5 +1,5 @@
 ﻿<%@ WebHandler Language="C#" Class="BuildLegends" %>
-/* $Rev: 14634 $ */
+/* $Rev: 15622 $ */
 using System;
 using System.Text;
 using System.Web;
@@ -54,7 +54,7 @@ public class BuildLegends : IHttpHandler
             }
         }
 
-        LegendInfo legInfo = new LegendInfo(token, mapServiceUrl, layerIds.ToArray(), false);
+        LegendInfo legInfo = new LegendInfo(token, mapServiceUrl, layerIds.ToArray(), true, false);
 
         // get main legend
         StringBuilder sb = new StringBuilder();

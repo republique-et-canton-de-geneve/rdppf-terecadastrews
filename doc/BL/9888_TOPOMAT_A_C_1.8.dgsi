@@ -1,0 +1,134 @@
+########################BULLETIN DE LIVRAISON########################
+#AUTEUR 	: Damien Sauge
+#DATE		: 05.06.2019
+#DEMANDEUR 	: DGSI
+#####################################################################
+
+###GENERAL###
+NOM_DU_LIVRABLE= 9888_TOPOMAT_A_C_1.8
+VERSION= 1.8
+MAIL=dsauge@topomat.ch
+#############
+
+###PRE REQUIS MANUEL###
+# indiquez le nom du document du répertoire document décrivant ces pré requis manuels
+PRE_MANU= prerequis_manuel.txt
+#######################
+
+###POST REQUIS MANUEL###
+# indiquez le nom du document du répertoire document décrivant ces posts requis manuels
+POST_MANU= postrequis_manuel.txt
+########################
+
+###PRE REQUIS ###
+# Indiquez la liste des zips considérés comme des pré requis à cette installation. Le séparateur sera la , (virgule)
+PRE_REQUIS=
+#################
+
+###SOCLE TECHNIQUE###
+# Indiquez la version de .Net, system (32 ou 64), arcgis server ou autres
+.NET= 4.5.1
+SYSTEM= 64
+ARCGIS_SERVER= >=10.1
+AUTRES=
+#####################
+
+############################### CONTENU ZIP##################################
+#Listez l'ensemble des fichiers relatifs à l'application, qu'il soit présent ou pas dans le zip
+#Les fichiers non présents seront commentés (#  en début de ligne)
+#chaque ligne a la structure suivante : CheminDuFichier, Version, Extension, Param (O/N),Schéma
+#la section PARAM permet de savoir si du paramétrage est nécessaire dans le fichier (exemple présence d'URL à adapter)
+# La section Schéma est facultative sauf pour les fichiers de type sql où elle est obligatoire
+##########
+#Exemples#
+##########
+#\Livrable\web.config,v3,config,O
+#\Livrable\DBA\table.sql,v3,sql,N,rdppf_adm
+
+DEBUT_LISTING_CONTENU_ZIP
+\Livrable\webservice\RdppfSVC.svc,,svc,N
+\Livrable\webservice\web.config,v21396,config,O
+\Livrable\webservice\App_Code\Config.cs,v19264,cs,N
+\Livrable\webservice\App_Code\Helper.cs,v20981,cs,N
+\Livrable\webservice\App_Code\IRdppfSVC.cs,v21372,cs,N
+\Livrable\webservice\App_Code\RdppfSVC.cs,v21372,cs,N
+\Livrable\webservice\App_Code\TokenManager.cs,v14634,cs,N
+\Livrable\webservice\App_Code\XmlHelper.cs,v19034,cs,N
+\Livrable\webservice\App_Code\report\ExtractGenerator.cs,v21372,cs,N
+\Livrable\webservice\App_Code\report\ExtractWorker.cs,v19636,cs,N
+\Livrable\webservice\App_Code\report\ReportData.cs,v21379,cs,N
+\Livrable\webservice\App_Code\report\ReportTemplate.cs,v19053,cs,N
+\Livrable\webservice\App_Code\requests\CapabilityReq.cs,v19578,cs,N
+\Livrable\webservice\App_Code\requests\CommonReq.cs,v21372,cs,N
+\Livrable\webservice\App_Code\requests\GetEGRIDParamReq.cs,v15751,cs,N
+\Livrable\webservice\App_Code\requests\GetEGRIDReq.cs,v19122,cs,N
+\Livrable\webservice\App_Code\requests\GetExtractParamReq.cs,v21379,cs,N
+\Livrable\webservice\App_Code\requests\GetExtractReq.cs,v21379,cs,N
+\Livrable\webservice\App_Code\requests\GetReportReq.cs,v21379,cs,N
+\Livrable\webservice\App_Code\requests\VersionReq.cs,v19578,cs,N
+\Livrable\webservice\App_Code\schemas\ErrorResponse.cs,v14634,cs,N
+\Livrable\webservice\App_Code\schemas\Extract.cs,v19053,cs,N
+\Livrable\webservice\App_Code\schemas\GmlSimplified.cs,v19053,cs,N
+\Livrable\webservice\App_Code\schemas\JsonExtract.cs,v19122,cs,N
+\Livrable\webservice\App_Code\schemas\Versioning.cs,v21427,cs,N
+\Livrable\webservice\App_Code\workers\CommonThread.cs,v19053,cs,N
+\Livrable\webservice\App_Code\workers\ComputeSurface.cs,v19053,cs,N
+\Livrable\webservice\App_Code\workers\EsriObjects.cs,v21379,cs,N
+\Livrable\webservice\App_Code\workers\GeometryHelper.cs,v19053,cs,N
+\Livrable\webservice\App_Code\workers\LayerInfo.cs,v19084,cs,N
+\Livrable\webservice\App_Code\workers\LegendInfo.cs,v20963,cs,N
+\Livrable\webservice\App_Code\workers\MapWorker.cs,v19264,cs,N
+\Livrable\webservice\App_Code\workers\QueryWorker.cs,v19053,cs,N
+\Livrable\webservice\App_Code\workers\RestrictionWorker.cs,v21379,cs,N
+\Livrable\webservice\App_Code\workers\ScaleBar.cs,v19264,cs,N
+\Livrable\webservice\App_Code\workers\SurfaceWorker.cs,v21379,cs,N
+\Livrable\webservice\App_GlobalResources\Resource.resx,,resx,N
+\Livrable\webservice\Bin\ESRI.ArcGIS.SOAP.dll,v10.3.1.4921,dll,N
+\Livrable\webservice\Bin\itextsharp.dll,v5.5.13.0,dll,N
+\Livrable\webservice\Bin\itextsharp.xmlworker.dll,v5.5.13.0,dll,N
+\Livrable\webservice\Bin\log4net.dll,v2.0.8.0,dll,N
+\Livrable\webservice\Bin\Topomat.Pdf.Report.dll,v2.7.0.0,dll,N
+\Livrable\webservice\Bin\Topomat.Web.Common.dll,v10.1.1.0,dll,N
+\Livrable\webservice\config\commune.xml,v15751,xml,O
+\Livrable\webservice\config\information.xml,v21426,xml,O
+\Livrable\webservice\config\legalProvision.xml,v21426,xml,O
+\Livrable\webservice\config\mapPrintConfig.xml,v19264,xml,O
+\Livrable\webservice\config\request.xml,v21426,xml,O
+\Livrable\webservice\config\report\ReportAnnex.xslt,v19053,xslt,O
+\Livrable\webservice\config\report\ReportGlossary.xslt,v19053,xslt,O
+\Livrable\webservice\config\report\ReportMainSection.xslt,v21437,xslt,O
+\Livrable\webservice\config\report\ReportRestriction.xslt,v21379,xslt,O
+\Livrable\webservice\config\report\ReportTemplate.xml,v19053,xml,O
+\Livrable\webservice\config\report\Template.pdf,,pdf,N
+\Livrable\webservice\images\NorthArrow.png,,png,N
+\Livrable\webservice\legends\arcgis_rest.css,,css,N
+\Livrable\webservice\logos\blank.gif,,gif,N
+\Livrable\webservice\logos\cadastrerdppfargb.jpg,,jpg,N
+\Livrable\webservice\logos\LOGORCGE_rvb300dpi_FRU.jpg,,jpg,N
+\Livrable\webservice\logos\Logo_der_Schweizerischen_Eidgenossenschaft.svg,,svg,N
+\Livrable\webservice\logos\Logo_rgb_pos_EN.eps,,eps,N
+\Livrable\webservice\logos\logo_suisse.png,,png,N
+\Livrable\webservice\utilities\BuildLegends.ashx,v15622,ashx,N
+\Livrable\webservice\utilities\ConvertConfig.aspx,v14634,aspx,N
+\Livrable\webservice\utilities\ConvertConfig.aspx.cs,v14634,cs,N
+\Livrable\webservice\utilities\StaticConfig.xml,v14634,xml,O
+
+FIN_LISTING_CONTENU_ZIP
+#############################################################################
+
+### Validation de l'installation ###
+# Procédure permettant de valider l'installation techniquement
+Produire les rapports pdf pour les parcelles suivantes: (Se référer au guide d'installation pour former l'URL)
+20/1328
+41/10750
+24/4134
+7/7175
+7/8030
+26/2284
+###################################
+
+### Retour ARRIERE ###
+# Procédure permettant d'effectuer un retour arrière. 
+# Le zip peut contenir des scripts de retour arrière si besoin (BDD par exemple)
+Aucune procédure.
+######################

@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DOC_NOT_APPENDED" xml:space="preserve">
+    <value>Le document suivant n'a pas pu être ajouté au rapport: {0}.</value>
+  </data>
   <data name="ERROR_GEOMETRY" xml:space="preserve">
     <value>Erreur, la géométrie de l'objet ne peut être convertit en GML.</value>
   </data>
   <data name="ERROR_INFORMATIONS" xml:space="preserve">
     <value>Erreur lors de la récupération du champ de l'information complémentaire ({0}) sur la couche '{1}'.</value>
+  </data>
+  <data name="ERROR_PRINT_MAP" xml:space="preserve">
+    <value>Erreur lors de la génération du plan d'impression.</value>
   </data>
   <data name="ERROR_REGULATIONS" xml:space="preserve">
     <value>Erreur lors de la récupération du champ de la régulation ({0}) sur la couche {1}.</value>

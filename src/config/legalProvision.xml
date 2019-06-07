@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!-- $Rev: 17030 $ -->
+<!-- $Rev: 21426 $ -->
 <LegalProvisionConfig>
   <Regulations>
     <LegalProvisions id="DATE_ADOPT_GRAND_CONSEIL" field="Date d'adoption par le Grand-Conseil">
@@ -149,7 +149,7 @@
     <LegalProvisions id="LIEN_INFOS_COMPL" field="Lien WEB vers des informations complémentaires">
       <TextAtWeb></TextAtWeb>
       <Lawstatus>1</Lawstatus>
-      <Title>Informations complémentaires</Title>
+      <Title>Disposition juridique</Title>
       <OfficialTitle></OfficialTitle>
       <Abbreviation></Abbreviation>
       <OfficialNumber></OfficialNumber>
@@ -509,6 +509,14 @@
       <OfficialTitle></OfficialTitle>
       <Abbreviation>RaLAT</Abbreviation>
       <OfficialNumber></OfficialNumber>
-    </LegalProvisions>	
+    </LegalProvisions>
+    <LegalProvisions id="ONR">
+      <TextAtWeb>https://www.admin.ch/ch/f/sr/c725_111.html</TextAtWeb>
+      <Lawstatus>1</Lawstatus>
+      <Title>RS 725.111 - Ordonnance fédérale sur les routes nationales (ORN)</Title>
+      <OfficialTitle></OfficialTitle>
+      <Abbreviation>ONR</Abbreviation>
+      <OfficialNumber></OfficialNumber>
+    </LegalProvisions>
   </Laws>
 </LegalProvisionConfig>
