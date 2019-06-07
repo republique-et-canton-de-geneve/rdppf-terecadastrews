@@ -19,7 +19,7 @@
     <add key="EnvironmentUrl" value="https://{{ stage }}.etat-ge.ch"/>
     <!-- Paramètres globaux -->
     <add key="ReverseProxyAGS" value="{#EnvironmentUrl#}/terags"/>
-    <add key="ApplicationPath" value="{{ stages[stage]['deploy_releases_folder'] }}"/>
+    <add key="ApplicationPath" value="{{ deploy_releases_folder }}"/>
     <add key="WebsiteUrl" value="{#EnvironmentUrl#}/terecadastrews"/>
     <!-- Paramètres des fichiers et répertoires -->
     <add key="ConfigPath" value="{#ApplicationPath#}\config"/>
