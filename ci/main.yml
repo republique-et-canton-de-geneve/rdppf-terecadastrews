@@ -1,24 +1,26 @@
 ---
 app: "9888"
 src: "src"
+domain_name: "TER"
+app_name: "RDPPF"
 os_type: 'windows'
 product: 'iis'
+
 artifact_repository_name: 'thirdparty'
 artifact_group_id: 'ch.ge.ter'
 artifact_id: "{{ app }}"
 artifact_ext: 'zip'
 artifact_classifier: ""
 artifact_file_name: "{{ artifact_id }}-{{ version }}.{{ artifact_ext }}"
+
 deploy_releases_folder_suffix: ''
-# deploy_releases_folder: "D:\\data\\{{ app }}"
 app_log_folder: "D:\\logs\\{{ app }}"
 
-# win_iis_webapppool_name: '9888_terecadastrews'
+win_iis_webapppool_name: "{{ app }}_{{ app_name }}"
 win_iis_webapplication_name: 'terecadastrews'
 # win_iis_webapplication_site: 'Default Web Site'
-win_iis_webapplication_path: ''
-win_iis_webapppool_attributes:
-  managedRuntimeVersion: v4.0
+# win_iis_managedRuntimeVersion: v4.0
+
 
 stages:
   dev:
