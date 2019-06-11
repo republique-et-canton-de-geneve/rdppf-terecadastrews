@@ -1,0 +1,32 @@
+---
+- name: Get list of files
+  local_action: "shell cd {{ ci_working_directory }}/doc;  [ -d \"{{ ci_working_directory }}/doc\" ] &&  find . -name '*' -type f"
+  ignore_errors: yes
+  register: app_files_list
+
+- name: Get list of files
+  local_action: "shell cd {{ ci_working_directory }}"
+
+- name: Process application files into _doc
+  win_copy:
+    src: "{{ ci_working_directory }}/doc/{{ item }}"
+    dest: "{{ deploy_releases_folder }}_doc\\{{ item }}"
+  with_items:
+    - "{{ app_files_list.stdout.splitlines() }}"
+
+- name: Get list of templates
+  local_action: "shell cd {{ ci_working_directory }}/ci/templates;  [ -d \"{{ ci_working_directory }}/ci/templates\" ] &&  find . -name '*' -type f"
+  ignore_errors: yes
+  register: app_templates_list
+
+- name: Get list of templates
+  local_action: "shell cd {{ ci_working_directory }}"
+
+- name: Process application templates into _config
+  template:
+    src: "{{ ci_working_directory }}/ci/templates/{{ item }}"
+    dest: "{{ deploy_releases_folder }}_config\\{{ item }}"
+  with_items:
+    - "{{ app_templates_list.stdout.splitlines() }}"
+
+

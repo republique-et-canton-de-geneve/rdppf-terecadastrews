@@ -16,32 +16,23 @@ artifact_file_name: "{{ artifact_id }}-{{ version }}.{{ artifact_ext }}"
 deploy_releases_folder_suffix: ''
 app_log_folder: "D:\\logs\\{{ app }}"
 
+timestamp: "{{ansible_date_time.year}}{{ ansible_date_time.month }}{{ ansible_date_time.day }}-{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+sources_folder: "D:\\_sources\\{{ app }}\\Livraisons\\{{ timestamp }}_{{ app }}_release_{{ version }}\\"
+
 win_iis_webapppool_name: "{{ app }}_{{ app_name }}"
 win_iis_webapplication_name: 'terecadastrews'
 win_iis_webapplication_site: "{{ stage|upper }}"
-# win_iis_managedRuntimeVersion: v4.0
 
 
 stages:
   dev:
     hosts: "geoweb03"
-    # win_iis_webapplication_site: 'DEV'
-    # ReverseProxyAGS: "https://dev.etat-ge.ch/terags"
-    # WebsiteUrl: "https://dev.etat-ge.ch/terecadastrews"
-    # ApplicationPath: "{{ deploy_releases_folder }}"
-    # UseTrace: "false"
+
   # rec:
   #   hosts: "geoappweb02"
-    # ReverseProxyAGS: "https://rec.etat-ge.ch/terags"
-    # WebsiteUrl: "https://rec.etat-ge.ch/terecadastrews"
-    # ApplicationPath: "{{ deploy_releases_folder }}"
-    # UseTrace: "true"
+
   # prod:
   #   hosts: "geoappweb01"
-    # ReverseProxyAGS: "https://prod.etat-ge.ch/terags"
-    # WebsiteUrl: "https://prod.etat-ge.ch/terecadastrews"
-    # ApplicationPath: "{{ deploy_releases_folder }}"
-    # UseTrace: "true"
 
 # secure_env_variables:
 #   - db_password

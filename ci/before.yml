@@ -1,0 +1,44 @@
+---
+- name: Create sources and _backup folders
+  win_file:
+    path: "{{ sources_folder }}\\_backup"
+    state: directory
+
+- name: Create _config folder
+  win_file:
+    path: "{{ sources_folder }}\\_config"
+    state: directory
+
+- name: Create _doc folder
+  win_file:
+    path: "{{ sources_folder }}\\_doc"
+    state: directory
+
+- name: Create _config folder tree (doc)
+  win_file:
+    path: "{{ sources_folder }}\\_config\\{{ files1.path }}"
+    state: directory
+  with_filetree: "{{ ci_working_directory }}/doc/"
+  when: files1.state == 'directory'
+  loop_control :
+    loop_var: files1
+
+- name: Create _config folder tree (templates)
+  win_file:
+    path: "{{ sources_folder }}\\_config\\{{ files2.path }}"
+    state: directory
+  with_filetree: "{{ ci_working_directory }}/ci/templates/"
+  when: files2.state == 'directory'
+  loop_control :
+    loop_var: files2
+
+- name: Zip app into _backup
+  win_shell: Compress-Archive {{ deploy_releases_folder }}\{{ app }} {{ sources_folder }}\_backup\{{timestamp }}_{{ app }}_backup.zip
+  args:
+    removes: "{{ deploy_releases_folder }}\\{{ app }}"
+
+- name: Export IIS Application Pools config into _backup
+  win_shell: "%windir%\\system32\\inetsrv\\appcmd list apppool /config /xml > {{ sources_folder }}\\_backup\\{{timestamp }}_IIS_App_Pools_backup.xml"
+
+- name: Export IIS Sites config into _backup
+  win_shell: "%windir%\\system32\\inetsrv\\appcmd list site /config /xml > {{ sources_folder }}\\_backup\\{{timestamp }}_IIS_Sites_backup.xml"
