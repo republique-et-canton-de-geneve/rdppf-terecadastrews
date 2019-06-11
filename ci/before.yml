@@ -32,6 +32,11 @@
   loop_control :
     loop_var: files2
 
+- name: Copy Release into _sources
+  win_copy:
+    src: "{{ artifact_path }}"
+    dest: "{{ sources_folder }}"
+
 - name: Zip app into _backup
   win_shell: Compress-Archive {{ deploy_releases_folder }} {{ sources_folder }}\_backup\{{timestamp }}_{{ app }}_backup.zip
   args:
