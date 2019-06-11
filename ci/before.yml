@@ -16,7 +16,7 @@
 
 - name: Create _config folder tree (doc)
   win_file:
-    path: "{{ sources_folder }}\\_config\\{{ files1.path }}"
+    path: "{{ sources_folder }}\\_doc\\{{ files1.path }}"
     state: directory
   with_filetree: "{{ ci_working_directory }}/ci/doc/"
   when: files1.state == 'directory'
