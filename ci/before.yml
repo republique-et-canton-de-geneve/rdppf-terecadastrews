@@ -38,7 +38,7 @@
     removes: "{{ deploy_releases_folder }}\\{{ app }}"
 
 - name: Export IIS Application Pools config into _backup
-  win_shell: "%windir%\\system32\\inetsrv\\appcmd list apppool /config /xml > {{ sources_folder }}\\_backup\\{{timestamp }}_IIS_App_Pools_backup.xml"
+  win_shell: "C:\\Windows\\System32\\inetsrv\\appcmd list apppool /config /xml > {{ sources_folder }}\\_backup\\{{timestamp }}_IIS_App_Pools_backup.xml"
 
 - name: Export IIS Sites config into _backup
-  win_shell: "%windir%\\system32\\inetsrv\\appcmd list site /config /xml > {{ sources_folder }}\\_backup\\{{timestamp }}_IIS_Sites_backup.xml"
+  win_shell: "C:\\Windows\\System32\\inetsrv\\appcmd list site /config /xml > {{ sources_folder }}\\_backup\\{{timestamp }}_IIS_Sites_backup.xml"
