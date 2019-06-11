@@ -10,7 +10,7 @@
 - name: Process application files into _doc
   win_copy:
     src: "{{ ci_working_directory }}/doc/{{ item }}"
-    dest: "{{ deploy_releases_folder }}_doc\\{{ item }}"
+    dest: "{{ sources_folder }}\\_doc\\{{ item }}"
   with_items:
     - "{{ app_files_list.stdout.splitlines() }}"
 
@@ -25,7 +25,7 @@
 - name: Process application templates into _config
   template:
     src: "{{ ci_working_directory }}/ci/templates/{{ item }}"
-    dest: "{{ deploy_releases_folder }}_config\\{{ item }}"
+    dest: "{{ sources_folder }}\\_config\\{{ item }}"
   with_items:
     - "{{ app_templates_list.stdout.splitlines() }}"
 
