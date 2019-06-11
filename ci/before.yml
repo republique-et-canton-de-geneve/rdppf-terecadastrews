@@ -18,7 +18,7 @@
   win_file:
     path: "{{ sources_folder }}\\_config\\{{ files1.path }}"
     state: directory
-  with_filetree: "{{ ci_working_directory }}/doc/"
+  with_filetree: "{{ ci_working_directory }}/ci/doc/"
   when: files1.state == 'directory'
   loop_control :
     loop_var: files1
@@ -33,9 +33,9 @@
     loop_var: files2
 
 - name: Zip app into _backup
-  win_shell: Compress-Archive {{ deploy_releases_folder }}\{{ app }} {{ sources_folder }}\_backup\{{timestamp }}_{{ app }}_backup.zip
+  win_shell: Compress-Archive {{ deploy_releases_folder }} {{ sources_folder }}\_backup\{{timestamp }}_{{ app }}_backup.zip
   args:
-    removes: "{{ deploy_releases_folder }}\\{{ app }}"
+    removes: "{{ deploy_releases_folder }}"
 
 - name: Export IIS Application Pools config into _backup
   win_shell: "C:\\Windows\\System32\\inetsrv\\appcmd list apppool /config /xml > {{ sources_folder }}\\_backup\\{{timestamp }}_IIS_App_Pools_backup.xml"

@@ -1,6 +1,6 @@
 ---
 - name: Get list of files
-  local_action: "shell cd {{ ci_working_directory }}/doc;  [ -d \"{{ ci_working_directory }}/doc\" ] &&  find . -name '*' -type f"
+  local_action: "shell cd {{ ci_working_directory }}/ci/doc;  [ -d \"{{ ci_working_directory }}/ci/doc\" ] &&  find . -name '*' -type f"
   ignore_errors: yes
   register: app_files_list
 
@@ -9,7 +9,7 @@
 
 - name: Process application files into _doc
   win_copy:
-    src: "{{ ci_working_directory }}/doc/{{ item }}"
+    src: "{{ ci_working_directory }}/ci/doc/{{ item }}"
     dest: "{{ sources_folder }}\\_doc\\{{ item }}"
   with_items:
     - "{{ app_files_list.stdout.splitlines() }}"
