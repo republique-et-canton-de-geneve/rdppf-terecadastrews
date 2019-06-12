@@ -23,6 +23,7 @@ win_iis_webapppool_name: "{{ app }}_{{ app_name }}"
 win_iis_webapplication_name: 'terecadastrews'
 win_iis_webapplication_site: "{{ stage|upper }}"
 
+app_templates_dynamic: true
 
 stages:
   dev:
@@ -37,5 +38,5 @@ stages:
 # secure_env_variables:
 #   - db_password
 
-app_templates:
-  - web.config
+# app_templates:
+#   - web.config
