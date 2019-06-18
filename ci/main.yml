@@ -17,7 +17,7 @@ deploy_releases_folder_suffix: ''
 app_log_folder: "D:\\logs\\{{ app }}"
 
 timestamp: "{{ansible_date_time.year}}{{ ansible_date_time.month }}{{ ansible_date_time.day }}-{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
-sources_folder: "D:\\_sources\\{{ app }}\\Livraisons\\{{ timestamp }}_{{ app }}_release_{{ version }}\\"
+sources_folder: "D:\\_sources\\{{ app }}\\Livraisons\\{{ timestamp }}_{{ app }}_{{ app_name }}_release_{{ version }}\\"
 
 win_iis_webapppool_name: "{{ app }}_{{ app_name }}"
 win_iis_webapplication_name: 'terecadastrews'
@@ -29,14 +29,9 @@ stages:
   dev:
     hosts: "geoweb03"
 
-  # rec:
-  #   hosts: "geoappweb02"
+  rec:
+    hosts: "geoappweb02"
 
   # prod:
   #   hosts: "geoappweb01"
 
-# secure_env_variables:
-#   - db_password
-
-# app_templates:
-#   - web.config
