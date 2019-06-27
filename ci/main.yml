@@ -32,6 +32,6 @@ stages:
   rec:
     hosts: "geoappweb02"
 
-  # prod:
-  #   hosts: "geoappweb01"
+  prod:
+    hosts: "geoappweb01"
 
