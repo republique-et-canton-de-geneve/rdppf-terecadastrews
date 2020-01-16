@@ -1,4 +1,4 @@
-﻿/* $Rev: 21379 $ */
+﻿/* $Rev: 22459 $ */
 using System;
 using System.Linq;
 using System.Web.Script.Serialization;
@@ -97,8 +97,17 @@ public class SurfaceWorker
                 areaResult = this.AreasAndLengthsRequest(intersectResult);
             }
 
-            double SG = double.Parse(feature.attributes[WebHelper.GetConfigValue("ParcelleAreaFieldName")]);
-            double ST = double.Parse(feature.attributes[WebHelper.GetConfigValue("ParcelleSurfaceFieldName")]);
+            double SG = 0, ST = 0;
+            if (feature.type == ParcelleType.BienFonds)
+            {
+                SG = double.Parse(feature.attributes[WebHelper.GetConfigValue("ParcelleAreaFieldName")]);
+                ST = double.Parse(feature.attributes[WebHelper.GetConfigValue("ParcelleSurfaceFieldName")]);
+            }
+            else if (feature.type == ParcelleType.DDP)
+            {
+                SG = double.Parse(feature.attributes[WebHelper.GetConfigValue("DDPAreaFieldName")]);
+                ST = double.Parse(feature.attributes[WebHelper.GetConfigValue("DDPSurfaceFieldName")]);
+            }            
 
             ComputeSurface cs = new ComputeSurface();
             if (cs.Process(isComplete, SG, ST, areaResult.areas) == ComputeSurface.RESULT_FINISHED)

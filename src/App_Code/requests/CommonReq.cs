@@ -1,4 +1,4 @@
-﻿/* $Rev: 21372 $ */
+﻿/* $Rev: 22461 $ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,21 +38,62 @@ public class CommonReq
         return string.Compare(this.flavour.ToUpper(), "EMBEDDABLE") == 0 ? true : false;
     }
 
-    public QueryResult ProcessEGRID(string egrid)
+    public QueryResultFeature ProcessEGRID(string egrid)
     {
+        ParcelleType type = ParcelleType.BienFonds;
+
         int id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("ParcelleLayerName")).LayerID;
         string clause = string.Format("{0}='{1}'", WebHelper.GetConfigValue("ParcelleEGRIDFieldName"), egrid);
 
-        return this.queryWorker.QueryAttrRequest(id, clause, true);
+        QueryResult qr = this.queryWorker.QueryAttrRequest(id, clause, true);
+
+        if (qr.features.Length == 0)
+        {
+            id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DDPLayerName")).LayerID;
+            clause = string.Format("{0}='{1}'", WebHelper.GetConfigValue("DDPEGRIDFieldName"), egrid);
+
+            qr = this.queryWorker.QueryAttrRequest(id, clause, true);
+            type = ParcelleType.DDP;
+        }
+
+        QueryResultFeature feature = null;
+        if (qr.features.Length == 1)
+        {
+            feature = qr.features[0];
+            feature.type = type;
+        }
+
+        return feature;
     }
 
-    public QueryResult ProcessID(string identdn, string number)
+    public QueryResultFeature ProcessID(string identdn, string number)
     {
+        ParcelleType type = ParcelleType.BienFonds;
+
         int id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("ParcelleLayerName")).LayerID;
         string clause = string.Format("{0}={1} AND {2}={3}", WebHelper.GetConfigValue("ParcelleNoCommFieldName"), identdn,
             WebHelper.GetConfigValue("ParcelleNoFieldName"), number);
 
-        return this.queryWorker.QueryAttrRequest(id, clause, true);
+        QueryResult qr = this.queryWorker.QueryAttrRequest(id, clause, true);
+
+        if (qr.features.Length == 0)
+        {
+            id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DDPLayerName")).LayerID;
+            clause = string.Format("{0}={1} AND {2}={3}", WebHelper.GetConfigValue("DDPNoCommFieldName"), identdn,
+                WebHelper.GetConfigValue("DDPNoFieldName"), number);
+
+            qr = this.queryWorker.QueryAttrRequest(id, clause, true);
+            type = ParcelleType.DDP;
+        }
+
+        QueryResultFeature feature = null;
+        if (qr.features.Length == 1)
+        {
+            feature = qr.features[0];
+            feature.type = type;
+        }
+
+        return feature;
     }
 
     protected void Init(GetExtractParamReq param, string flavour, bool forReport)
@@ -138,9 +179,18 @@ public class CommonReq
         guid = guid.Insert(14, "-");
         guid = guid.Substring(0, 18);
 
-        string noCom = feature.attributes[WebHelper.GetConfigValue("ParcelleNoCommFieldName")];
-        string noParc = feature.attributes[WebHelper.GetConfigValue("ParcelleNoFieldName")];
-
+        string noCom = string.Empty, noParc = string.Empty;
+        if (feature.type == ParcelleType.BienFonds)
+        {
+            noCom = feature.attributes[WebHelper.GetConfigValue("ParcelleNoCommFieldName")];
+            noParc = feature.attributes[WebHelper.GetConfigValue("ParcelleNoFieldName")];
+        }
+        else if (feature.type == ParcelleType.DDP)
+        {
+            noCom = feature.attributes[WebHelper.GetConfigValue("DDPNoCommFieldName")];
+            noParc = feature.attributes[WebHelper.GetConfigValue("DDPNoFieldName")];
+        }            
+        
         return string.Format("{0}-{1}-{2}", guid, noCom, noParc);
     }
 

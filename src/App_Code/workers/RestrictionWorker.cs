@@ -1,4 +1,4 @@
-﻿/* $Rev: 21379 $ */
+﻿/* $Rev: 22461 $ */
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -38,12 +38,12 @@ public class RestrictionWorker
         this.extractParams = param;
     }
 
-    public RestrictionResult[] RunAnalyse(QueryResult parcelle, Extent mapExtent)
+    public RestrictionResult[] RunAnalyse(QueryResultFeature feature, Extent mapExtent)
     {
         // request intersected entities
         string ids = this.GetIdentifyLayerIds();
 
-        string jsonGeometry = this.queryWorker.BufferPolygonRequest(parcelle.features,
+        string jsonGeometry = this.queryWorker.BufferPolygonRequest(new QueryResultFeature[] { feature },
                     QueryWorker.WKID_MN95, QueryWorker.WKID_MN95, -0.1);
 
         IdentifyResult[] irs = this.queryWorker.IdentifyRequestFromPolygon(ids, jsonGeometry, true);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!-- $Rev: 21379 $ -->
+<!-- $Rev: 22477 $ -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:template match="restriction">
     <head>
@@ -13,7 +13,7 @@
         */
         html, body, table
         {
-        font: 7pt Cadastra,Arial,Verdana,sans-serif;
+        font: 8.5pt Cadastra;
         }
         table
         {
@@ -27,12 +27,11 @@
         {
         font-size: 15pt;
         font-weight: bold;
-        padding-bottom: 14mm;
         }
         td.separator
         {
-        border: 1px dotted white;
-        border-bottom-color: #999;
+        border: 0.07mm solid white;
+        border-bottom-color: black;
         height: 2px;
         }
         td.title
@@ -49,30 +48,23 @@
         {
         vertical-align: middle;
         width: 10mm;
-        height: 5mm;
         }
         td.label
         {
-        width: 58mm;
-        }
-        td.length
-        {
-        text-align: right;
-        width: 38mm;
+        padding-top: 1mm;
+        width: 62mm;
         }
         td.surface
         {
-        text-align: right;
-        width: 21mm;
-        }
-        td.percent
-        {
+        padding-top: 1mm;
         text-align: right;
         width: 17mm;
         }
-        span.link
+        td.percent
         {
-        color: rgb(76,143,186);
+        padding-top: 1mm;
+        text-align: right;
+        width: 17mm;
         }
         a
         {
@@ -90,6 +82,7 @@
         <div class="title">
           <xsl:value-of select="title"/>
         </div>
+        <div style="{titleMarginStyle}"></div>
         <div>
           <img src="{mapUrl}" />
         </div>
@@ -100,7 +93,7 @@
               <tr>
                 <td class="title"></td>
                 <td class="content">
-                  <table>
+                  <table style="font-size:6.5pt/8.5pt">
                     <tr>
                       <td class="symbol"></td>
                       <td class="label">Type</td>
@@ -140,11 +133,11 @@
               <tr>
                 <td class="title"></td>
                 <td class="content">
-                  <table>
+                  <table style="font-size:6.5pt/8.5pt">
                     <tr>
                       <td class="symbol"></td>
                       <td class="label">Type</td>
-                      <td class="length">Longueur</td>
+                      <td class="length">Part</td>
                     </tr>
                   </table>
                 </td>
@@ -167,7 +160,7 @@
                           <td class="label">
                             <xsl:value-of select="label"/>
                           </td>
-                          <td class="length">
+                          <td class="surface">
                             <xsl:value-of select="length"/>
                             <xsl:text> m</xsl:text>
                           </td>
@@ -185,12 +178,12 @@
               <tr>
                 <td class="title"></td>
                 <td class="content">
-                  <table>
+                  <table style="font-size:6.5pt/8.5pt">
                     <tr>
                       <td class="symbol"></td>
                       <td class="label">Type</td>
-                      <td class="surface">Surface</td>
-                      <td class="percent">Part</td>
+                      <td class="surface">Part</td>
+                      <td class="percent">Part en %</td>
                     </tr>
                   </table>
                 </td>
@@ -218,7 +211,7 @@
                             <xsl:text disable-output-escaping="yes"> m&#178;</xsl:text>
                           </td>
                           <td class="percent">
-                            <xsl:value-of select="surfPercent"/>
+                            <xsl:value-of select="surfPercentFormatted"/>
                             <xsl:text>%</xsl:text>
                           </td>
                         </tr>
@@ -229,34 +222,39 @@
                 <tr>
                   <td class="separator" colspan="2"></td>
                 </tr>
-              </xsl:if>              
+              </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
-          <xsl:if test="count(otherLegends/legend)>0">
-            <tr>
-              <td class="title">
-                <div>Autre légende</div>
-                <div>(visible dans le cadre du plan)</div>
-              </td>
-              <td class="content">
-                <table>
-                  <xsl:for-each select="otherLegends/legend">
-                    <tr>
-                      <td class="symbol">
-                        <img src="{imageUrl}" />
-                      </td>
-                      <td>
-                        <xsl:value-of select="label"/>
-                      </td>
-                    </tr>
-                  </xsl:for-each>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td class="separator" colspan="2"></td>
-            </tr>
-          </xsl:if>
+          <tr>
+            <td class="title">
+              <div>Autre légende</div>
+              <div>(visible dans le cadre du plan)</div>
+            </td>
+            <td class="content">
+              <xsl:choose>
+                <xsl:when test="count(otherLegends/legend)>0">
+                  <table>
+                    <xsl:for-each select="otherLegends/legend">
+                      <tr>
+                        <td class="symbol">
+                          <img src="{imageUrl}" />
+                        </td>
+                        <td class="label" style="width:96mm">
+                          <xsl:value-of select="label"/>
+                        </td>
+                      </tr>
+                    </xsl:for-each>
+                  </table>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:text>-</xsl:text>
+                </xsl:otherwise>
+              </xsl:choose>
+            </td>
+          </tr>
+          <tr>
+            <td class="separator" colspan="2"></td>
+          </tr>
           <xsl:if test="count(additionnalLegends/legend)>0">
             <tr>
               <td class="title">
@@ -270,134 +268,8 @@
                       <td class="symbol">
                         <img src="{imageUrl}" />
                       </td>
-                      <td>
+                      <td class="label" style="width:96mm">
                         <xsl:value-of select="label"/>
-                      </td>
-                    </tr>
-                  </xsl:for-each>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td class="separator" colspan="2"></td>
-            </tr>
-          </xsl:if>
-        </table>
-        <xsl:choose>
-          <xsl:when test="breakAfterLegend='true'">
-            <div style="page-break-before: always"></div>
-          </xsl:when>
-          <xsl:otherwise>
-            <div style="height:4mm"></div>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:if test="count(regulations/regulation)>0">
-          <table>
-            <tr>
-              <td class="title">
-                <div>Dispositions juridiques</div>
-              </td>
-              <td class="content">
-                <table>
-                  <tr>
-                    <td style="height:2mm"></td>
-                  </tr>
-                  <xsl:for-each select="regulations/regulation">
-                    <tr>
-                      <td>
-                        <div>
-                          <xsl:value-of select="label"/>
-                        </div>
-                        <xsl:for-each select="values/string">
-                          <div class="valueLink">
-                            <xsl:choose>
-                              <xsl:when test="starts-with(., 'http')">
-                                <a href="{.}">
-                                  <xsl:value-of select="."/>
-                                </a>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                              </xsl:otherwise>
-                            </xsl:choose>
-                          </div>
-                        </xsl:for-each>
-                      </td>
-                    </tr>
-                  </xsl:for-each>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td class="separator" colspan="2"></td>
-            </tr>
-          </table>
-        </xsl:if>
-        <xsl:if test="breakAfterRegulation='true'">
-          <div style="page-break-before: always"></div>
-        </xsl:if>
-        <table>
-          <xsl:if test="count(laws/law)>0">
-            <tr>
-              <td class="title">
-                <div>Bases légales</div>
-              </td>
-              <td class="content">
-                <table>
-                  <tr>
-                    <td style="height:2mm"></td>
-                  </tr>
-                  <xsl:for-each select="laws/law">
-                    <tr>
-                      <td>
-                        <div>
-                          <xsl:value-of select="title"/>
-                        </div>
-                        <div class="valueLink">
-                          <a href="{link}">
-                            <xsl:value-of select="link"/>
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  </xsl:for-each>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td class="separator" colspan="2"></td>
-            </tr>
-          </xsl:if>
-          <xsl:if test="count(informations/information)>0">
-            <tr>
-              <td class="title">
-                <div>Informations et renvois supplémentaires</div>
-              </td>
-              <td class="content">
-                <table>
-                  <tr>
-                    <td style="height:2mm"></td>
-                  </tr>
-                  <xsl:for-each select="informations/information">
-                    <tr>
-                      <td>
-                        <div>
-                          <xsl:value-of select="label"/>
-                        </div>
-                        <xsl:for-each select="values/string">
-                          <div class="valueLink">
-                            <xsl:choose>
-                              <xsl:when test="starts-with(., 'http')">
-                                <a href="{.}">
-                                  <xsl:value-of select="."/>
-                                </a>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                              </xsl:otherwise>
-                            </xsl:choose>
-                          </div>
-                        </xsl:for-each>
                       </td>
                     </tr>
                   </xsl:for-each>
@@ -410,21 +282,184 @@
           </xsl:if>
           <tr>
             <td class="title">
+              <div>Légende complète</div>
+            </td>
+            <td class="content">
+              <a href="{legendLink}">
+                <xsl:value-of select="legendLink"/>
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="separator" colspan="2"></td>
+          </tr>
+        </table>
+        <xsl:choose>
+          <xsl:when test="breakAfterLegend='true'">
+            <div style="page-break-before: always"></div>
+          </xsl:when>
+          <xsl:otherwise>
+            <div style="height:6mm"></div>
+          </xsl:otherwise>
+        </xsl:choose>
+        <table>
+          <tr>
+            <td class="title">
+              <div>Dispositions juridiques</div>
+            </td>
+            <td class="content">
+              <div style="height:2mm"></div>
+              <xsl:choose>
+                <xsl:when test="count(regulations/regulation)>0">
+                  <table>
+                    <xsl:for-each select="regulations/regulation">
+                      <tr>
+                        <td>
+                          <div>
+                            <xsl:value-of select="label"/>
+                            <xsl:text>:</xsl:text>
+                          </div>
+                          <xsl:for-each select="values/string">
+                            <div class="valueLink">
+                              <xsl:choose>
+                                <xsl:when test="starts-with(., 'http')">
+                                  <a href="{.}">
+                                    <xsl:value-of select="."/>
+                                  </a>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                  <xsl:value-of select="."/>
+                                </xsl:otherwise>
+                              </xsl:choose>
+                            </div>
+                          </xsl:for-each>
+                        </td>
+                      </tr>
+                    </xsl:for-each>
+                  </table>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:text>-</xsl:text>
+                </xsl:otherwise>
+              </xsl:choose>
+            </td>
+          </tr>
+          <tr>
+            <td class="separator" colspan="2"></td>
+          </tr>
+        </table>
+        <xsl:if test="breakAfterRegulation='true'">
+          <div style="page-break-before: always"></div>
+        </xsl:if>
+        <table>
+          <tr>
+            <td class="title">
+              <div>Bases légales</div>
+            </td>
+            <td class="content">
+              <div style="height:2mm"></div>
+              <xsl:choose>
+                <xsl:when test="count(laws/law)>0">
+                  <table>
+                    <xsl:for-each select="laws/law">
+                      <tr>
+                        <td>
+                          <div>
+                            <xsl:value-of select="title"/>
+                            <xsl:text>:</xsl:text>
+                          </div>
+                          <div class="valueLink">
+                            <a href="{link}">
+                              <xsl:value-of select="link"/>
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    </xsl:for-each>
+                  </table>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:text>-</xsl:text>
+                </xsl:otherwise>
+              </xsl:choose>
+            </td>
+          </tr>
+          <tr>
+            <td class="separator" colspan="2"></td>
+          </tr>
+        </table>
+        <xsl:if test="breakAfterInfo='true'">
+          <div style="page-break-before: always"></div>
+        </xsl:if>
+        <table>
+          <tr>
+            <td class="title">
+              <div>Informations et renvois supplémentaires</div>
+            </td>
+            <td class="content">
+              <div style="height:2mm"></div>
+              <xsl:choose>
+                <xsl:when test="count(informations/information)>0">
+                  <table>
+                    <xsl:for-each select="informations/information">
+                      <tr>
+                        <td>
+                          <div>
+                            <xsl:value-of select="label"/>
+                            <xsl:text>:</xsl:text>
+                          </div>
+                          <xsl:for-each select="values/string">
+                            <div class="valueLink">
+                              <xsl:choose>
+                                <xsl:when test="starts-with(., 'http')">
+                                  <a href="{.}">
+                                    <xsl:value-of select="."/>
+                                  </a>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                  <xsl:value-of select="."/>
+                                </xsl:otherwise>
+                              </xsl:choose>
+                            </div>
+                          </xsl:for-each>
+                        </td>
+                      </tr>
+                    </xsl:for-each>
+                  </table>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:text>-</xsl:text>
+                </xsl:otherwise>
+              </xsl:choose>
+            </td>
+          </tr>
+          <tr>
+            <td class="separator" colspan="2"></td>
+          </tr>
+        </table>
+        <xsl:if test="breakAfterInfo='true'">
+          <div style="page-break-before: always"></div>
+        </xsl:if>
+        <table>
+          <tr>
+            <td class="title">
               <div>Service compétent</div>
             </td>
             <td class="content">
+              <div style="height:2mm"></div>
               <table>
-                <tr>
-                  <td style="height:2mm"></td>
-                </tr>
                 <tr>
                   <td>
                     <xsl:value-of select="service/name"/>
                     <xsl:if test="string-length(service/link)>0">
                       <xsl:text>: </xsl:text>
-                      <span class="link">
-                        <xsl:value-of select="service/link"/>
-                      </span>
+                      <div style="height:2mm"></div>
+                      <div style="padding-left:3mm">
+                        <a href="{service/link}">
+                          <xsl:value-of select="service/link"/>
+                        </a>
+                      </div>
+                      <div style="height:1mm"></div>
                     </xsl:if>
                   </td>
                 </tr>
@@ -434,16 +469,19 @@
           <tr>
             <td class="separator" colspan="2"></td>
           </tr>
-          <xsl:if test="count(annexes/annex)>0">
+        </table>
+        <xsl:if test="count(annexes/annex)>0">
+          <xsl:if test="breakAfterService='true'">
+            <div style="page-break-before: always"></div>
+          </xsl:if>
+          <table>
             <tr>
               <td class="title">
                 <div>Annexes</div>
               </td>
               <td class="content">
+                <div style="height:2mm"></div>
                 <table>
-                  <tr>
-                    <td style="height:2mm"></td>
-                  </tr>
                   <xsl:for-each select="annexes/annex">
                     <tr>
                       <td>
@@ -462,8 +500,8 @@
             <tr>
               <td class="separator" colspan="2"></td>
             </tr>
-          </xsl:if>
-        </table>
+          </table>
+        </xsl:if>
       </body>
     </html>
   </xsl:template>

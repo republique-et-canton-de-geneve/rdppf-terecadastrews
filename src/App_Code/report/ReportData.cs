@@ -1,4 +1,4 @@
-﻿/* $Rev: 21379 $ */
+﻿/* $Rev: 22477 $ */
 using System;
 
 public class ReportData
@@ -32,8 +32,8 @@ public class mainSection
     public string[] generalInfos;
     public string[] baseData;
     public office office;
+    public string marginStyle = "height:10mm";
     public bool breakAfterToc = false;
-    public bool breakAfterOther = false;
 }
 
 public class data
@@ -77,6 +77,7 @@ public class restriction
     public law[] laws;
     public information[] informations;
     public service service;
+    public string titleMarginStyle;
     public string mapUrl;
     public string geometryType = string.Empty;
     public string legendLink = string.Empty;    
@@ -86,6 +87,9 @@ public class restriction
     public annex[] annexes;
     public bool breakAfterLegend = false;
     public bool breakAfterRegulation = false;
+    public bool breakAfterLaw = false;
+    public bool breakAfterInfo = false;
+    public bool breakAfterService = false;
 }
 
 public class regulation
@@ -119,6 +123,7 @@ public class legend
     public int length;
     public int surface;
     public double surfPercent;
+    public string surfPercentFormatted;
 }
 
 public class toc

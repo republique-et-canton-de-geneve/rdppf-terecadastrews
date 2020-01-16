@@ -6,6 +6,9 @@ using Topomat.Pdf.Report;
 using System.IO;
 using System.Xml.Serialization;
 using System.Text;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.draw;
 
 public class ExtractWorker
 {
@@ -36,20 +39,44 @@ public class ExtractWorker
 
     public void GetGlossaryExtract(glossary[] glossaries, string fileName)
     {
-        // build glossary page
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(this.BuildGlossaryXml(glossaries));
-
-        xmlDoc.Save(Path.Combine(this.workingPath, "glossary.xml"));
-
-        PdfReport glossaryReport = new PdfReport(this.reportTemplate.Format, this.reportTemplate.MarginLeft,
+        var document = new Document(this.reportTemplate.Format, this.reportTemplate.MarginLeft,
             this.reportTemplate.MarginRight, this.reportTemplate.MarginTop, this.reportTemplate.MarginBottom);
 
-        // generate pdf
-        using (XmlNodeReader xmlReader = new XmlNodeReader(xmlDoc))
-        using (XmlTextReader xsltReader = new XmlTextReader(Helper.GetReportConfigFilePath("ReportGlossary.xslt")))
+        try
         {
-            glossaryReport.GeneratePdf(xmlReader, xsltReader, this.workingPath, fileName);
+            using (var writer = PdfWriter.GetInstance(document, new FileStream(fileName, FileMode.Create)))
+            {
+                document.Open();
+
+                FontFactory.RegisterDirectory(@"C:\Windows\Fonts");
+                BaseFont bfCadastraBold = FontFactory.GetFont("Cadastra Bold", BaseFont.CP1252, BaseFont.EMBEDDED).BaseFont;
+                BaseFont bfCadastra = FontFactory.GetFont("Cadastra", BaseFont.CP1252, BaseFont.EMBEDDED).BaseFont;
+
+                Font mainTitleFont = new Font(bfCadastraBold, 15.0f, Font.NORMAL, new BaseColor(0, 0, 0));
+                Font titleFont = new Font(bfCadastraBold, 8.5f, Font.NORMAL, new BaseColor(0, 0, 0));
+                Font textFont = new Font(bfCadastra, 8.5f, Font.NORMAL, new BaseColor(0, 0, 0));
+
+                Paragraph pg = new Paragraph(new Chunk("Abréviations", mainTitleFont));
+                pg.SpacingAfter = 23f;
+                document.Add(pg);
+
+                foreach (glossary g in glossaries)
+                {
+                    Paragraph p = new Paragraph(8.5f, new Chunk(string.Format("{0}: ", g.title), titleFont));
+                    p.Add(new Chunk(g.content, textFont));
+                    document.Add(p);
+
+                    LineSeparator sep = new LineSeparator(0.07f, 100f, BaseColor.BLACK, Element.ALIGN_CENTER, 3.0f);
+                    document.Add(new Chunk(sep));
+                }
+            }
+        }
+        catch (Exception)
+        {
+        }
+        finally
+        {
+            document.Close();
         }
     }
 

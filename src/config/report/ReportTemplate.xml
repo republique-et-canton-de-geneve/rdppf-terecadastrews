@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!-- $Rev: 19053 $ -->
+<!-- $Rev: 22477 $ -->
 <Template>
     <!-- Format du rapport, valeurs possibles: A5, A4, A3 -->
     <Format>A4</Format>
     <!-- Marges utilisées pour le contenu du rapport (en mm), gauche, droite, haut, bas séparées par des virgules, sans espace -->
     <!-- Soustraire 3mm à la marge du haut pour afficher les titres à la bonne hauteur -->
-    <Margins>18,18,37,15</Margins> 
+    <Margins>18,18,39,18</Margins> 
     <!-- Utiliser le modèle définit dans web.config, valeurs possibles: true, false-->
     <UseModel>true</UseModel>
     <!-- Police utilisée pour les zones de texte -->
@@ -18,7 +18,7 @@
     <TextDateZones>
         <TextDateZone>
             <!-- Format de la date, notation courante: y (année), M (mois) , d (jour), H (heure), m (minute), s (seconde) -->
-            <Text>dd.MM.yyyy HH:mm:ss</Text>
+            <Text>dd.MM.yyyy  HH:mm:ss</Text>
             <!-- Taille de la police -->
             <FontSize>7</FontSize>
             <!-- Alignement du text, valeurs possibles: left, center, right -->
@@ -26,7 +26,7 @@
             <!-- Position verticale (en mm), valeurs possibles de l'attribut 'from' : left, right -->
             <HorizontalPosition from="left">18</HorizontalPosition>
             <!-- Position horizontale (en mm), valeurs possibles de l'attribut 'from' : top, bottom -->
-            <VerticalPosition from="bottom">12</VerticalPosition>
+            <VerticalPosition from="bottom">10</VerticalPosition>
             <!-- Rotation en degrés -->
             <Rotation>0</Rotation>
             <!-- Couleur de la police: rouge,vert,bleu (0 à 255) séparés par des virgules sans espace -->
@@ -44,7 +44,7 @@
             <FontSize>7</FontSize>
             <Alignement>right</Alignement>
             <HorizontalPosition from="right">18</HorizontalPosition>
-            <VerticalPosition from="bottom">12</VerticalPosition>
+            <VerticalPosition from="bottom">10</VerticalPosition>
             <Rotation>0</Rotation>
             <Color>0,0,0</Color>
         </TextPageZone>
@@ -58,7 +58,7 @@
             <FontSize>7</FontSize>
             <Alignement>left</Alignement>
             <HorizontalPosition from="left">44</HorizontalPosition>
-            <VerticalPosition from="bottom">12</VerticalPosition>
+            <VerticalPosition from="bottom">10</VerticalPosition>
             <Rotation>0</Rotation>
             <Color>0,0,0</Color>
         </TextZone>

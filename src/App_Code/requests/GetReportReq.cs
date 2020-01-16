@@ -1,4 +1,4 @@
-﻿/* $Rev: 21379 $ */
+﻿/* $Rev: 22477 $ */
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -15,6 +15,9 @@ using System.Drawing.Drawing2D;
 public class GetReportReq : CommonReq
 {
     private static int MAP_OUTLINE_WIDTH = 2;
+    private static int TITLE_MARGIN_BREAK = 55;
+    private static int TITLE_MARGIN_SINGLE = 14;
+    private static int TITLE_MARGIN_DOUBLE = 7;
 
     private string workPath;
     private string workUrl;
@@ -29,11 +32,11 @@ public class GetReportReq : CommonReq
         this.workUrl = WebHelper.GetConfigValue("WorkingUrl");
     }
 
-    public byte[] GetResponseAsPdf(QueryResult qResult)
+    public byte[] GetResponseAsPdf(QueryResultFeature feature)
     {
         Stopwatch timer = Stopwatch.StartNew();
 
-        ReportData reportData = this.GetReportData(qResult);
+        ReportData reportData = this.GetReportData(feature);
 
         Helper.LogInfo(this.GetType().ToString(), "GetResponseAsPdf - * DONNEES *", timer.ElapsedMilliseconds);
         timer.Restart();
@@ -47,7 +50,7 @@ public class GetReportReq : CommonReq
         return pdfData;
     }
 
-    private ReportData GetReportData(QueryResult qResult)
+    private ReportData GetReportData(QueryResultFeature feature)
     {
         Stopwatch timer = Stopwatch.StartNew();
 
@@ -55,22 +58,28 @@ public class GetReportReq : CommonReq
         IDictionary<Thread, SurfaceWorkerThread> dictSurfThreads = new Dictionary<Thread, SurfaceWorkerThread>();
 
         // first get maps
-        Extent geomExtent = this.queryWorker.GetGeometryExtent(qResult.features[0].geometry);
+        Extent geomExtent = this.queryWorker.GetGeometryExtent(feature.geometry);
         this.printParams = new MapPrintParams(XmlHelper.GetMapPrintConfig(), geomExtent);
 
-        RestrictionResult[] restrictionResults = this.restrWorker.RunAnalyse(qResult, this.printParams.GetMapExtent());
+        RestrictionResult[] restrictionResults = this.restrWorker.RunAnalyse(feature, this.printParams.GetMapExtent());
 
         Helper.LogInfo(this.GetType().ToString(), "GetReportData - analyse", timer.ElapsedMilliseconds);
         timer.Restart();
 
-        int[] ids = this.GetMapLayerIds(new string[] { "markerMapLayer", "addMapLayer", "mainMapLayer" });
-        int markerId = this.GetMapLayerIds(new string[] { "markerMapLayer" })[0];
-        string layerDefs = string.Format("{0}:OBJECTID={1}", markerId, qResult.features[0].attributes["OBJECTID"]);
+        string marker = "markerMapLayer";
+        if (feature.type == ParcelleType.DDP)
+        {
+            marker = "markerDDPMapLayer";
+        }
+
+        int[] ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "mainMapLayer" });
+        int markerId = this.GetMapLayerIds(new string[] { marker })[0];
+        string layerDefs = string.Format("{0}:OBJECTID={1}", markerId, feature.attributes["OBJECTID"]);
 
         dictMapPrintThreads.Add(this.GetMapPrintWorkerThread(this.printParams, geomExtent, ids,
             MapWorkerThread.TYPE_PAGE, -1, layerDefs));
 
-        ids = this.GetMapLayerIds(new string[] { "markerMapLayer", "addMapLayer", "restrictionMapLayer" });
+        ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "restrictionMapLayer" });
         foreach (RestrictionResult restriction in restrictionResults)
         {
             if (restriction.isFirst)
@@ -109,7 +118,7 @@ public class GetReportReq : CommonReq
             }
 
             SurfaceWorkerThread swThread = new SurfaceWorkerThread(new SurfaceWorker());
-            swThread.Init(qResult.features[0], isComplete, isOverlap, restrList.ToArray());
+            swThread.Init(feature, isComplete, isOverlap, restrList.ToArray());
 
             Thread thread = new Thread(new ThreadStart(swThread.Start));
             thread.Start();
@@ -120,7 +129,7 @@ public class GetReportReq : CommonReq
         string mainMapUrl = string.Empty;
         IDictionary<int, string> dictRestrictionMapUrls = new Dictionary<int, string>();
 
-        this.CreateWorkingDirectory(this.GetIdentifier(qResult.features[0]));
+        this.CreateWorkingDirectory(this.GetIdentifier(feature));
 
         // wait for threads to finish
         foreach (KeyValuePair<Thread, SurfaceWorkerThread> pair in dictSurfThreads)
@@ -163,7 +172,7 @@ public class GetReportReq : CommonReq
         Helper.LogInfo(this.GetType().ToString(), "GetReportData - récupération des cartes", timer.ElapsedMilliseconds);
         timer.Restart();
 
-        data[] attributes = this.GetMainData(qResult);
+        data[] attributes = this.GetMainData(feature);
 
         // add concerned themes
         IList<restriction> restrictions = new List<restriction>();
@@ -239,18 +248,24 @@ public class GetReportReq : CommonReq
         return new KeyValuePair<Thread, MapPrintWorkerThread>(thread, mapPrintThread);
     }
 
-    private data[] GetMainData(QueryResult qResult)
+    private data[] GetMainData(QueryResultFeature feature)
     {
         XmlNode requestConfig = XmlHelper.GetConfig("request.xml", "RequestConfig");
-        XmlNode reNode = requestConfig.SelectSingleNode("RealEstate");
+
+        string xpath = "RealEstate/Parcelle";
+        if (feature.type == ParcelleType.DDP)
+        {
+            xpath = "RealEstate/DDP";
+        }
+        XmlNode reNode = this.requestConfig.SelectSingleNode(xpath);
 
         field[] parcFields = new field[]
         {
-            new field() { name = "NO_PARCELLE", value = XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "Number") },
-            new field() { name = "EGRID", value = XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "EGRID") },
-            new field() { name = "NOMFECO", value = XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "Municipality") },
-            new field() { name = "NUFECO", value = XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "FosNr") },
-            new field() { name = "SURFACE", value = XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "LandRegistryArea") }
+            new field() { name = "NO_PARCELLE", value = XmlHelper.GetAttributeFromNode(feature, reNode, "Number") },
+            new field() { name = "EGRID", value = XmlHelper.GetAttributeFromNode(feature, reNode, "EGRID") },
+            new field() { name = "NOMFECO", value = XmlHelper.GetAttributeFromNode(feature, reNode, "Municipality") },
+            new field() { name = "NUFECO", value = XmlHelper.GetAttributeFromNode(feature, reNode, "FosNr") },
+            new field() { name = "SURFACE", value = XmlHelper.GetAttributeFromNode(feature, reNode, "LandRegistryArea") }
         };
 
         dataLayer parcDataLayer = new dataLayer
@@ -326,6 +341,11 @@ public class GetReportReq : CommonReq
                     surfPercent = result.PartInPercent
                 });
             }
+        }
+        foreach (string key in dictLegends.Keys)
+        {
+            dictLegends[key].surfPercent = Math.Round(dictLegends[key].surfPercent, 1);
+            dictLegends[key].surfPercentFormatted = string.Format("{0:0.0}", dictLegends[key].surfPercent);
         }
 
         // other legends
@@ -463,6 +483,12 @@ public class GetReportReq : CommonReq
             });
         }
 
+        string restrTitle = XmlHelper.GetXmlElementValue(node, "Theme/Text");
+        string titleMarginStyle = string.Format("height:{0}mm", TITLE_MARGIN_SINGLE);
+        if (restrTitle.Length > TITLE_MARGIN_BREAK)
+        {
+            titleMarginStyle = string.Format("height:{0}mm", TITLE_MARGIN_DOUBLE);
+        }
         // return object
         return new restriction()
         {
@@ -477,6 +503,7 @@ public class GetReportReq : CommonReq
                 name = XmlHelper.GetXmlElementValue(node, "ResponsibleOffice/Name"),
                 link = XmlHelper.GetXmlElementValue(node, "ResponsibleOffice/OfficeAtWeb")
             },
+            titleMarginStyle = titleMarginStyle,
             mapUrl = dictRestrictionMapUrls[firstResult.LayerId],
             geometryType = firstResult.IdentResult.geometryType,
             legendLink = legendAtWeb,

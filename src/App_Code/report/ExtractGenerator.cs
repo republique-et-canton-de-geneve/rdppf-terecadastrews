@@ -1,4 +1,4 @@
-﻿/* $Rev: 21372 $ */
+﻿/* $Rev: 22477 $ */
 using System;
 using System.IO;
 using System.Text;
@@ -19,6 +19,16 @@ public class ExtractGenerator
     #region Data members
 
     private static int LINES_BEFORE_BREAK = 24;
+
+    // valeurs permettant de positionner blocs infos / données de base / clauses
+    private static int TOC_FIXED_ELEMENTS = 100;
+    private static int TOC_CONCERNED_RESTRICTION = 6;
+    private static int TOC_OTHER_RESTRICTION = 4;
+    private static int TOC_BLOCK = 85;
+
+    private static int MARGIN_BOTTOM = 10;
+    private static int PAGE_HEIGHT = 297;
+
     private string workPath;
     private List<ReportAnnex> Annexes;
     private int NextAnnex;
@@ -54,7 +64,7 @@ public class ExtractGenerator
             if (restr.result == true)
             {
                 restr.annexes = this.GetAnnexes(reportData.section.type, restr);
-                //this.TestBreakPage(restr);
+                this.TestBreakPage(restr);
 
                 ExtractWorkerThread ewThread = new ExtractWorkerThread(new ExtractWorker(workPath, template));
                 ewThread.InitRestriction(restr, Path.Combine(this.workPath, restr.id + ".pdf"));
@@ -234,18 +244,7 @@ public class ExtractGenerator
 
         return sb.ToString();
     }
-
-    //private string BuildGlossaryXml(glossary[] glossaries)
-    //{
-    //    XmlRootAttribute xRoot = new XmlRootAttribute("glossaryRoot");
-
-    //    StringBuilder sb = new StringBuilder();
-    //    XmlSerializer serializer = new XmlSerializer(glossaries.GetType(), xRoot);
-    //    serializer.Serialize(XmlWriter.Create(sb), glossaries);
-
-    //    return sb.ToString();
-    //}
-
+    
     private string BuildAnnexXml(string node)
     {
         XmlRootAttribute xRoot = new XmlRootAttribute("annex");
@@ -278,60 +277,79 @@ public class ExtractGenerator
 
     private void TestBreakPage(restriction restr)
     {
-        // approximate length of page from collections of restriction
-        int length = restr.legends.Length + restr.otherLegends.Length + restr.additionnalLegends.Length;
-        // legends count double;
-        length = length * 2 + 1;
+        // estimation de la place prise par la légende
+        int lines = restr.legends.Length + restr.otherLegends.Length + restr.additionnalLegends.Length;
+        // espace entre légendes et dispositions;
+        lines++;
         foreach (regulation reg in restr.regulations)
         {
-            length++;
-            length += reg.values.Length;
+            // intitulé de la disposition
+            lines++;
+            // valeurs doublées (souvent des liens sur 2 lignes)
+            lines += reg.values.Length * 2;
         }
 
-        if (length > LINES_BEFORE_BREAK)
+        if (lines > LINES_BEFORE_BREAK)
         {
             restr.breakAfterLegend = true;
         }
         else
         {
-            length += restr.laws.Length * 2;
-            foreach (information info in restr.informations)
-            {
-                length++;
-                length += info.values.Length;
-            }
-            length++;
-            length += restr.annexes.Length;
-
-            if (length > LINES_BEFORE_BREAK)
+            // lois: intitulé + lien sur 2 lignes
+            lines += restr.laws.Length * 3;
+            if (lines > LINES_BEFORE_BREAK)
             {
                 restr.breakAfterRegulation = true;
             }
+            else
+            {
+                // estimer les infos comme les dispositions
+                foreach (information info in restr.informations)
+                {
+                    lines++;
+                    lines += info.values.Length * 2;
+                }
+                if (lines > LINES_BEFORE_BREAK)
+                {
+                    restr.breakAfterLaw = true;
+                }
+                else
+                {
+                    lines += 2;
+                    if (lines > LINES_BEFORE_BREAK)
+                    {
+                        restr.breakAfterInfo = true;
+                    }
+                    else
+                    {
+                        lines += restr.annexes.Length;
+                        if (lines > LINES_BEFORE_BREAK)
+                        {
+                            restr.breakAfterService = true;
+                        }
+                    }
+                }
+            }            
         }
     }
 
     private void TestTocBreakPage(mainSection section)
     {
-        int test = 0;
-        foreach (toc toc in section.tocs)
+        int marginHeight = PAGE_HEIGHT - TOC_FIXED_ELEMENTS - TOC_BLOCK - MARGIN_BOTTOM;
+        marginHeight = marginHeight - (section.tocs.Length * TOC_CONCERNED_RESTRICTION);
+        foreach (restriction r in section.restrictions)
         {
-            if (toc.annexes.Length > 0)
+            if (r.result == false)
             {
-                test += toc.annexes.Length;
-            }
-            else
-            {
-                test += 2;
+                marginHeight = marginHeight - TOC_OTHER_RESTRICTION;
             }
         }
-        if (test > LINES_BEFORE_BREAK)
+        marginHeight = marginHeight - (section.noDataThemes.Length * TOC_OTHER_RESTRICTION);
+
+        section.marginStyle = string.Format("height:{0}mm", marginHeight);
+        if (marginHeight < 10)
         {
             section.breakAfterToc = true;
-        }
-        test += section.restrictions.Length;
-        if (test > LINES_BEFORE_BREAK)
-        {
-            section.breakAfterOther = true;
         }
     }
 

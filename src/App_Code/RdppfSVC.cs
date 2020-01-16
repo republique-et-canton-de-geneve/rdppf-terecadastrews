@@ -1,4 +1,4 @@
-﻿/* $Rev: 21372 $ */
+﻿/* $Rev: 22461 $ */
 using System.Xml;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
@@ -545,17 +545,17 @@ public class RdppfSVC : IRdppfSVC
         GetExtractParamReq paramRequest = this.GetExtractParameters();
         GetExtractReq extractRequest = new GetExtractReq(paramRequest, flavour, returnGeometry);
 
-        QueryResult qr = null;
+        QueryResultFeature feature = null;
         if (string.IsNullOrEmpty(egrid))
         {
-            qr = extractRequest.ProcessID(identdn, number);
+            feature = extractRequest.ProcessID(identdn, number);
         }
         else
         {
-            qr = extractRequest.ProcessEGRID(egrid);
+            feature = extractRequest.ProcessEGRID(egrid);
         }
 
-        if (qr.features.Length != 1)
+        if (feature == null)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
             return XmlHelper.GetXmlElement(new ErrorResponseType(204));
@@ -565,11 +565,11 @@ public class RdppfSVC : IRdppfSVC
         {
             GetReportReq reportRequest = new GetReportReq(paramRequest, flavour);
 
-            return XmlHelper.GetXmlElement(extractRequest.GetEmbeddableResponseAsXml(reportRequest.GetResponseAsPdf(qr)));
+            return XmlHelper.GetXmlElement(extractRequest.GetEmbeddableResponseAsXml(reportRequest.GetResponseAsPdf(feature)));
         }
         else
         {
-            return XmlHelper.GetXmlElement(extractRequest.GetResponseAsXml(qr));
+            return XmlHelper.GetXmlElement(extractRequest.GetResponseAsXml(feature));
         }
     }
 
@@ -581,17 +581,17 @@ public class RdppfSVC : IRdppfSVC
         GetExtractParamReq paramRequest = this.GetExtractParameters();
         GetExtractReq extractRequest = new GetExtractReq(paramRequest, flavour, returnGeometry);
 
-        QueryResult qr = null;
+        QueryResultFeature feature = null;
         if (string.IsNullOrEmpty(egrid))
         {
-            qr = extractRequest.ProcessID(identdn, number);
+            feature = extractRequest.ProcessID(identdn, number);
         }
         else
         {
-            qr = extractRequest.ProcessEGRID(egrid);
+            feature = extractRequest.ProcessEGRID(egrid);
         }
 
-        if (qr.features.Length != 1)
+        if (feature == null)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
             string json = serializer.Serialize(new ErrorResponseType(204));
@@ -603,7 +603,7 @@ public class RdppfSVC : IRdppfSVC
             GetReportReq reportRequest = new GetReportReq(paramRequest, flavour);
 
             JsonExtract.JsonEmbeddableExtract extract =
-                extractRequest.GetEmbeddableResponseAsJson(reportRequest.GetResponseAsPdf(qr));
+                extractRequest.GetEmbeddableResponseAsJson(reportRequest.GetResponseAsPdf(feature));
 
             string json = serializer.Serialize(extract);
 
@@ -611,7 +611,7 @@ public class RdppfSVC : IRdppfSVC
         }
         else
         {
-            JsonExtract.JsonExtract extract = extractRequest.GetResponseAsJson(qr);
+            JsonExtract.JsonExtract extract = extractRequest.GetResponseAsJson(feature);
             string json = serializer.Serialize(extract);
 
             return new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -634,30 +634,30 @@ public class RdppfSVC : IRdppfSVC
         Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** PARAMETRES ***", timer.ElapsedMilliseconds);
         timer.Restart();
 
-        QueryResult qr = null;
+        QueryResultFeature feature = null;
         if (string.IsNullOrEmpty(egrid))
         {
-            qr = reportRequest.ProcessID(identdn, number);
+            feature = reportRequest.ProcessID(identdn, number);
 
             Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** PROCESS commune + parcelle ***", timer.ElapsedMilliseconds);
             timer.Restart();
         }
         else
         {
-            qr = reportRequest.ProcessEGRID(egrid);
+            feature = reportRequest.ProcessEGRID(egrid);
 
             Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** PROCESS EGRID ***", timer.ElapsedMilliseconds);
             timer.Restart();
         }
 
-        if (qr.features.Length != 1)
+        if (feature == null)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
             string json = serializer.Serialize(new ErrorResponseType(204));
             return new MemoryStream(Encoding.UTF8.GetBytes(json));
         }
 
-        byte[] buffer = reportRequest.GetResponseAsPdf(qr);
+        byte[] buffer = reportRequest.GetResponseAsPdf(feature);
 
         Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** ANALYSE + PDF ***", timer.ElapsedMilliseconds);
         timer.Stop();

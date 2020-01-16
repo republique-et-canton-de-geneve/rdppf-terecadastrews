@@ -1,5 +1,7 @@
-﻿/* $Rev: 21379 $ */
+﻿/* $Rev: 22459 $ */
 using System.Collections.Generic;
+
+public enum ParcelleType { BienFonds, DDP };
 
 public class QueryResult
 {
@@ -12,6 +14,7 @@ public class QueryResultFeature
 {
     public IDictionary<string, string> attributes;
     public GeometryResult geometry;
+    public ParcelleType type;
 }
 
 public class IdentifyResp

@@ -1,4 +1,4 @@
-﻿/* $Rev: 21379 $ */
+﻿/* $Rev: 22461 $ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,20 +28,20 @@ public class GetExtractReq : CommonReq
         this.returnGeometry = returnGeometry;
     }
     
-    public GetExtractByIdResponseType GetResponseAsXml(QueryResult qResult)
+    public GetExtractByIdResponseType GetResponseAsXml(QueryResultFeature feature)
     {
         GetExtractByIdResponseType response = new GetExtractByIdResponseType();
 
-        response.Item = this.GetExtract(qResult);        
+        response.Item = this.GetExtract(feature);        
 
         return response;
     }
 
-    public JsonExtract.JsonExtract GetResponseAsJson(QueryResult qResult)
+    public JsonExtract.JsonExtract GetResponseAsJson(QueryResultFeature feature)
     {
         JsonExtract.JsonExtract response = new JsonExtract.JsonExtract();
 
-        response.Item = this.GetExtract(qResult);
+        response.Item = this.GetExtract(feature);
 
         return response;
     }
@@ -62,24 +62,30 @@ public class GetExtractReq : CommonReq
         return response;
     }
 
-    private Extract GetExtract(QueryResult qResult)
+    private Extract GetExtract(QueryResultFeature feature)
     {
         IDictionary<Thread, MapWorkerThread> dictMapThreads = new Dictionary<Thread, MapWorkerThread>();
         IDictionary<Thread, SurfaceWorkerThread> dictSurfThreads = new Dictionary<Thread, SurfaceWorkerThread>();
 
         // first get maps
-        Extent geomExtent = this.queryWorker.GetGeometryExtent(qResult.features[0].geometry);
+        Extent geomExtent = this.queryWorker.GetGeometryExtent(feature.geometry);
         this.printParams = new MapPrintParams(XmlHelper.GetMapPrintConfig(), geomExtent);
 
-        RestrictionResult[] restrictions = this.restrWorker.RunAnalyse(qResult, this.printParams.GetMapExtent());
+        RestrictionResult[] restrictions = this.restrWorker.RunAnalyse(feature, this.printParams.GetMapExtent());
+
+        string marker = "markerMapLayer";
+        if (feature.type == ParcelleType.DDP)
+        {
+            marker = "markerDDPMapLayer";
+        }
 
         int[] ids = this.GetMapLayerIds(new string[] { "addMapLayer", "mainMapLayer" });
         dictMapThreads.Add(this.GetMapWorkerThread(this.printParams, geomExtent, ids, MapWorkerThread.TYPE_MAIN,
             string.Empty, string.Empty, this.param.withImages));
 
-        ids = this.GetMapLayerIds(new string[] { "markerMapLayer", "addMapLayer", "mainMapLayer" });
-        int markerId = this.GetMapLayerIds(new string[] { "markerMapLayer" })[0];
-        string layerDefs = string.Format("{0}:OBJECTID={1}", markerId, qResult.features[0].attributes["OBJECTID"]);
+        ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "mainMapLayer" });
+        int markerId = this.GetMapLayerIds(new string[] { marker })[0];
+        string layerDefs = string.Format("{0}:OBJECTID={1}", markerId, feature.attributes["OBJECTID"]);
 
         dictMapThreads.Add(this.GetMapWorkerThread(this.printParams, geomExtent, ids, MapWorkerThread.TYPE_PAGE,
             string.Empty, layerDefs, this.param.withImages));
@@ -118,7 +124,7 @@ public class GetExtractReq : CommonReq
             }
 
             SurfaceWorkerThread swThread = new SurfaceWorkerThread(new SurfaceWorker());
-            swThread.Init(qResult.features[0], isComplete, isOverlap, restrList.ToArray());
+            swThread.Init(feature, isComplete, isOverlap, restrList.ToArray());
 
             Thread thread = new Thread(new ThreadStart(swThread.Start));
             thread.Start();
@@ -195,7 +201,7 @@ public class GetExtractReq : CommonReq
             extract.Item3 = WebHelper.GetConfigValue("LogoUrl") + "/" +
                 XmlHelper.GetXmlElementValue(this.infoConfig, "MunicipalityLogo");
         }
-        extract.ExtractIdentifier = this.GetNormalizedString(this.GetIdentifier(qResult.features[0]), 50);
+        extract.ExtractIdentifier = this.GetNormalizedString(this.GetIdentifier(feature), 50);
         extract.Item4 = extract.Item3; // TODO, QRCode
 
         extract.GeneralInformation = this.GetLocalisedMText(this.infoConfig, "GeneralInformation");
@@ -204,11 +210,11 @@ public class GetExtractReq : CommonReq
 
         if (this.param.withImages)
         {
-            extract.RealEstate = this.GetRealEstate(qResult, restrictions, mainMapImage, pageMapImage);
+            extract.RealEstate = this.GetRealEstate(feature, restrictions, mainMapImage, pageMapImage);
         }
         else
         {
-            extract.RealEstate = this.GetRealEstate(qResult, restrictions, mainMapUrl, pageMapUrl);
+            extract.RealEstate = this.GetRealEstate(feature, restrictions, mainMapUrl, pageMapUrl);
         }
         extract.ExclusionOfLiability = this.GetExclusionOfLiability();
         extract.PLRCadastreAuthority = this.GetPLRCadastreAuthority(this.infoConfig, "PLRCadastreAuthority");
@@ -356,20 +362,25 @@ public class GetExtractReq : CommonReq
         return list.ToArray();
     }
 
-    private RealEstate_DPR GetRealEstate(QueryResult qResult, RestrictionResult[] restrictions, Map mainMap, Map printMap)
+    private RealEstate_DPR GetRealEstate(QueryResultFeature feature, RestrictionResult[] restrictions, Map mainMap, Map printMap)
     {
         RealEstate_DPR re = new RealEstate_DPR();
 
-        XmlNode reNode = this.requestConfig.SelectSingleNode("RealEstate");
+        string xpath = "RealEstate/Parcelle";
+        if (feature.type == ParcelleType.DDP)
+        {
+            xpath = "RealEstate/DDP";
+        }
+        XmlNode reNode = this.requestConfig.SelectSingleNode(xpath);
 
         re.Canton = CantonCode.GE;
-        re.EGRID = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "EGRID"), 14);
-        re.FosNr = XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "FosNr");
-        re.IdentDN = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "IdentDN"), 12);
-        re.LandRegistryArea = XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "LandRegistryArea");
+        re.EGRID = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "EGRID"), 14);
+        re.FosNr = XmlHelper.GetAttributeFromNode(feature, reNode, "FosNr");
+        re.IdentDN = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "IdentDN"), 12);
+        re.LandRegistryArea = XmlHelper.GetAttributeFromNode(feature, reNode, "LandRegistryArea");
         re.MetadataOfGeographicalBaseData = XmlHelper.GetXmlElementValue(reNode, "MetadataOfGeographicalBaseData");
-        re.Municipality = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "Municipality"), 60);
-        re.Number = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(qResult.features[0], reNode, "Number"), 12);
+        re.Municipality = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "Municipality"), 60);
+        re.Number = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "Number"), 12);
 
         // layerIndex quand on a plusieurs couches ?
         mainMap.layerIndex = "-1";
@@ -378,7 +389,7 @@ public class GetExtractReq : CommonReq
         printMap.layerIndex = "-1";
         printMap.layerOpacity = 1.0;
         re.PlanForLandRegisterMainPage = printMap;
-        re.Limit = this.GetLimit(qResult.features[0]);
+        re.Limit = this.GetLimit(feature);
 
         re.RestrictionOnLandownership = this.GetRestrictionOnLandownership(restrictions, re.FosNr);
         re.SubunitOfLandRegister = string.Empty; // si définit, utiliser: this.GetNormalizedString("", 60);
@@ -387,20 +398,20 @@ public class GetExtractReq : CommonReq
         return re;
     }
 
-    private RealEstate_DPR GetRealEstate(QueryResult qResult, RestrictionResult[] restrictions, byte[] mainImage, byte[] printImage)
+    private RealEstate_DPR GetRealEstate(QueryResultFeature feature, RestrictionResult[] restrictions, byte[] mainImage, byte[] printImage)
     {
         Map mainMap = this.GetPlanForLandRegister(mainImage);
         Map printMap = this.GetPlanForLandRegister(printImage);
 
-        return this.GetRealEstate(qResult, restrictions, mainMap, printMap);
+        return this.GetRealEstate(feature, restrictions, mainMap, printMap);
     }
 
-    private RealEstate_DPR GetRealEstate(QueryResult qResult, RestrictionResult[] restrictions, string mapUrl, string printUrl)
+    private RealEstate_DPR GetRealEstate(QueryResultFeature feature, RestrictionResult[] restrictions, string mapUrl, string printUrl)
     {
         Map mainMap = this.GetPlanForLandRegister(mapUrl);
         Map pageMap = this.GetPlanForLandRegister(printUrl);
 
-        return this.GetRealEstate(qResult, restrictions, mainMap, pageMap);
+        return this.GetRealEstate(feature, restrictions, mainMap, pageMap);
     }
 
     private RestrictionOnLandownership[] GetRestrictionOnLandownership(RestrictionResult[] restrictions, string municipality)

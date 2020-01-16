@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<!-- $Rev: 21426 $ -->
+<!-- $Rev: 22677 $ -->
 <RequestConfig>
   <markerMapLayer>marker</markerMapLayer>
+  <markerDDPMapLayer>marker_DDP</markerDDPMapLayer>
   <addMapLayer>1002_PLIM</addMapLayer>
   <addMapLayer>1002_PLIM_TERR</addMapLayer>
   <addMapLayer>1160_ADRESSE</addMapLayer>
@@ -39,15 +40,28 @@
   <restrictionMapLayer>CAD_BATIMENT_HORSOL</restrictionMapLayer>
   <restrictionMapLayer>CAD_BATIMENT_SOUS_SOL</restrictionMapLayer>
   <RealEstate>
-    <Number>NO_PARCELLE</Number>
-    <IdentDN>NO_COMM</IdentDN>
-    <EGRID>EGRID</EGRID>
-    <Municipality>COMMUNE</Municipality>
-    <FosNr>NUFECO</FosNr>
-    <LandRegistryArea>SURFACE</LandRegistryArea>
-    <MetadataOfGeographicalBaseData>
-      http://ge.ch/sitg/sitg_catalog/data_details/575b9f91-bd6e-462d-acbf-76a95ab78db6/xhtml_raw
-    </MetadataOfGeographicalBaseData>
+    <Parcelle>
+      <Number>NO_PARCELLE</Number>
+      <IdentDN>NO_COMM</IdentDN>
+      <EGRID>EGRID</EGRID>
+      <Municipality>COMMUNE</Municipality>
+      <FosNr>NUFECO</FosNr>
+      <LandRegistryArea>SURFACE</LandRegistryArea>
+      <MetadataOfGeographicalBaseData>
+        http://ge.ch/sitg/sitg_catalog/data_details/575b9f91-bd6e-462d-acbf-76a95ab78db6/xhtml_raw
+      </MetadataOfGeographicalBaseData>
+    </Parcelle>
+    <DDP>
+      <Number>NO_DDP</Number>
+      <IdentDN>NO_COMM</IdentDN>
+      <EGRID>EGRID</EGRID>
+      <Municipality>COMMUNE</Municipality>
+      <FosNr>NUFECO</FosNr>
+      <LandRegistryArea>SURFACE_TECHNIQUE</LandRegistryArea>
+      <MetadataOfGeographicalBaseData>
+        https://ge.ch/sitg/sitg_catalog/data_details/33fde7a1-9f29-4db7-84b7-926804574388/xhtml_raw
+      </MetadataOfGeographicalBaseData>
+    </DDP>
   </RealEstate>
   <RestrictionOnLandownership layer="RDPPF_ZONES_SYNT" complete="true" additionalLayers="RDPPF_ZONES_SYNT_DEV">
     <Information>Amenagement-73</Information>
@@ -594,6 +608,7 @@
     <SubTheme>cadastre_sites_pollues</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
+	<regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
     <lawId>LPE</lawId>
     <lawId>Osites</lawId>
     <lawId>LaLSC</lawId>
