@@ -1,4 +1,4 @@
-﻿/* $Rev: 22477 $ */
+﻿/* $Rev: 22729 $ */
 using System;
 using System.IO;
 using System.Text;
@@ -18,7 +18,7 @@ public class ExtractGenerator
 
     #region Data members
 
-    private static int LINES_BEFORE_BREAK = 24;
+    private static int LINES_BEFORE_BREAK = 22;
 
     // valeurs permettant de positionner blocs infos / données de base / clauses
     private static int TOC_FIXED_ELEMENTS = 100;
@@ -278,7 +278,11 @@ public class ExtractGenerator
     private void TestBreakPage(restriction restr)
     {
         // estimation de la place prise par la légende
-        int lines = restr.legends.Length + restr.otherLegends.Length + restr.additionnalLegends.Length;
+        int lines = restr.legends.Length + restr.otherLegends.Length + restr.additionnalLegends.Length + 1;
+        if (restr.otherLegends.Length < 2)
+        {
+            lines += 2 - restr.otherLegends.Length;
+        }
         // espace entre légendes et dispositions;
         lines++;
         foreach (regulation reg in restr.regulations)
@@ -287,6 +291,10 @@ public class ExtractGenerator
             lines++;
             // valeurs doublées (souvent des liens sur 2 lignes)
             lines += reg.values.Length * 2;
+        }
+        if (restr.regulations.Length == 0)
+        {
+            lines++;
         }
 
         if (lines > LINES_BEFORE_BREAK)
@@ -297,6 +305,10 @@ public class ExtractGenerator
         {
             // lois: intitulé + lien sur 2 lignes
             lines += restr.laws.Length * 3;
+            if (restr.laws.Length == 0)
+            {
+                lines++;
+            }
             if (lines > LINES_BEFORE_BREAK)
             {
                 restr.breakAfterRegulation = true;
@@ -309,12 +321,17 @@ public class ExtractGenerator
                     lines++;
                     lines += info.values.Length * 2;
                 }
+                if (restr.informations.Length == 0)
+                {
+                    lines += 2;
+                }
                 if (lines > LINES_BEFORE_BREAK)
                 {
                     restr.breakAfterLaw = true;
                 }
                 else
                 {
+                    // Service compétent sur 2 lignes
                     lines += 2;
                     if (lines > LINES_BEFORE_BREAK)
                     {

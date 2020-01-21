@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!-- $Rev: 22477 $ -->
+<!-- $Rev: 22729 $ -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:template match="restriction">
     <head>
@@ -388,7 +388,7 @@
             <td class="separator" colspan="2"></td>
           </tr>
         </table>
-        <xsl:if test="breakAfterInfo='true'">
+        <xsl:if test="breakAfterLaw='true'">
           <div style="page-break-before: always"></div>
         </xsl:if>
         <table>
