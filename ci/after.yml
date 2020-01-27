@@ -29,13 +29,9 @@
   with_items:
     - "{{ app_templates_list.stdout.splitlines() }}"
 
-#- name: Generation des legendes
-#  win_shell: |
-#    $response = Invoke-WebRequest -Uri http://localhost/terecadastrews/utilities/BuildLegends.ashx
-#    if ($response.Content -ne "Finished.")
-#       {
-#       Write-Host "Generation des legendes echouee! "
-#       Write-Host $response.Content
-#       exit 1
-#       }
-#    Write-Host "Generation des legendes OK"
+- name: Generation des legendes
+  uri:
+    url: https://{{ stage }}.etat-ge.ch/terecadastrews/utilities/BuildLegends.ashx
+    return_content: yes
+  register: reponse
+  failed_when: "'Finished.' not in reponse.content"
