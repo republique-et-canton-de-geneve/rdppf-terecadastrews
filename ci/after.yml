@@ -30,8 +30,8 @@
     - "{{ app_templates_list.stdout.splitlines() }}"
 
 - name: Generation des legendes
-  uri:
-    url: https://{{ stage }}.etat-ge.ch/terecadastrews/utilities/BuildLegends.ashx
+  win_uri:
+    url: http://localhost/terecadastrews/utilities/BuildLegends.ashx
     return_content: yes
   register: reponse
   failed_when: "'Finished.' not in reponse.content"
