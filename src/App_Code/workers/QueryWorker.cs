@@ -1,4 +1,4 @@
-﻿/* $Rev: 19053 $ */
+﻿/* $Rev: 22885 $ */
 using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
@@ -27,7 +27,7 @@ public class QueryWorker
         this.token = token;
 	}
 
-    public QueryResult QueryAttrRequest(int id, string whereClause, bool returnGeometry)
+    public QueryResult QueryAttrRequest(int id, string whereClause, ParcelleType type, bool returnGeometry)
     {
         using (WebClient client = new WebClient())
         {
@@ -43,13 +43,17 @@ public class QueryWorker
             byte[] response = client.UploadValues(url, values);
             string resp = Encoding.UTF8.GetString(response);
 
-            QueryResult result = serializer.Deserialize<QueryResult>(resp);
-            
+            QueryResult result = serializer.Deserialize<QueryResult>(resp);            
+            foreach (QueryResultFeature feat in result.features)
+            {
+                feat.type = type;
+            }            
+
             return result;
         }
     }
 
-    public QueryResult QueryGeomRequest(int id, string type, string jsonGeometry, bool returnGeometry)
+    public QueryResult QueryGeomRequest(int id, string geometryType, string jsonGeometry, ParcelleType type, bool returnGeometry)
     {
         using (WebClient client = new WebClient())
         {
@@ -58,7 +62,7 @@ public class QueryWorker
             values = new NameValueCollection();
             values["outFields"] = "*";
             values["geometry"] = jsonGeometry;
-            values["geometryType"] = type;
+            values["geometryType"] = geometryType;
             values["returnGeometry"] = returnGeometry.ToString();
             values["f"] = "json";
 
@@ -67,6 +71,10 @@ public class QueryWorker
             string resp = Encoding.UTF8.GetString(response);
 
             QueryResult result = serializer.Deserialize<QueryResult>(resp);
+            foreach (QueryResultFeature feat in result.features)
+            {
+                feat.type = type;
+            }
             
             return result;
         }

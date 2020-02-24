@@ -1,4 +1,4 @@
-﻿/* $Rev: 22459 $ */
+﻿/* $Rev: 22885 $ */
 using System.Linq;
 using Topomat.Web.Common;
 using System.Collections.Generic;
@@ -47,15 +47,27 @@ public class GetEGRIDReq
             jsonGeometry = this.queryWorker.BufferRequest(geometries, QueryWorker.WKID_MN95, QueryWorker.WKID_MN95, 1.0);
         }
 
-        return this.SendGeomRequest(jsonGeometry);
+        QueryResult qrResults = this.queryWorker.QueryGeomRequest(this.parcelleLayerId, "esriGeometryPolygon", jsonGeometry, ParcelleType.BienFonds, false);
+        QueryResult qrDdps = this.queryWorker.QueryGeomRequest(this.ddpLayerId, "esriGeometryPolygon", jsonGeometry, ParcelleType.DDP, false);
+
+        ConcatQueryResults(qrResults, qrDdps.features);
+
+        return qrResults;
     }
 
     public QueryResult GetEGRIDByID(string identdn, string number)
     {
         string clause = string.Format("{0}={1} AND {2}={3}", WebHelper.GetConfigValue("ParcelleNoCommFieldName"), identdn,
             WebHelper.GetConfigValue("ParcelleNoFieldName"), number);
+        QueryResult qrResults = this.queryWorker.QueryAttrRequest(this.parcelleLayerId, clause, ParcelleType.BienFonds, false);
 
-        return this.queryWorker.QueryAttrRequest(this.parcelleLayerId, clause, false);
+        clause = string.Format("{0}={1} AND {2}={3}", WebHelper.GetConfigValue("DDPNoCommFieldName"), identdn,
+                WebHelper.GetConfigValue("DDPNoFieldName"), number);
+        QueryResult qrDdps = this.queryWorker.QueryAttrRequest(this.ddpLayerId, clause, ParcelleType.DDP, false);
+
+        ConcatQueryResults(qrResults, qrDdps.features);
+
+        return qrResults;
     }
 
     public QueryResult GetEGRIDByLocalisation(string postalCode, string localisation, string number)
@@ -70,7 +82,7 @@ public class GetEGRIDReq
             WebHelper.GetConfigValue("AdresseVoieFieldName"), localisation.ToUpper(),
             WebHelper.GetConfigValue("AdresseNumFieldName"), number);
 
-        QueryResult qrAdresses = this.queryWorker.QueryAttrRequest(this.adresseLayerId, clause, false);
+        QueryResult qrAdresses = this.queryWorker.QueryAttrRequest(this.adresseLayerId, clause, ParcelleType.Undefined, false);
 
         // attribute requests on batiments
         foreach (QueryResultFeature adrFeat in qrAdresses.features)
@@ -78,12 +90,12 @@ public class GetEGRIDReq
             string egid = adrFeat.attributes[WebHelper.GetConfigValue("AdresseEGIDFieldName")];
 
             clause = string.Format("{0}={1}", WebHelper.GetConfigValue("BatimentHSEGIDFieldName"), egid);
-            QueryResult qrBatHS = this.queryWorker.QueryAttrRequest(this.batimentHSLayerId, clause, true);
+            QueryResult qrBatHS = this.queryWorker.QueryAttrRequest(this.batimentHSLayerId, clause, ParcelleType.Undefined, true);
 
             IList<QueryResultFeature> batFeatures = new List<QueryResultFeature>(qrBatHS.features);
 
             clause = string.Format("{0}={1}", WebHelper.GetConfigValue("BatimentSSEGIDFieldName"), egid);
-            QueryResult qrBatSS = this.queryWorker.QueryAttrRequest(this.batimentSSLayerId, clause, true);
+            QueryResult qrBatSS = this.queryWorker.QueryAttrRequest(this.batimentSSLayerId, clause, ParcelleType.Undefined, true);
 
             batFeatures = batFeatures.Concat<QueryResultFeature>(qrBatSS.features).ToList<QueryResultFeature>();
 
@@ -93,8 +105,8 @@ public class GetEGRIDReq
                 string jsonGeometry = this.queryWorker.BufferPolygonRequest(batFeatures.ToArray(),
                     QueryWorker.WKID_MN95, QueryWorker.WKID_MN95, -0.1);
 
-                qrResults = this.queryWorker.QueryGeomRequest(this.parcelleLayerId, "esriGeometryPolygon", jsonGeometry, false);
-                QueryResult qrDdps = this.queryWorker.QueryGeomRequest(this.ddpLayerId, "esriGeometryPolygon", jsonGeometry, false);
+                qrResults = this.queryWorker.QueryGeomRequest(this.parcelleLayerId, "esriGeometryPolygon", jsonGeometry, ParcelleType.BienFonds, false);
+                QueryResult qrDdps = this.queryWorker.QueryGeomRequest(this.ddpLayerId, "esriGeometryPolygon", jsonGeometry, ParcelleType.DDP, false);
 
                 ConcatQueryResults(qrResults, qrDdps.features);
             }
@@ -131,33 +143,7 @@ public class GetEGRIDReq
             identDN = identdns.ToArray()
         };
     }
-
-    private QueryResult GetEGRIDFromGNSS(double x, double y)
-    {
-        string geometries = string.Format("{0},{1}", y, x);
-        string jsonGeometry = this.queryWorker.BufferRequest(geometries, QueryWorker.WKID_WGS84, QueryWorker.WKID_MN95, 1.0);
-
-        return this.SendGeomRequest(jsonGeometry);
-    }
-
-    private QueryResult GetEGRIDFromMN(double x, double y)
-    {
-        if (x < 1000000 && y < 1000000)
-        {
-            x += 2000000;
-            y += 1000000;
-        }
-        string geometries = string.Format("{0},{1}", x, y);
-        string jsonGeometry = this.queryWorker.BufferRequest(geometries, QueryWorker.WKID_MN95, QueryWorker.WKID_MN95, 1.0);
-
-        return this.SendGeomRequest(jsonGeometry);
-    }
-
-    private QueryResult SendGeomRequest(string jsonGeometry)
-    {
-        return this.queryWorker.QueryGeomRequest(this.parcelleLayerId, "esriGeometryPolygon", jsonGeometry, false);
-    }
-
+    
     private void ConcatQueryResults(QueryResult qr, QueryResultFeature[] features)
     {
         IList<QueryResultFeature> list = new List<QueryResultFeature>(qr.features);

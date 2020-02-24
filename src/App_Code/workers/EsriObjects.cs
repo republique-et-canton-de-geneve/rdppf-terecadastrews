@@ -1,7 +1,7 @@
-﻿/* $Rev: 22459 $ */
+﻿/* $Rev: 22885 $ */
 using System.Collections.Generic;
 
-public enum ParcelleType { BienFonds, DDP };
+public enum ParcelleType { BienFonds, DDP, Undefined };
 
 public class QueryResult
 {
