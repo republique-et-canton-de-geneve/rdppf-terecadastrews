@@ -2,10 +2,6 @@
 <!-- $Rev: 22477 $ -->
 <InformationConfig>
     <ThemeWithoutData>
-        <Code>ContaminatedMilitarySites</Code>
-        <Text>Cadastre des sites pollués - domaine militaire</Text>
-    </ThemeWithoutData>
-    <ThemeWithoutData>
         <Code>GroundwaterProtectionSites</Code>
         <Text>Périmètres de protection des eaux souterraines</Text>
     </ThemeWithoutData>
