@@ -96,7 +96,6 @@
     <regulationId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LGZD</lawId>
     <lawId>LZIAM</lawId>
@@ -126,7 +125,6 @@
     <regulationId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LGZD</lawId>
     <lawId>LZIAM</lawId>
@@ -153,7 +151,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LGZD</lawId>
     <lawId>LCI</lawId>
@@ -185,7 +182,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LCI</lawId>
     <lawId>LPMNS</lawId>
     <lawId>LPRLac</lawId>
@@ -215,7 +211,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LZIAM</lawId>
     <lawId>LCI</lawId>
@@ -248,7 +243,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LGZD</lawId>
     <lawId>LCI</lawId>
@@ -280,7 +274,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LCI</lawId>
     <lawId>Lext</lawId>
@@ -306,7 +299,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LGZD</lawId>
     <lawId>LCI</lawId>
@@ -331,7 +323,6 @@
     <regulationId>LIEN_PLAN</regulationId>
     <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>Lext</lawId>
     <lawId>LGEA</lawId>
@@ -354,7 +345,6 @@
     <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
     <regulationId>LIEN_PLAN</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LZIAM</lawId>
     <lawId>LCI</lawId>
@@ -436,7 +426,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <lawId>LAT</lawId>
-    <lawId>OAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LGZD</lawId>
     <lawId>LZIAM</lawId>
@@ -584,7 +573,7 @@
     <Information>Aeroport-108</Information>
     <Theme>
       <Code>AirportsSecurityZonePlans</Code>
-      <Text>Plan de la zone de sécurité</Text>
+      <Text>Périmètre de la zone de sécurité</Text>
     </Theme>
     <SubTheme>plan_zone_securite</SubTheme>
     <Lawstatus field="STATUT_JUR" />
@@ -615,7 +604,25 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
-      <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechetslogie-sols-dechets</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+    <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_MILIT" complete="false">
+    <Information>Militaire-117</Information>
+    <Theme>
+      <Code>ContaminatedArmySites</Code>
+      <Text>Cadastre des sites pollués : domaine militaire</Text>
+    </Theme>
+    <SubTheme>site_pollue_milit</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
+    <lawId>LPE</lawId>
+    <lawId>Osites</lawId>
+    <informationId>LIEN_INFOS_COMPL</informationId>
+    <ResponsibleOffice>
+      <Name>Secrétariat général du Département fédéral de la défense, de la protection de la population et des sports</Name>
+      <OfficeAtWeb>https://www.vbs.admin.ch/fr/ddps/organisation/unites-administratives/secretariat-general.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_AERO_S" complete="false" additionalLayers="RDPPF_CH_SITES_POLLUES_AERO_P">
@@ -629,15 +636,15 @@
     <MetadataOfGeographicalBaseData />
     <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
     <regulationId>LIEN_INFOS_COMPL</regulationId>
-    <lawId>LA</lawId>
-    <lawId>OSIA</lawId>
+    <lawId>LPE</lawId>
+    <lawId>Osites</lawId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
       <OfficeAtWeb>http://www.bazl.admin.ch?lang=fr</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_TP" complete="false">
-    <Information>Transports-publics-117</Information>
+    <Information>Transports-publics-119</Information>
     <Theme>
       <Code>ContaminatedPublicTransportSites</Code>
       <Text>Cadastre des sites pollués : domaine des transports publics</Text>
@@ -646,8 +653,8 @@
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <lawId>LA</lawId>
-    <lawId>OSIA</lawId>
+    <lawId>LPE</lawId>
+    <lawId>Osites</lawId>
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office fédéral des transports</Name>
@@ -690,8 +697,6 @@
     <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LPE</lawId>
     <lawId>OPB</lawId>
     <lawId>LALPE</lawId>
     <lawId>RPBV</lawId>
@@ -710,7 +715,7 @@
     <Information>Amenagement_157</Information>
     <Theme>
       <Code>ForestPerimeters</Code>
-      <Text>Limites statiques de la forêt</Text>
+      <Text>Limites forestières statiques</Text>
     </Theme>
     <SubTheme>limite_foret</SubTheme>
     <Lawstatus field="STATUT_JUR" />
@@ -734,18 +739,17 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_DISTANCES_FORET_S" complete="false" overlap="true" additionalLayers="RDPPF_DISTANCES_FORET_L,FFP_CADASTRE_FORET_COUL">
+  <RestrictionOnLandownership layer="RDPPF_DISTANCES_FORET_S" complete="false" additionalLayers="RDPPF_DISTANCES_FORET_L,FFP_CADASTRE_FORET_COUL">
     <Information>Foret-159</Information>
     <Theme>
       <Code>ForestDistanceLines</Code>
-      <Text>Distances par rapport à la forêt</Text>
+      <Text>Distances par rapport à la forêt</Text>	  
     </Theme>
     <SubTheme>distance_rapport_foret</SubTheme>
     <Lawstatus field="STATUT_JURIDIQUE" />
     <MetadataOfGeographicalBaseData />
     <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
     <regulationId>LIEN_CONSTAT_NATURE_FOREST</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
     <lawId>LAT</lawId>
     <lawId>LALAT</lawId>
     <lawId>LFo</lawId>
