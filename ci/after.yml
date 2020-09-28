@@ -31,7 +31,7 @@
 
 - name: Generation des legendes
   win_uri:
-    url: https://{{ stages[hosts] }}.ge-admin.ad.etat-ge.ch/terecadastrews/utilities/BuildLegends.ashx
+    url: https://{{ stage.[hosts] }}.ge-admin.ad.etat-ge.ch/terecadastrews/utilities/BuildLegends.ashx
     return_content: yes
   register: reponse
   failed_when: "'Finished.' not in reponse.content"
