@@ -34,4 +34,4 @@
     url: https://localhost/terecadastrews/utilities/BuildLegends.ashx
     return_content: yes
   register: reponse
-  failed_when: "'Finished.' not in reponse.content"
+  failed_when: "'certificate.' not in reponse.content"
