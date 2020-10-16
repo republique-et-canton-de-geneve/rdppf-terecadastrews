@@ -607,7 +607,7 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-    <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_MILIT" complete="false">
+    <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_MILIT" complete="false" additionalLayers="RDPPF_CH_SITES_POLLUES_MILIT_P">>
     <Information>Militaire-117</Information>
     <Theme>
       <Code>ContaminatedArmySites</Code>
@@ -617,9 +617,9 @@
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
+	<regulationId>LIEN_INFOS_COMPL</regulationId>
     <lawId>LPE</lawId>
     <lawId>Osites</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Secrétariat général du Département fédéral de la défense, de la protection de la population et des sports</Name>
       <OfficeAtWeb>https://www.vbs.admin.ch/fr/ddps/organisation/unites-administratives/secretariat-general.html</OfficeAtWeb>
