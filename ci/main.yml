@@ -27,11 +27,14 @@ app_templates_dynamic: true
 
 stages:
   dev:
-    hosts: "geoweb03"
+    hosts: "w09635apdev04"
+    ClientEnvironmentUrl: "https://dev.etat-ge.ch"
 
   rec:
     hosts: "geoappweb02"
+    ClientEnvironmentUrl: "https://demo.ge.ch"
 
   prod:
     hosts: "geoappweb01"
+    ClientEnvironmentUrl: "https://ge.ch"
 
