@@ -31,7 +31,7 @@ stages:
     ClientEnvironmentUrl: "https://dev.etat-ge.ch"
 
   rec:
-    hosts: "geoappweb02"
+    hosts: "w09635aprec04"
     ClientEnvironmentUrl: "https://demo.ge.ch"
 
   prod:
