@@ -1,4 +1,4 @@
-﻿/* $Rev: 19034 $ */
+﻿/* $Rev: 25011 $ */
 using System;
 using System.Xml;
 using System.Text;
@@ -71,6 +71,26 @@ public class XmlHelper
         xmlDoc.LoadXml(sb.ToString());
 
         return xmlDoc.DocumentElement;
+    }
+
+    public static XmlElement GetXmlElement(IDictionary<string, string> info, List<KeyValuePair<string, string>> items)
+    {
+        XmlDocument doc = new XmlDocument();
+
+        if (info.ContainsKey("name") && info.ContainsKey("namespace"))
+        {
+            XmlElement rootElement = doc.CreateElement(info["name"], info["namespace"]);
+            doc.AppendChild(rootElement);
+
+            foreach (KeyValuePair<string, string> item in items)
+            {
+                XmlElement el = doc.CreateElement(item.Key, info["namespace"]);
+                el.AppendChild(doc.CreateTextNode(item.Value));
+                rootElement.AppendChild(el);
+            }
+        }
+
+        return doc.DocumentElement;
     }
 
     public static string GetXmlElementValue(XmlNode root, string name)

@@ -1,4 +1,4 @@
-﻿/* $Rev: 22461 $ */
+﻿/* $Rev: 25011 $ */
 using System.Xml;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
@@ -27,7 +27,7 @@ public class RdppfSVC : IRdppfSVC
 
                 if (qr.features.Length > 0)
                 {
-                    return XmlHelper.GetXmlElement(req.GetEGRIDResponse(qr));
+                    return XmlHelper.GetXmlElement(req.GetEGRIDResponseTypeInfo(), req.GetGenericEGRIDRResponse(qr));
                 }
                 else
                 {
@@ -110,7 +110,7 @@ public class RdppfSVC : IRdppfSVC
 
             if (qr.features.Length > 0)
             {
-                return XmlHelper.GetXmlElement(req.GetEGRIDResponse(qr));
+                return XmlHelper.GetXmlElement(req.GetEGRIDResponseTypeInfo(), req.GetGenericEGRIDRResponse(qr));
             }
             else
             {
@@ -174,7 +174,7 @@ public class RdppfSVC : IRdppfSVC
 
             if (qr.features.Length > 0)
             {
-                return XmlHelper.GetXmlElement(req.GetEGRIDResponse(qr));
+                return XmlHelper.GetXmlElement(req.GetEGRIDResponseTypeInfo(), req.GetGenericEGRIDRResponse(qr));
             }
             else
             {

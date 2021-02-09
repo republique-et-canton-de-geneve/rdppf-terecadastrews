@@ -1,4 +1,4 @@
-﻿/* $Rev: 22459 $ */
+﻿/* $Rev: 25011 $ */
 using System;
 using System.Linq;
 using System.Web.Script.Serialization;
@@ -98,15 +98,18 @@ public class SurfaceWorker
             }
 
             double SG = 0, ST = 0;
+            string errorId = string.Empty;
             if (feature.type == ParcelleType.BienFonds)
             {
                 SG = double.Parse(feature.attributes[WebHelper.GetConfigValue("ParcelleAreaFieldName")]);
                 ST = double.Parse(feature.attributes[WebHelper.GetConfigValue("ParcelleSurfaceFieldName")]);
+                errorId = feature.attributes[WebHelper.GetConfigValue("ParcelleEGRIDFieldName")];
             }
             else if (feature.type == ParcelleType.DDP)
             {
                 SG = double.Parse(feature.attributes[WebHelper.GetConfigValue("DDPAreaFieldName")]);
                 ST = double.Parse(feature.attributes[WebHelper.GetConfigValue("DDPSurfaceFieldName")]);
+                errorId = feature.attributes[WebHelper.GetConfigValue("DDPEGRIDFieldName")];
             }            
 
             ComputeSurface cs = new ComputeSurface();
@@ -121,8 +124,7 @@ public class SurfaceWorker
             }
             else
             {
-                string id = feature.attributes[WebHelper.GetConfigValue("EGRID")];
-                throw new WsUserException(string.Format(Resources.Resource.WRONG_COMPUTE_SURFACE, id));
+                throw new WsUserException(string.Format(Resources.Resource.WRONG_COMPUTE_SURFACE, errorId));
             }
         }        
     }

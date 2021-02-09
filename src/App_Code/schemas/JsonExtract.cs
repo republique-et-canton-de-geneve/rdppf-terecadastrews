@@ -1,4 +1,4 @@
-﻿/* $Rev: 19122 $ */
+﻿/* $Rev: 25011 $ */
 using ExtractData_v103;
 
 namespace JsonExtract
@@ -15,6 +15,6 @@ namespace JsonExtract
 
     public class JsonEGRID
     {
-        public GetEGRIDResponseType Item { get; set; }
+        public GetEGRIDResponseType[] Item { get; set; }
     }
 }

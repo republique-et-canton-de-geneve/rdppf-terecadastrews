@@ -1,0 +1,4 @@
+- Ajout de la transparence sur les symboles des légendes des extraits statiques.
+- Correction de l'appel getEGRID. Recherche sur adresse sans numéro fonctionnel.
+  Schémas des données en sortie respecte les instructions de la confédération.
+  Ex. d'appel: https://dev.etat-ge.ch/terecadastrews/RdppfSVC.svc/getegrid/xml/1213/bandol

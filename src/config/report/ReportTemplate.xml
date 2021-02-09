@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!-- $Rev: 22477 $ -->
+<!-- $Rev: 25012 $ -->
 <Template>
     <!-- Format du rapport, valeurs possibles: A5, A4, A3 -->
     <Format>A4</Format>

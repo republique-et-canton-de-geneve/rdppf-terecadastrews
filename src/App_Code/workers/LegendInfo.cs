@@ -1,4 +1,4 @@
-﻿/* $Rev: 20963 $ */
+﻿/* $Rev: 23677 $ */
 using System.Collections.Generic;
 using ESRI.ArcGIS.SOAP;
 using Topomat.Web.Common;
@@ -24,7 +24,7 @@ public class LegendInfo
         string defaultMapName = mapService.GetDefaultMapName();
 
         ImageType imgType = new ImageType();
-        imgType.ImageFormat = esriImageFormat.esriImagePNG;
+        imgType.ImageFormat = esriImageFormat.esriImagePNG32;
         if (withImages == true)
         {
             imgType.ImageReturnType = esriImageReturnType.esriImageReturnMimeData;

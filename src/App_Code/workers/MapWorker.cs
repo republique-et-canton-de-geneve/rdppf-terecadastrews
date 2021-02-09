@@ -1,4 +1,4 @@
-﻿/* $Rev: 19264 $ */
+﻿/* $Rev: 23677 $ */
 using System;
 using System.Linq;
 using System.Net;
@@ -33,7 +33,7 @@ public class MapWorker
             values["bbox"] = string.Format("{0},{1},{2},{3}", geomExtent.xmin, geomExtent.ymin, geomExtent.xmax, geomExtent.ymax);
             values["size"] = string.Format("{0},{1}", this.printParams.GetMapWidth(), this.printParams.GetMapHeight());
             values["dpi"] = this.printParams.GetDpi().ToString();
-            values["format"] = "png";
+            values["format"] = "png32";
             values["layerDefs"] = layerDefs;
             values["layers"] = string.Format("show:{0}", string.Join(",", layerIds));
             values["transparent"] = "true";
@@ -52,7 +52,7 @@ public class MapWorker
             string.Format("?bbox={0},{1},{2},{3}", geomExtent.xmin, geomExtent.ymin, geomExtent.xmax, geomExtent.ymax),
             string.Format("&size={0},{1}", this.printParams.GetMapWidth(), this.printParams.GetMapHeight()),
             string.Format("&dpi={0}", this.printParams.GetDpi()),
-            "&format=png",
+            "&format=png32",
             string.Format("&layerDefs={0}", layerDefs),
             string.Format("&layers=show:{0}", string.Join(",", layerIds)),
             "&transparent=true",

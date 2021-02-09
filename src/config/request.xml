@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<!-- $Rev: 22677 $ -->
+<!-- $Rev: 25012 $ -->
 <RequestConfig>
   <markerMapLayer>marker</markerMapLayer>
   <markerDDPMapLayer>marker_DDP</markerDDPMapLayer>
@@ -573,7 +573,7 @@
     <Information>Aeroport-108</Information>
     <Theme>
       <Code>AirportsSecurityZonePlans</Code>
-      <Text>Périmètre de la zone de sécurité</Text>
+      <Text>Plan de la zone de sécurité</Text>
     </Theme>
     <SubTheme>plan_zone_securite</SubTheme>
     <Lawstatus field="STATUT_JUR" />
@@ -665,7 +665,7 @@
     <Information>Geologie-131</Information>
     <Theme>
       <Code>GroundwaterProtectionZones</Code>
-      <Text>Zone de protection des eaux souterraines</Text>
+      <Text>Zones de protection des eaux souterraines</Text>
     </Theme>
     <SubTheme>zone_protection_eaux_souterraines</SubTheme>
     <Lawstatus field="STATUT_JUR" />
@@ -682,6 +682,18 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PERIM_PROT_EAU_SOUT" complete="false">
+    <Information>Geologie-132</Information>
+    <Theme>
+        <Code>GroundwaterProtectionSites</Code>
+        <Text>Périmètres de protection des eaux souterraines</Text>
+    </Theme>
+    <SubTheme>perimetre_protection_eaux_souterraines</SubTheme>
+    <ResponsibleOffice>
+      <Name>Service de géologie, sols et déchets</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>  
   <RestrictionOnLandownership layer="RDPPF_DSOPB" complete="false">
     <Information>Amenagement-145</Information>
     <Theme>
@@ -728,8 +740,6 @@
     <regulationId>LIEN_REGLEMENT</regulationId>
     <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
     <regulationId>LIEN_INFOS_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
     <lawId>LFo</lawId>
     <lawId>OFo</lawId>
     <lawId>LForêt</lawId>
@@ -750,8 +760,6 @@
     <MetadataOfGeographicalBaseData />
     <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
     <regulationId>LIEN_CONSTAT_NATURE_FOREST</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
     <lawId>LFo</lawId>
     <lawId>OFo</lawId>
     <lawId>LForêt</lawId>
