@@ -239,7 +239,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LALAT">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_l1_30.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_30.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 1 30 - Loi d'application de la loi fédérale sur l'aménagement du territoire (LALAT)</Title>
       <OfficialTitle></OfficialTitle>
@@ -247,7 +247,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LGZD">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_l1_35.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_35.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 1 35 - Loi générale sur les zones de développement (LGZD)</Title>
       <OfficialTitle></OfficialTitle>
@@ -255,7 +255,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LZIAM">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_l1_45.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_45.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 1 45 - Loi générale sur les zones de développement industriel ou d’activités mixtes (LZIAM)</Title>
       <OfficialTitle></OfficialTitle>
@@ -263,7 +263,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LCI">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_l5_05.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l5_05.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 5 05 - Loi sur les constructions et les installations diverses (LCI)</Title>
       <OfficialTitle></OfficialTitle>
@@ -271,7 +271,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="Lext">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_l1_40.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_40.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 1 40 - Loi sur l'extension des voies de communication et l'aménagement des quartiers ou localités (Lext)</Title>
       <OfficialTitle></OfficialTitle>
@@ -295,7 +295,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LEaux-GE">
-      <TextAtWeb>https://www.geneve.ch/legislation/rsg/f/rsg_l2_05.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l2_05.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 2 05 - Loi sur les eaux (LEaux-GE)</Title>
       <OfficialTitle></OfficialTitle>
@@ -303,7 +303,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="REaux-GE">
-      <TextAtWeb>https://www.geneve.ch/legislation/rsg/f/rsg_l2_05p01.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l2_05p01.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 2 05.01 - Règlement d’exécution de la loi sur les eaux (REaux-GE)</Title>
       <OfficialTitle></OfficialTitle>
@@ -327,7 +327,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LALPE">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_k1_70.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_k1_70.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG K 1 70 - Loi d'application de la loi fédérale sur la protection de l'environnement (LALPE)</Title>
       <OfficialTitle></OfficialTitle>
@@ -335,7 +335,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="RPBV">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_k1_70p10.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_k1_70p10.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG K 1 70.10 - Règlement sur la protection contre le bruit et les vibrations (RPBV)</Title>
       <OfficialTitle></OfficialTitle>
@@ -359,7 +359,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LForêt">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/rsg_m5_10.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_m5_10.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG M 6 10 - Loi cantonale sur les forêts (LForêt)</Title>
       <OfficialTitle></OfficialTitle>
@@ -367,7 +367,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="RForêt">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_M5_10P01.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_M5_10P01.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG M 5 10.01 - Règlement d'application de la Loi cantonale sur les forêts (RForêt)</Title>
       <OfficialTitle></OfficialTitle>
@@ -375,7 +375,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="RAZIDI">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_L1_45P05.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_45P05.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title></Title>
       <OfficialTitle>RSG 45.05 - Règlement sur les activités admissibles en zone industrielle ou de développement industriel; respectivement en zone de développement d’activités mixtes (RAZIDI)</OfficialTitle>
@@ -383,7 +383,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LPMNS">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_l4_05.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_05.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG 4 05 - Loi sur la protection des monuments; de la nature et des sites (LPMNS)</Title>
       <OfficialTitle></OfficialTitle>
@@ -391,7 +391,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LPRLac">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_L4_10.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_10.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 4 10 - Loi sur la protection générale des rives du lac (LPRLac)</Title>
       <OfficialTitle></OfficialTitle>
@@ -399,7 +399,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LPRRhône">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/rsg_l4_13.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_13.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 4 13 - Loi sur la protection générale des rives du Rhône (LPRRhône)</Title>
       <OfficialTitle></OfficialTitle>
@@ -407,7 +407,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LPRArve">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_L4_16.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_16.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 4 16Loi sur la protection générale et l’aménagement des rives de l’Arve (LPRArve)</Title>
       <OfficialTitle></OfficialTitle>
@@ -415,7 +415,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LGEA">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_L3_10.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l3_10.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 3 10 - Loi sur les gravières et exploitations assimilées (LGEA)</Title>
       <OfficialTitle></OfficialTitle>
@@ -423,7 +423,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="RGEA">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_L3_10P03.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l3_10P03.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 3 10.03 - Règlement d’application de la loi sur les gravières et exploitations assimilées (RGEA)</Title>
       <OfficialTitle></OfficialTitle>
@@ -431,7 +431,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LPRVers">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/s/rsg_L4_19.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_19.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 4 19 - Loi sur la protection générale et l’aménagement des rives de la Versoix (LPRVers)</Title>
       <OfficialTitle></OfficialTitle>
@@ -447,7 +447,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LaLSC">
-      <TextAtWeb>http://www.ge.ch/legislation/rsg/f/rsg_k1_71.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_k1_71.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG K 1 71 - Loi d'application de la législation fédérale sur les sites contaminés (LaLSC)</Title>
       <OfficialTitle></OfficialTitle>
@@ -495,7 +495,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="LaLCPR">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/s/rsg_L1_60.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_60.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 1 60 - Loi sur l’application de la loi fédérale sur les chemins pour piétons et les chemins de randonnée pédestre (LaLCPR)</Title>
       <OfficialTitle></OfficialTitle>
@@ -503,7 +503,7 @@
       <OfficialNumber></OfficialNumber>
     </LegalProvisions>
     <LegalProvisions id="RaLAT">
-      <TextAtWeb>https://www.ge.ch/legislation/rsg/f/s/rsg_L1_30P01.html</TextAtWeb>
+      <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_30P01.htm</TextAtWeb>
       <Lawstatus>1</Lawstatus>
       <Title>RSG L 1 30.01 - Règlement d’application de la loi d’application de la loi fédérale sur l’aménagement du territoire (RaLAT)</Title>
       <OfficialTitle></OfficialTitle>
