@@ -547,7 +547,7 @@
     <informationId></informationId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
-      <OfficeAtWeb>http://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
+      <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_AERO" complete="false">
@@ -566,7 +566,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
-      <OfficeAtWeb>http://www.bazl.admin.ch?lang=fr</OfficeAtWeb>
+      <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_SECU_AERO" complete="false">
@@ -585,7 +585,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
-      <OfficeAtWeb>http://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
+      <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CADASTRE_SITES_POLLUES" complete="false">
@@ -640,7 +640,7 @@
     <lawId>Osites</lawId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
-      <OfficeAtWeb>http://www.bazl.admin.ch?lang=fr</OfficeAtWeb>
+      <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_TP" complete="false">
@@ -658,7 +658,7 @@
     <informationId>LIEN_INFOS_COMPL</informationId>
     <ResponsibleOffice>
       <Name>Office fédéral des transports</Name>
-      <OfficeAtWeb>http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html?lang=fr</OfficeAtWeb>
+      <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home/allgemeine-themen/umwelt/altlasten.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZONES_PROTECTION_EAUX" complete="false">
