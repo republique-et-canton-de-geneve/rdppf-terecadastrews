@@ -35,6 +35,6 @@ stages:
     ClientEnvironmentUrl: "https://demo.ge.ch"
 
   prod:
-    hosts: "geoappweb01"
+    hosts: "w09635apprd04"
     ClientEnvironmentUrl: "https://ge.ch"
 
