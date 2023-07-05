@@ -126,14 +126,17 @@
   <data name="ERROR_INFORMATIONS" xml:space="preserve">
     <value>Erreur lors de la récupération du champ de l'information complémentaire ({0}) sur la couche '{1}'.</value>
   </data>
+  <data name="ERROR_LEGALPROVISION" xml:space="preserve">
+    <value>Erreur lors de la récupération du champ de la disposition juridique ({0}) sur la couche {1}.</value>
+  </data>
   <data name="ERROR_PRINT_MAP" xml:space="preserve">
     <value>Erreur lors de la génération du plan d'impression.</value>
   </data>
-  <data name="ERROR_REGULATIONS" xml:space="preserve">
-    <value>Erreur lors de la récupération du champ de la régulation ({0}) sur la couche {1}.</value>
-  </data>
   <data name="ERROR_RENDERER" xml:space="preserve">
     <value>Erreur lors de la récupération du symbole pour le champ '{0}', avec la valeur '{1}' sur la couche '{2}'.</value>
+  </data>
+  <data name="ERROR_REQUESTS" xml:space="preserve">
+    <value>Erreur sur le paramétrage des requêtes ({0})</value>
   </data>
   <data name="LAYERID_NOT_FOUND" xml:space="preserve">
     <value>La couche avec l'id {0} n'a pas été trouvée sur le service cartographique.</value>
@@ -152,6 +155,6 @@
     <value>Type de rendu de la symbologie inconnu ({0}) pour la couche {1}.</value>
   </data>
   <data name="WRONG_COMPUTE_SURFACE" xml:space="preserve">
-    <value>Le calcul des surfaces retourne des incohérences pour la parcelle, EGRID: {0}"</value>
+    <value>Le calcul des surfaces retourne des incohérences pour la parcelle, EGRID: {0}</value>
   </data>
 </root>

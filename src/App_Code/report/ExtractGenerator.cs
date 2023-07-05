@@ -1,46 +1,54 @@
-﻿/* $Rev: 22729 $ */
+﻿/* $Rev: 30309 $ */
+using iText.IO.Font;
+using iText.IO.Image;
+using iText.Kernel.Colors;
+using iText.Kernel.Font;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Draw;
+using iText.Kernel.Utils;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Layout;
+using iText.Layout.Properties;
+using iText.Layout.Renderer;
+using iText.Pdfa;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Topomat.Web.Common;
-using Topomat.Pdf.Report;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using System.Collections.Generic;
-using System.Net;
-using System.Diagnostics;
-using System.Threading;
 
 public class ExtractGenerator
 {
 
     #region Data members
 
-    private static int LINES_BEFORE_BREAK = 22;
+    private static float[] DimensionsA4 = { 210.0f, 297.0f };
+    private static int MainNumberOfPage = 3;
 
     // valeurs permettant de positionner blocs infos / données de base / clauses
-    private static int TOC_FIXED_ELEMENTS = 100;
+    private static int TOC_FIXED_ELEMENTS = 117;
     private static int TOC_CONCERNED_RESTRICTION = 6;
     private static int TOC_OTHER_RESTRICTION = 4;
     private static int TOC_BLOCK = 85;
 
-    private static int MARGIN_BOTTOM = 10;
     private static int PAGE_HEIGHT = 297;
 
     private string workPath;
-    private List<ReportAnnex> Annexes;
-    private int NextAnnex;
+    private OeREBKRMHelper oerebHelper;
 
     #endregion
 
     #region Constructor / Destructor
 
-    public ExtractGenerator()
+    public ExtractGenerator(OeREBKRMHelper helper)
     {
-        this.Annexes = new List<ReportAnnex>();
-        this.NextAnnex = 1;
+        this.oerebHelper = helper;
     }
 
     #endregion
@@ -49,7 +57,8 @@ public class ExtractGenerator
 
     public byte[] Generate(ReportData reportData)
     {
-        this.workPath = Path.Combine(WebHelper.GetConfigValue("WorkingPath"), reportData.section.reference);
+        byte[] intent = File.ReadAllBytes(System.IO.Path.Combine(WebHelper.GetConfigValue("ConfigPath"), "sRGB_CS_profile.icm"));
+        this.workPath = System.IO.Path.Combine(WebHelper.GetConfigValue("WorkingPath"), reportData.section.reference);
 
         // get template
         ReportTemplate template = GetTemplate();
@@ -57,177 +66,89 @@ public class ExtractGenerator
         // build restriction pages
         Stopwatch timer = Stopwatch.StartNew();
 
-        string glossaryFileName = Path.Combine(this.workPath, "glossary.pdf");
-        IDictionary<Thread, ExtractWorkerThread> dictExtractThreads = new Dictionary<Thread, ExtractWorkerThread>();
-        foreach (restriction restr in reportData.section.restrictions)
+        SortedList<int, RestrictionExtract> extracts = new SortedList<int, RestrictionExtract>();
+        Parallel.ForEach(reportData.section.restrictions, restr =>
         {
             if (restr.result == true)
             {
-                restr.annexes = this.GetAnnexes(reportData.section.type, restr);
-                this.TestBreakPage(restr);
-
-                ExtractWorkerThread ewThread = new ExtractWorkerThread(new ExtractWorker(workPath, template));
-                ewThread.InitRestriction(restr, Path.Combine(this.workPath, restr.id + ".pdf"));
-
-                Thread thread = new Thread(new ThreadStart(ewThread.Start));
-                thread.Start();
-
-                dictExtractThreads.Add(thread, ewThread);
-            }
-        }
-
-        ExtractWorkerThread gewThread = new ExtractWorkerThread(new ExtractWorker(workPath, template));
-        gewThread.InitGlossary(reportData.glossaries, glossaryFileName);
-
-        Thread gThread = new Thread(new ThreadStart(gewThread.Start));
-        gThread.Start();
-
-        dictExtractThreads.Add(gThread, gewThread);
-        
-        List<string> tmpFiles = new List<string>();
-        List<toc> tables = new List<toc>();
-        int pages = 1;
-
-        // wait for extract threads to finish
-        foreach (KeyValuePair<Thread, ExtractWorkerThread> pair in dictExtractThreads)
-        {
-            pair.Key.Join();
-            if (!pair.Value.IsSuccessfull())
-            {
-                throw new WsUserException(pair.Value.GetErrorMessage());
-            }
-
-            if (pair.Value.GetWorkerType() == (int)ExtractWorkerThread.workerTypes.Restriction)
-            {
-                tmpFiles.Add(pair.Value.GetFileName());
-
-                toc table = new toc();
-                table.title = pair.Value.GetRestriction().title;
-                using (PdfReader input = new PdfReader(pair.Value.GetFileName()))
+                string path = System.IO.Path.Combine(this.workPath, restr.id + ".pdf");
+                int numPages = GetRestrictionExtract(intent, restr, path);
+                extracts.Add(restr.order, new RestrictionExtract
                 {
-                    table.page = (pages).ToString();
-                    pages += input.NumberOfPages;
-                }
-                table.annexes = pair.Value.GetRestriction().annexes;
-                tables.Add(table);
-            }            
+                    Title = restr.title,
+                    Pages = numPages,
+                    Path = path
+                });
+            }
+        });
+
+        List<toc> tables = new List<toc>();
+        int pages = MainNumberOfPage + 1;
+        foreach (RestrictionExtract extract in extracts.Values)
+        {
+            toc table = new toc();
+            table.title = extract.Title;
+            table.page = (pages).ToString();
+            pages += extract.Pages;
+            tables.Add(table);
         }
 
+        string glossaryFilePath = System.IO.Path.Combine(this.workPath, "glossary.pdf");
+        GetGlossaryExtract(intent, template, reportData.glossaries, glossaryFilePath);
         
-        Helper.LogInfo(this.GetType().ToString(), "Generate - pages de restriction + abréviations", timer.ElapsedMilliseconds);
+        Helper.LogInfo(this.GetType().ToString(), "Génération des pages de restriction", timer.ElapsedMilliseconds);
         timer.Restart();
 
         // build main section pages
         reportData.section.tocs = tables.ToArray();
         this.TestTocBreakPage(reportData.section);
 
-        string tmpFileName = this.GenerateMainSection(template, reportData);
+        string mainSectionFilePath = System.IO.Path.Combine(this.workPath, "reportData.pdf");
+        int mainPages = this.GenerateMainSection(reportData, intent, mainSectionFilePath);
 
-        Helper.LogInfo(this.GetType().ToString(), "Generate - page de garde", timer.ElapsedMilliseconds);
+        Helper.LogInfo(this.GetType().ToString(), "Génération de la page principale", timer.ElapsedMilliseconds);
         timer.Restart();
 
-        // correct toc page numbers
-        int mainPages = 0;
-        using (PdfReader input = new PdfReader(tmpFileName))
+        // correct toc page numbers if needed and rebuild main section pages
+        if (mainPages != MainNumberOfPage)
         {
-            mainPages = input.NumberOfPages;
+            foreach (toc toc in reportData.section.tocs)
+            {
+                int page = int.Parse(toc.page);
+                page += mainPages - MainNumberOfPage;
+                toc.page = page.ToString();
+            }
+            this.GenerateMainSection(reportData, intent, mainSectionFilePath);
         }
-        foreach (toc toc in reportData.section.tocs)
-        {
-            int page = int.Parse(toc.page);
-            page += mainPages;
-            toc.page = page.ToString();
-        }
-
-        // rebuild main section pages
-        string fname = this.GenerateMainSection(template, reportData);
-
-        Helper.LogInfo(this.GetType().ToString(), "Generate - page de garde + sommaire", timer.ElapsedMilliseconds);
-        timer.Restart();
 
         List<string> pdfFiles = new List<string>();
-        pdfFiles.Add(fname);
-        foreach (string tf in tmpFiles)
+        pdfFiles.Add(mainSectionFilePath);
+        foreach (RestrictionExtract extract in extracts.Values)
         {
-            pdfFiles.Add(tf);
+            pdfFiles.Add(extract.Path);
         }
-        pdfFiles.Add(glossaryFileName);
+        pdfFiles.Add(glossaryFilePath);
 
         // generate final report
-        PdfReport report = new PdfReport(template.Format, template.MarginLeft, template.MarginRight,
-                    template.MarginTop, template.MarginBottom);
+        MemoryStream ms = new MemoryStream();
+        PdfADocument pdf = new PdfADocument(new PdfWriter(ms), PdfAConformanceLevel.PDF_A_2A,
+            new PdfOutputIntent("Custom", "", "https://www.color.org", "sRGB IEC61966-2.1", new MemoryStream(intent)));
+        pdf.SetTagged();
 
-        if (template.UseModel == true)
+        PdfMerger merger = new PdfMerger(pdf);
+        merger.SetCloseSourceDocuments(true);
+        foreach (string filePath in pdfFiles)
         {
-            report.SetTemplate(Helper.GetReportConfigFilePath("Template.pdf"));
+            PdfDocument tmp = new PdfDocument(new PdfReader(filePath));
+            merger.Merge(tmp, 1, tmp.GetNumberOfPages());
         }
 
-        FontFactory.RegisterDirectory(template.Font.FontDirectory);
-        BaseFont bf = FontFactory.GetFont(template.Font.FontName, BaseFont.CP1252, BaseFont.EMBEDDED).BaseFont;
+        AddLogosAndTexts(pdf, template, reportData);
 
-        foreach (ReportTemplateZone dz in template.TextDateZones)
-        {
-            TextZone zone = new TextZone(DateTime.Now.ToString(dz.Text), bf, dz.FontSize);
-            zone.SetPosition(dz.Alignement, dz.PositionX, dz.PositionY, dz.Rotation);
-            zone.SetRGBColorFill(dz.FontColor[0], dz.FontColor[1], dz.FontColor[2]);
-            report.AddTextZone(zone);
-        }
-        foreach (ReportTemplateZone pz in template.TextPageZones)
-        {
-            TextZone zone = new TextZone(pz.Text, bf, pz.FontSize);
-            zone.SetPosition(pz.Alignement, pz.PositionX, pz.PositionY, pz.Rotation);
-            zone.SetRGBColorFill(pz.FontColor[0], pz.FontColor[1], pz.FontColor[2]);
-            report.AddTextPageZone(zone);
-        }
-        foreach (ReportTemplateZone z in template.TextZones)
-        {
-            string content = string.Empty;
-            switch (z.Text)
-            {
-                case "#REF#":
-                    content = reportData.section.reference;
-                    break;
-                default:
-                    break;
-            }
-            TextZone zone = new TextZone(content, bf, z.FontSize);
-            zone.SetPosition(z.Alignement, z.PositionX, z.PositionY, z.Rotation);
-            zone.SetRGBColorFill(z.FontColor[0], z.FontColor[1], z.FontColor[2]);
-            report.AddTextZone(zone);
-        }
-
-        Helper.LogInfo(this.GetType().ToString(), "Generate - rapport final", timer.ElapsedMilliseconds);
-        timer.Restart();
-
-        // add legal documents
-        if (this.Annexes.Count == 0)
-        {
-            fname = Path.Combine(this.workPath, "staticExtract.pdf");
-            report.MergePdfFiles(pdfFiles, this.workPath, fname);
-        }
-        else
-        {
-            fname = Path.Combine(this.workPath, "staticExtract_temp.pdf");
-            report.MergePdfFiles(pdfFiles, this.workPath, fname);
-            pdfFiles.Add(fname);
-
-            Dictionary<int, string> annexFiles = new Dictionary<int, string>();
-            annexFiles.Add(-1, fname);
-            foreach (ReportAnnex annex in this.Annexes)
-            {
-                if (annex.isIncluded == true)
-                {
-                    annexFiles.Add(annex.number, annex.value);
-                }
-            }
-            fname = Path.Combine(this.workPath, "staticExtract.pdf");
-            MergeLegalFiles(reportData.section.reference, annexFiles, fname);
-        }
-
-        Helper.LogInfo(this.GetType().ToString(), "Generate - ajout des dispositions juridiques", timer.ElapsedMilliseconds);
+        Helper.LogInfo(this.GetType().ToString(), "Génération du rapport final", timer.ElapsedMilliseconds);
         timer.Stop();
 
-        return File.ReadAllBytes(fname);
+        return ms.GetBuffer();
     }
 
     #endregion
@@ -244,124 +165,31 @@ public class ExtractGenerator
 
         return sb.ToString();
     }
-    
-    private string BuildAnnexXml(string node)
-    {
-        XmlRootAttribute xRoot = new XmlRootAttribute("annex");
 
-        StringBuilder sb = new StringBuilder();
-        XmlSerializer serializer = new XmlSerializer(node.GetType(), xRoot);
-        serializer.Serialize(XmlWriter.Create(sb), node);
-
-        return sb.ToString();
-    }
-
-    private string GenerateMainSection(ReportTemplate template, ReportData reportData)
+    private int GenerateMainSection(ReportData reportData, byte[] intent, string fileName)
     {
         XmlDocument xmlDataDoc = new XmlDocument();
         xmlDataDoc.LoadXml(this.BuildMainSectionXml(reportData.section));
 
-        PdfReport dataReport = new PdfReport(template.Format, template.MarginLeft, template.MarginRight,
-            template.MarginTop, template.MarginBottom);
+        PdfReport report = new PdfReport(intent);
 
-        // generate pdf
-        string filename = Path.Combine(this.workPath, "reportData.pdf");
-        using (XmlNodeReader xmlReader = new XmlNodeReader(xmlDataDoc))
-        using (XmlTextReader xsltReader = new XmlTextReader(Helper.GetReportConfigFilePath("ReportMainSection.xslt")))
-        {
-            dataReport.GeneratePdf(xmlReader, xsltReader, this.workPath, filename);
-        }
+        xmlDataDoc.Save(System.IO.Path.Combine(this.workPath, "data.xml"));
 
-        return filename;
-    }
-
-    private void TestBreakPage(restriction restr)
-    {
-        // estimation de la place prise par la légende
-        int lines = restr.legends.Length + restr.otherLegends.Length + restr.additionnalLegends.Length + 1;
-        if (restr.otherLegends.Length < 2)
-        {
-            lines += 2 - restr.otherLegends.Length;
-        }
-        // espace entre légendes et dispositions;
-        lines++;
-        foreach (regulation reg in restr.regulations)
-        {
-            // intitulé de la disposition
-            lines++;
-            // valeurs doublées (souvent des liens sur 2 lignes)
-            lines += reg.values.Length * 2;
-        }
-        if (restr.regulations.Length == 0)
-        {
-            lines++;
-        }
-
-        if (lines > LINES_BEFORE_BREAK)
-        {
-            restr.breakAfterLegend = true;
-        }
-        else
-        {
-            // lois: intitulé + lien sur 2 lignes
-            lines += restr.laws.Length * 3;
-            if (restr.laws.Length == 0)
-            {
-                lines++;
-            }
-            if (lines > LINES_BEFORE_BREAK)
-            {
-                restr.breakAfterRegulation = true;
-            }
-            else
-            {
-                // estimer les infos comme les dispositions
-                foreach (information info in restr.informations)
-                {
-                    lines++;
-                    lines += info.values.Length * 2;
-                }
-                if (restr.informations.Length == 0)
-                {
-                    lines += 2;
-                }
-                if (lines > LINES_BEFORE_BREAK)
-                {
-                    restr.breakAfterLaw = true;
-                }
-                else
-                {
-                    // Service compétent sur 2 lignes
-                    lines += 2;
-                    if (lines > LINES_BEFORE_BREAK)
-                    {
-                        restr.breakAfterInfo = true;
-                    }
-                    else
-                    {
-                        lines += restr.annexes.Length;
-                        if (lines > LINES_BEFORE_BREAK)
-                        {
-                            restr.breakAfterService = true;
-                        }
-                    }
-                }
-            }            
-        }
+        return report.GeneratePdfA(xmlDataDoc, Helper.GetReportConfigFilePath("ReportMainSection.xslt"), fileName);
     }
 
     private void TestTocBreakPage(mainSection section)
     {
-        int marginHeight = PAGE_HEIGHT - TOC_FIXED_ELEMENTS - TOC_BLOCK - MARGIN_BOTTOM;
-        marginHeight = marginHeight - (section.tocs.Length * TOC_CONCERNED_RESTRICTION);
+        int marginHeight = PAGE_HEIGHT - TOC_FIXED_ELEMENTS - TOC_BLOCK;
+        marginHeight -= (section.tocs.Length * TOC_CONCERNED_RESTRICTION);
         foreach (restriction r in section.restrictions)
         {
             if (r.result == false)
             {
-                marginHeight = marginHeight - TOC_OTHER_RESTRICTION;
+                marginHeight -= TOC_OTHER_RESTRICTION;
             }
         }
-        marginHeight = marginHeight - (section.noDataThemes.Length * TOC_OTHER_RESTRICTION);
+        marginHeight -= (section.noDataThemes.Length * TOC_OTHER_RESTRICTION);
 
         section.marginStyle = string.Format("height:{0}mm", marginHeight);
         if (marginHeight < 10)
@@ -370,42 +198,173 @@ public class ExtractGenerator
         }
     }
 
-    private annex[] GetAnnexes(string type, restriction restr)
+    private int GetRestrictionExtract(byte[] intent, restriction restr, string fileName)
     {
-        List<annex> annexes = new List<annex>();
+        XmlRootAttribute xRoot = new XmlRootAttribute("restriction");
 
-        if (string.Compare(type, "REDUCED") != 0)
-        {
-            foreach (regulation reg in restr.regulations)
-            {
-                foreach (string value in reg.values)
-                {
-                    ReportAnnex repAnnex = this.Annexes.Find(a => string.Compare(a.value, value) == 0);
-                    if (repAnnex == null)
-                    {
-                        repAnnex = new ReportAnnex(value);
-                        if (repAnnex.isIncluded)
-                        {
-                            repAnnex.number = this.NextAnnex;
-                            this.NextAnnex++;
-                        }
-                        this.Annexes.Add(repAnnex);
-                    }
-                    if (repAnnex.isIncluded)
-                    {
-                        annex annex = new annex();
-                        annex.title = reg.label;
-                        annex.number = repAnnex.number;
-                        annexes.Add(annex);
-                    }
-                }
-            }
-        }
+        StringBuilder sb = new StringBuilder();
+        XmlSerializer serializer = new XmlSerializer(restr.GetType(), xRoot);
+        serializer.Serialize(XmlWriter.Create(sb), restr);
 
-        return annexes.ToArray();
+        XmlDocument xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(sb.ToString());
+
+        PdfReport restrReport = new PdfReport(intent);
+        return restrReport.GeneratePdfA(xmlDoc, Helper.GetReportConfigFilePath("ReportRestriction.xslt"), fileName);
     }
 
+    private void GetGlossaryExtract(byte[] intent, ReportTemplate template, InformationText[] glossaries, string fileName)
+    {
+        PdfDocument pdf = new PdfADocument(new PdfWriter(fileName), PdfAConformanceLevel.PDF_A_2A,
+            new PdfOutputIntent("Custom", "", "https://www.color.org", "sRGB IEC61966-2.1", new MemoryStream(intent)));
+        pdf.SetTagged();
+        Document doc = new Document(pdf, PageSize.A4);
 
+        doc.SetMargins(template.MarginTop, template.MarginRight, template.MarginBottom, template.MarginLeft);
+
+        PdfFont boldFont = PdfFontFactory.CreateFont(Helper.GetReportConfigFilePath(template.BoldFontFile), PdfEncodings.CP1252, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
+        PdfFont font = PdfFontFactory.CreateFont(Helper.GetReportConfigFilePath(template.RegularFontFile), PdfEncodings.CP1252, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
+
+        doc.Add(new Paragraph(new Text("Termes et abréviations").SetFont(boldFont).SetFontSize(15)).SetMargins(0, 0, 20, 0));
+        foreach (InformationText g in glossaries)
+        {
+            Paragraph p = new Paragraph(new Text(string.Format("{0}: ", g.Title)).SetFont(boldFont).SetFontSize(8)).SetMargins(4, 0, 4, 0).SetFixedLeading(10);
+            p.Add(new Text(g.Contents[0]).SetFont(font).SetFontSize(8));
+            doc.Add(p);
+
+            if (g.Contents.Length > 1)
+            {
+                for (int i = 1; i < g.Contents.Length; i++)
+                {
+                    Paragraph p2 = new Paragraph(new Text(g.Contents[i]).SetFont(font).SetFontSize(8)).SetMargins(2, 0, 2, 0).SetFixedLeading(10);
+                    doc.Add(p2);
+                }
+            }
+
+            SolidLine line = new SolidLine(0.07f);
+            line.SetColor(DeviceRgb.BLACK);
+            LineSeparator sep = new LineSeparator(line);
+            sep.SetHorizontalAlignment(HorizontalAlignment.CENTER).SetWidth(UnitValue.CreatePercentValue(100));
+            doc.Add(sep);
+        }
+
+        doc.Close();
+        pdf.Close();
+    }
+
+    private void AddLogosAndTexts(PdfADocument pdf, ReportTemplate template, ReportData data)
+    {
+        Document doc = new Document(pdf, template.Format);
+
+        PdfFont font = PdfFontFactory.CreateFont(Helper.GetReportConfigFilePath(template.RegularFontFile), PdfEncodings.CP1252, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
+
+        int pages = pdf.GetNumberOfPages();
+        for (int page = 1; page < pages + 1; page++)
+        {
+            Image chLogo = new Image(GetLogoData("ch"));
+            PositionLogo(chLogo, page, template.Format, 18, 10, 44, 15);
+            doc.Add(chLogo);
+
+            Image cantLogo = new Image(ImageDataFactory.Create(string.Format("{0}/LOGORCGE_rvb300dpi_FRU.jpg", WebHelper.GetConfigValue("LogoUrl"))));
+            PositionCenteredLogo(cantLogo, page, template.Format, 74, 10, 30, 13);
+            doc.Add(cantLogo);
+
+            //Image munLogo = new Image(ImageDataFactory.Create(data.municipalityLogoURL));
+            //PositionCenteredLogo(munLogo, page, template.Format, 115, 9, 30, 13);
+            //doc.Add(munLogo);
+
+            Image plrLogo = new Image(GetLogoData("ch.plr"));
+            PositionLogo(plrLogo, page, template.Format, 157, 10, 35, 10);
+            doc.Add(plrLogo);
+
+            doc.Add(DrawSeparator(page, template.Format, 18, 29, 174, 0.2f));
+            doc.Add(DrawSeparator(page, template.Format, 18, 282, 174, 0.8f));
+
+            float dateWidth = AddText(doc, page, font, DateTime.Now.ToString(template.Reference.DateFormat), template.Reference.FontSize,
+                template.Reference.Alignment, template.Format, template.Reference.X, template.Reference.Y);
+            float timeWidth = AddText(doc, page, font, DateTime.Now.ToString(template.Reference.TimeFormat), template.Reference.FontSize,
+                template.Reference.Alignment, template.Format, template.Reference.X + dateWidth + template.Reference.Spacing, template.Reference.Y);
+            AddText(doc, page, font, data.section.reference, template.Reference.FontSize, template.Reference.Alignment,
+                template.Format, template.Reference.X + dateWidth + timeWidth + 2 * template.Reference.Spacing, template.Reference.Y);
+            AddText(doc, page, font, string.Format(template.PageNumber.Format, page, pages), template.PageNumber.FontSize,
+                template.PageNumber.Alignment, template.Format, template.PageNumber.X, template.PageNumber.Y);
+        }
+
+        doc.Close();
+    }
+
+    static float AddText(Document doc, int page, PdfFont font, string content, int fontSize, ReportTemplateText.ReportTemplateAlignment alignment, PageSize size, float x, float y)
+    {
+        float fx = size.GetWidth() / 210, fy = size.GetHeight() / 297;
+
+        x *= fx;
+        y = size.GetHeight() - (y * fy);
+
+        Paragraph p = new Paragraph(content);
+        p.SetFont(font).SetFontSize(fontSize);
+        float width = GetParagraphWidth(doc, p);
+
+        switch (alignment)
+        {
+            case ReportTemplateText.ReportTemplateAlignment.RIGHT:
+                x -= width;
+                break;
+            case ReportTemplateText.ReportTemplateAlignment.CENTER:
+                x -= width / 2;
+                break;
+            default:
+                break;
+        }
+        p.SetFixedPosition(page, x, y, width).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetVerticalAlignment(VerticalAlignment.BOTTOM);
+
+        doc.Add(p);
+
+        return width / fx;
+    }
+
+    static Image DrawSeparator(int page, PageSize size, float left, float top, float width, float heightInPoints)
+    {
+        float fx = size.GetWidth() / 210, fy = size.GetHeight() / 297;
+
+        int w = (int)Math.Round(width * fx * (1 / heightInPoints));
+        System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, 1);
+        System.Drawing.Graphics graph = System.Drawing.Graphics.FromImage(bmp);
+        graph.DrawLine(new System.Drawing.Pen(System.Drawing.Color.Black, 1), 0, 0, w, 0);
+
+        Image img = new Image(ImageDataFactory.Create(bmp, System.Drawing.Color.Black));
+        img.ScaleToFit(width * fx, heightInPoints);
+        img.SetFixedPosition(page, left * fx, size.GetHeight() - (top * fy));
+
+        return img;
+    }
+
+    static float GetParagraphWidth(Document doc, Paragraph p)
+    {
+        IRenderer renderer = p.CreateRendererSubTree();
+        LayoutResult result = renderer.SetParent(doc.GetRenderer()).Layout(new LayoutContext(new LayoutArea(1, new Rectangle(1000, 100))));
+        return ((ParagraphRenderer)renderer).GetMinMaxWidth().GetMaxWidth();
+    }
+
+    private ImageData GetLogoData(string code)
+    {
+        string base64 = oerebHelper.GetLogo(code, "fr");
+        return ImageDataFactory.Create(Convert.FromBase64String(base64));
+    }
+
+    private void PositionLogo(Image image, int page, PageSize size, float left, float top, float width, float height)
+    {
+        float fx = size.GetWidth() / DimensionsA4[0], fy = size.GetHeight() / DimensionsA4[1];
+        image.ScaleToFit(width * fx, height * fy);
+        image.SetFixedPosition(page, left * fx, size.GetHeight() - (top * fy) - image.GetImageScaledHeight());
+    }
+
+    private void PositionCenteredLogo(Image image, int page, PageSize size, float left, float top, float width, float height)
+    {
+        float fx = size.GetWidth() / DimensionsA4[0], fy = size.GetHeight() / DimensionsA4[1];
+        image.ScaleToFit(width * fx, height * fy);
+        float xPos = ((left + (width / 2.0f)) * fx) - (image.GetImageScaledWidth() / 2.0f);
+        image.SetFixedPosition(page, xPos, size.GetHeight() - (top * fy) - image.GetImageScaledHeight());
+    }
 
     private ReportTemplate GetTemplate()
     {
@@ -414,216 +373,37 @@ public class ExtractGenerator
         XmlDocument doc = new XmlDocument();
         doc.Load(Helper.GetReportConfigFilePath("ReportTemplate.xml"));
 
-        template.SetFormat(doc.SelectSingleNode("/Template/Format").InnerText);
         template.SetMargins(doc.SelectSingleNode("/Template/Margins").InnerText);
-        template.SetUseModel(doc.SelectSingleNode("/Template/UseModel").InnerText);
-
-        XmlNode fNode = doc.SelectSingleNode("Template/Font");
-        template.Font.SetFontDirectory(fNode.SelectSingleNode("Directory").InnerText);
-        template.Font.SetFontName(fNode.SelectSingleNode("Name").InnerText);
-
-        foreach (XmlNode node in doc.SelectNodes("/Template/TextDateZones/TextDateZone"))
-        {
-            template.TextDateZones.Add(GetTemplateZone(template, node));
-        }
-
-        foreach (XmlNode node in doc.SelectNodes("/Template/TextPageZones/TextPageZone"))
-        {
-            template.TextPageZones.Add(GetTemplateZone(template, node));
-        }
-
-        foreach (XmlNode node in doc.SelectNodes("/Template/TextZones/TextZone"))
-        {
-            template.TextZones.Add(GetTemplateZone(template, node));
-        }
-
-        foreach (XmlNode node in doc.SelectNodes("/Template/TextAnnexZones/TextAnnexZone"))
-        {
-            template.TextAnnexZones.Add(GetTemplateZone(template, node));
-        }
+        template.Font = doc.SelectSingleNode("/Template/Font").InnerText;
+        template.RegularFontFile = doc.SelectSingleNode("/Template/RegularFontFile").InnerText;
+        template.BoldFontFile = doc.SelectSingleNode("/Template/BoldFontFile").InnerText;
+        template.Reference = GetTemplateText(doc.SelectSingleNode("/Template/Reference"));
+        template.Reference.DateFormat = doc.SelectSingleNode("/Template/Reference/DateFormat").InnerText;
+        template.Reference.TimeFormat = doc.SelectSingleNode("/Template/Reference/TimeFormat").InnerText;
+        template.Reference.SetSpacing(doc.SelectSingleNode("/Template/Reference/Spacing").InnerText);
+        template.PageNumber = GetTemplateText(doc.SelectSingleNode("/Template/PageNumber"));
+        template.PageNumber.Format = doc.SelectSingleNode("/Template/PageNumber/Format").InnerText;
 
         return template;
     }
 
-    private ReportTemplateZone GetTemplateZone(ReportTemplate template, XmlNode node)
+    private ReportTemplateText GetTemplateText(XmlNode node)
     {
-        ReportTemplateZone zone = new ReportTemplateZone(template.Format, template.Dimensions);
+        ReportTemplateText text = new ReportTemplateText();
 
-        zone.Text = node.SelectSingleNode("Text").InnerText;
-        zone.SetFontSize(node.SelectSingleNode("FontSize").InnerText);
-        zone.SetAlignement(node.SelectSingleNode("Alignement").InnerText);
-        XmlNode hpNode = node.SelectSingleNode("HorizontalPosition");
-        zone.SetPositionX(XmlHelper.GetXmlAttribute(hpNode, "from", true), hpNode.InnerText);
-        XmlNode vpNode = node.SelectSingleNode("VerticalPosition");
-        zone.SetPositionY(XmlHelper.GetXmlAttribute(vpNode, "from", true), vpNode.InnerText);
-        zone.SetRotation(node.SelectSingleNode("Rotation").InnerText);
-        zone.SetFontColor(node.SelectSingleNode("Color").InnerText);
+        text.SetFontSize(node.SelectSingleNode("FontSize").InnerText);
+        text.SetAlignment(node.SelectSingleNode("Alignement").InnerText);
+        text.SetPosition(node.SelectSingleNode("Position").InnerText);
 
-        return zone;
-    }
-
-    private void MergeLegalFiles(string reference, Dictionary<int, string> inputFiles, string outputFileName)
-    {
-        // get template
-        ReportTemplate template = GetTemplate();
-
-        IList<string> files = new List<string>();
-        IList<string> titleFiles = new List<string>();
-        foreach (KeyValuePair<int, string> input in inputFiles)
-        {
-            if (input.Key > 0)
-            {
-                string titleFile = BuildAnnexPage(reference, template, input.Key);
-                files.Add(titleFile);
-                titleFiles.Add(titleFile);
-            }
-            files.Add(input.Value);
-        }
-
-        using (FileStream fs = new FileStream(outputFileName, FileMode.Create, FileAccess.Write))
-        {
-            Document document = new Document();
-            PdfCopy pdf = new PdfCopy(document, fs);
-            try
-            {
-                document.Open();
-
-                Stopwatch timer = Stopwatch.StartNew();
-
-                foreach (string file in files)
-                {
-                    using (PdfReader reader = new PdfReader(file))
-                    {
-                        pdf.AddDocument(reader);
-                    }
-
-                    string msg = String.Format("MergeLegalFiles - Fichier: {0}", file);
-                    Helper.LogInfo(this.GetType().ToString(), msg, timer.ElapsedMilliseconds);
-                    timer.Restart();
-                }
-
-                timer.Stop();
-            }
-            finally
-            {
-                document.Close();
-            }
-        }
-        // delete temporary file
-        foreach (string tf in titleFiles)
-        {
-            File.Delete(tf);
-        }
-    }
-
-    private string BuildAnnexPage(string reference, ReportTemplate template, int number)
-    {
-        PdfReport report = new PdfReport(template.Format, template.MarginLeft, template.MarginRight,
-                    template.MarginTop, template.MarginBottom);
-
-        if (template.UseModel == true)
-        {
-            report.SetTemplate(Helper.GetReportConfigFilePath("Template.pdf"));
-        }
-
-        FontFactory.RegisterDirectory(template.Font.FontDirectory);
-        BaseFont bf = FontFactory.GetFont(template.Font.FontName, BaseFont.CP1252, BaseFont.EMBEDDED).BaseFont;
-
-        foreach (ReportTemplateZone dz in template.TextDateZones)
-        {
-            TextZone zone = new TextZone(DateTime.Now.ToString(dz.Text), bf, dz.FontSize);
-            zone.SetPosition(dz.Alignement, dz.PositionX, dz.PositionY, dz.Rotation);
-            zone.SetRGBColorFill(dz.FontColor[0], dz.FontColor[1], dz.FontColor[2]);
-            report.AddTextZone(zone);
-        }
-        foreach (ReportTemplateZone z in template.TextZones)
-        {
-            string content = string.Empty;
-            switch (z.Text)
-            {
-                case "#REF#":
-                    content = reference;
-                    break;
-                default:
-                    break;
-            }
-            TextZone zone = new TextZone(content, bf, z.FontSize);
-            zone.SetPosition(z.Alignement, z.PositionX, z.PositionY, z.Rotation);
-            zone.SetRGBColorFill(z.FontColor[0], z.FontColor[1], z.FontColor[2]);
-            report.AddTextZone(zone);
-        }
-        foreach (ReportTemplateZone pz in template.TextAnnexZones)
-        {
-            string content = string.Format(pz.Text, number);
-            TextZone zone = new TextZone(content, bf, pz.FontSize);
-            zone.SetPosition(pz.Alignement, pz.PositionX, pz.PositionY, pz.Rotation);
-            zone.SetRGBColorFill(pz.FontColor[0], pz.FontColor[1], pz.FontColor[2]);
-            report.AddTextPageZone(zone);
-        }
-
-        XmlDocument xmlEmptyDoc = new XmlDocument();
-        xmlEmptyDoc.LoadXml(this.BuildAnnexXml(string.Empty));
-
-        // generate pdf
-        string fname = Path.Combine(this.workPath, "_annex_" + number.ToString() + ".pdf");
-        using (XmlNodeReader xmlReader = new XmlNodeReader(xmlEmptyDoc))
-        using (XmlTextReader xsltReader = new XmlTextReader(Helper.GetReportConfigFilePath("ReportAnnex.xslt")))
-        {
-            report.GeneratePdf(xmlReader, xsltReader, this.workPath, fname);
-        }
-        return fname;
+        return text;
     }
 
     #endregion
 
-    #region private Classes
-
-    private class ReportAnnex
+    private class RestrictionExtract
     {
-        public int number;
-        public string value;
-        public bool isLink;
-        public bool isIncluded = false;
-
-        public ReportAnnex(string value)
-        {
-            this.value = value;
-            this.isLink = this.TestLink();
-            if (this.isLink)
-            {
-                this.isIncluded = this.TestAccess();
-            }
-        }
-
-        private bool TestLink()
-        {
-            if (this.value.StartsWith("http"))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private bool TestAccess()
-        {
-            try
-            {
-                HttpWebRequest request = WebRequest.Create(this.value) as HttpWebRequest;
-                request.Method = "HEAD";
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                using (PdfReader reader = new PdfReader(this.value))
-                {
-                    return (response.StatusCode == HttpStatusCode.OK);
-                }
-            }
-            catch
-            {
-                Helper.LogError(new WsUserException(string.Format(Resources.Resource.DOC_NOT_APPENDED, this.value)));
-                return false;
-            }
-        }
+        public string Title { get; set; }
+        public int Pages { get; set; }
+        public string Path { get; set; }
     }
-
-    #endregion
 }

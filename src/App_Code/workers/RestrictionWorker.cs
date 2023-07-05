@@ -1,8 +1,9 @@
-﻿/* $Rev: 22461 $ */
+﻿/* $Rev: 30309 $ */
+using ESRI.ArcGIS.SOAP;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
-using ESRI.ArcGIS.SOAP;
 using Topomat.Web.Common;
 
 public class RestrictionWorker
@@ -12,34 +13,27 @@ public class RestrictionWorker
     private LegendInfo legendInfo;
     private QueryWorker queryWorker;
     private GetExtractParamReq extractParams;
+    private IList<AdditionalLayer> additionalLayers;
+    private IList<AdditionalLayer> additionalLegends;
+    private bool storeSymbols;
 
-    public RestrictionWorker(LayerInfo layInfo, LegendInfo legInfo, QueryWorker worker)
-    {
-        GetExtractParamReq param = new GetExtractParamReq
-        {
-            allTopics = true,
-            lang = "fr",
-            withImages = true
-        };
-        this.Init(layInfo, legInfo, worker, param);
-    }
-
-    public RestrictionWorker(LayerInfo layInfo, LegendInfo legInfo, QueryWorker worker, GetExtractParamReq param)
-    {
-        this.Init(layInfo, legInfo, worker, param);
-    }
-
-    private void Init(LayerInfo layInfo, LegendInfo legInfo, QueryWorker worker, GetExtractParamReq param)
+    public RestrictionWorker(LayerInfo layInfo, LegendInfo legInfo, QueryWorker worker, GetExtractParamReq param, bool storeSymbols)
     {
         this.requestConfig = XmlHelper.GetConfig("request.xml", "RequestConfig");
         this.layerInfo = layInfo;
         this.legendInfo = legInfo;
         this.queryWorker = worker;
         this.extractParams = param;
+        this.additionalLayers = new List<AdditionalLayer>();
+        this.additionalLegends = new List<AdditionalLayer>();
+
+        this.storeSymbols = storeSymbols;
     }
 
     public RestrictionResult[] RunAnalyse(QueryResultFeature feature, Extent mapExtent)
     {
+        this.GetAdditionalLayers();
+
         // request intersected entities
         string ids = this.GetIdentifyLayerIds();
 
@@ -58,16 +52,71 @@ public class RestrictionWorker
             IList<RestrictionResult> mapList = this.AddInfos(irs);
 
             this.MergeResults(intersectList, mapList, intersectLayerIds);
-
-            // request legends for additional layers
-            IdentifyResult[] additionalIdentifyResults =
-                this.queryWorker.IdentifyRequestFromExtent(string.Join(",", this.GetAdditionalIdentifyLayerIds(irs)), 
-                mapExtent, false);
-
-            this.MergeAdditionalLegends(intersectList, additionalIdentifyResults);
         }
+        this.StoreLegendSymbols(intersectList);
 
         return intersectList.ToArray();
+    }
+
+    public IList<int> GetAdditionalLayerIds(int id)
+    {
+        IList<int> ids = new List<int>();
+        foreach (AdditionalLayer al in this.additionalLayers.Where(l => l.LayerInfo.LayerID == id))
+        {
+            ids.Add(al.AdditionalInfo.LayerID);
+        }
+        return ids;
+    }
+
+    public int GetOriginalLayerId(int id)
+    {
+        return this.additionalLayers.First(l => l.AdditionalInfo.LayerID == id).LayerInfo.LayerID;
+    }
+
+    public IList<int> GetAdditionalLegendIds(int id)
+    {
+        IList<int> ids = new List<int>();
+        foreach (AdditionalLayer al in this.additionalLegends.Where(l => l.LayerInfo.LayerID == id))
+        {
+            ids.Add(al.AdditionalInfo.LayerID);
+        }
+        return ids;
+    }
+
+    private void GetAdditionalLayers()
+    {
+        foreach (XmlNode node in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
+        {
+            string layerName = XmlHelper.GetXmlAttribute(node, "layer", true);
+            string addLayers = XmlHelper.GetXmlAttribute(node, "additionalLayers", false);
+            string addLegends = XmlHelper.GetXmlAttribute(node, "additionalLegends", false);
+
+            MapLayerInfo info = this.layerInfo.GetLayerInfo(layerName, true);
+
+            if (!string.IsNullOrEmpty(addLayers))
+            {
+                foreach (string addLayer in addLayers.Split(new char[] { ',' }))
+                {
+                    this.additionalLayers.Add(new AdditionalLayer
+                    {
+                        LayerInfo = info,
+                        AdditionalInfo = this.layerInfo.GetLayerInfo(addLayer, true)
+                    });
+                }
+            }
+
+            if (!string.IsNullOrEmpty(addLegends))
+            {
+                foreach (string addLegend in addLegends.Split(new char[] { ',' }))
+                {
+                    this.additionalLegends.Add(new AdditionalLayer
+                    {
+                        LayerInfo = info,
+                        AdditionalInfo = this.layerInfo.GetLayerInfo(addLegend, true)
+                    });
+                }
+            }
+        }
     }
 
     private string GetIdentifyLayerIds()
@@ -76,15 +125,24 @@ public class RestrictionWorker
 
         foreach (XmlNode node in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
         {
-            string theme = XmlHelper.GetXmlElementValue(node, "Theme/Code");
-            if (this.extractParams.allTopics || this.extractParams.topics.Contains(theme))
+            string code = XmlHelper.GetXmlElementValue(node, "Theme/Code");
+            if (this.extractParams.allTopics || this.extractParams.partialTopics.Contains(code))
             {
                 string layerName = XmlHelper.GetXmlAttribute(node, "layer", true);
-                list.Add(this.layerInfo.GetLayerInfo(layerName).LayerID);
+                int id = this.layerInfo.GetLayerInfo(layerName, true).LayerID;
+                list.Add(id);
+
+                foreach (AdditionalLayer al in this.additionalLayers.Where(l => l.LayerInfo.LayerID == id))
+                {
+                    if (!list.Contains(al.AdditionalInfo.LayerID))
+                    {
+                        list.Add(al.AdditionalInfo.LayerID);
+                    }
+                }
             }
         }
 
-        return string.Join(",", list);
+        return string.Join(",", list.OrderBy(n => n));
     }
 
     private IList<int> GetIdentifyLayerIds(IdentifyResult[] irs)
@@ -97,34 +155,23 @@ public class RestrictionWorker
             {
                 list.Add(ir.layerId);
             }
-        }
-
-        return list;
-    }
-
-    private IList<int> GetAdditionalIdentifyLayerIds(IdentifyResult[] irs)
-    {
-        IList<int> list = new List<int>();
-
-        foreach (IdentifyResult ir in irs)
-        {
-            XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", ir.layerName);
-            string additionalLayers = XmlHelper.GetXmlAttribute(node, "additionalLayers", false);
-
-            if (!string.IsNullOrEmpty(additionalLayers))
+            foreach (AdditionalLayer al in this.additionalLayers.Where(l => l.LayerInfo.LayerID == ir.layerId))
             {
-                foreach (string additionalLayer in additionalLayers.Split(new char[] { ',' }))
+                if (!list.Contains(al.AdditionalInfo.LayerID))
                 {
-                    int id = this.layerInfo.GetLayerInfo(additionalLayer).LayerID;
-                    if (!list.Contains(id))
-                    {
-                        list.Add(id);
-                    }
+                    list.Add(al.AdditionalInfo.LayerID);
                 }
-            }            
+            }
+            foreach (AdditionalLayer al in this.additionalLegends.Where(l => l.LayerInfo.LayerID == ir.layerId))
+            {
+                if (!list.Contains(al.AdditionalInfo.LayerID))
+                {
+                    list.Add(al.AdditionalInfo.LayerID);
+                }
+            }
         }
 
-        return list;
+        return list.OrderBy(n => n).ToList();
     }
 
     private IList<RestrictionResult> AddInfos(IdentifyResult[] irs)
@@ -135,24 +182,30 @@ public class RestrictionWorker
         {
             RestrictionResult result = new RestrictionResult(ir);
 
-            MapLayerInfo layInfo = this.layerInfo.GetLayerInfo(ir.layerName);
+            int id = ir.layerId; string name = ir.layerName;
+            MapLayerInfo layInfo = this.layerInfo.GetLayerInfo(ir.layerName, true);
+            this.layerInfo.GetLayerInfoAsJson(id);
+
             result.LayerId = ir.layerId;
+            result.LayerName = ir.layerName;
             result.OIDFieldName = layInfo.IDField;
             result.OID = long.Parse(ir.attributes[layInfo.IDField]);
             result.UniqueId = string.Format("{0}_{1}", ir.layerId, ir.attributes[layInfo.IDField]);
-
             result.Legend = this.GetLegend(layInfo, ir.attributes);
+            result.isAdditionalResult = this.additionalLayers.Count(al => al.AdditionalInfo.LayerID == ir.layerId) > 0;
+            result.isAdditionalLegend = this.additionalLegends.Count(al => al.AdditionalInfo.LayerID == ir.layerId) > 0;
 
             results.Add(result);
         }
 
         return results;
     }
-    
+
     private RestrictionLegend GetLegend(MapLayerInfo layerInfo, IDictionary<string, string> attributes)
     {
         MapServerLegendInfo legInfo = this.legendInfo.GetLegendInfo(layerInfo.LayerID);
-        LayerInfoJson.Renderer renderer = this.layerInfo.GetLayerInfoAsJson(layerInfo.LayerID).drawingInfo.renderer;
+        LayerInfoJson.Layer layInfo = this.layerInfo.GetLayerInfoAsJson(layerInfo.LayerID);
+        LayerInfoJson.Renderer renderer = layInfo.drawingInfo.renderer;
 
         string label = string.Empty;
         switch (renderer.type)
@@ -200,14 +253,22 @@ public class RestrictionWorker
             }
         }
 
+        LegendInfoJson.Legend jsonLegendInfo = this.legendInfo.GetLegendInfoAsJson(layerInfo.LayerID).First(jli => string.Compare(jli.label, label) == 0);
+        if (jsonLegendInfo == null)
+        {
+            throw new WsUserException(string.Format(Resources.Resource.LEGEND_NOT_FOUND, label, layerInfo.Name));
+        }
+
         RestrictionLegend legend = new RestrictionLegend();
         if (legendClass != null)
         {
             legend = new RestrictionLegend
             {
-                Index = legendIndex, 
+                Index = legendIndex,
                 Text = label,
-                TypeCode = string.Format("{0}:{1}", layerInfo.LayerID, Helper.ToHexString(label))
+                TypeCode = string.Format("{0}:{1}", layerInfo.LayerID, jsonLegendInfo.url),
+                GeometryType = layInfo.geometryType,
+                Order = GetGeometryOrder(layInfo.geometryType)
             };
         }
         else
@@ -215,102 +276,130 @@ public class RestrictionWorker
             throw new WsUserException(string.Format(Resources.Resource.LEGEND_NOT_FOUND, label, layerInfo.Name));
         }
 
-        if (string.IsNullOrEmpty(legendClass.SymbolImage.ImageURL))
-        {
-            legend.Symbol = legendClass.SymbolImage.ImageData;
-        }
-        else
-        {
-            legend.SymbolRef = legendClass.SymbolImage.ImageURL;
-        }
+        legend.Symbol = legendClass.SymbolImage.ImageData;
 
         return legend;
     }
 
-    private void MergeResults(IList<RestrictionResult> intersects, IList<RestrictionResult> others, IList<int> ids)
+    private void MergeResults(IList<RestrictionResult> intersectResults, IList<RestrictionResult> mapResults, IList<int> ids)
     {
         foreach (int id in ids)
         {
             bool first = true;
-            IList<long> intersectOids = new List<long>();
-            IList<string> intersectTypeCodes = new List<string>();
-
-            foreach (RestrictionResult intersect in intersects.Where<RestrictionResult>(ir => ir.LayerId == id))
-            {
-                intersectOids.Add(intersect.OID);
-                if (!intersectTypeCodes.Contains(intersect.Legend.TypeCode))
-                {
-                    intersectTypeCodes.Add(intersect.Legend.TypeCode);
-                }
-            }
-
-            foreach (RestrictionResult intersect in intersects.Where<RestrictionResult>(ir => ir.LayerId == id))
+            foreach (RestrictionResult intersect in intersectResults.Where(ir => ir.LayerId == id))
             {
                 intersect.isFirst = first;
                 if (first)
                 {
-                    // Build layerDefs with all layer entities on map and add other legends
-                    IList<long> oids = new List<long>();
-                    oids.Add(intersect.OID);
+                    int originId = intersect.isAdditionalResult ? GetOriginalLayerId(id) : id;
 
-                    IList<RestrictionLegend> otherLegends = new List<RestrictionLegend>();
-                    otherLegends.Add(intersect.Legend);
-
-                    foreach (RestrictionResult other in others.Where<RestrictionResult>(or => or.LayerId == id))
+                    IList<RestrictionLegend> allLegends = new List<RestrictionLegend>();                    
+                    foreach (RestrictionResult other in mapResults.Where(or => or.LayerId == originId))
                     {
-                        if (!oids.Contains(other.OID) && !intersectOids.Contains(other.OID))
+                        if (allLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0)
                         {
-                            oids.Add(other.OID);
-                        }
-                        if (otherLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0 &&
-                            !intersectTypeCodes.Contains(other.Legend.TypeCode))
-                        {
-                            otherLegends.Add(other.Legend);
+                            allLegends.Add(other.Legend);
                         }
                     }
+                    
+                    foreach (AdditionalLayer al in this.additionalLayers.Where(l => l.LayerInfo.LayerID == originId))
+                    {
+                        foreach (RestrictionResult other in mapResults.Where(or => or.LayerId == al.AdditionalInfo.LayerID))
+                        {
+                            if (allLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0)
+                            {
+                                allLegends.Add(other.Legend);
+                            }
+                        }
+                    }
+                    intersect.AllLegends = allLegends.OrderBy(_l => _l.Index).ToArray();
 
-                    intersect.LayerDefs = string.Format("{0}:{1} IN ({2})", id, intersect.OIDFieldName, string.Join(",", oids));
-                    intersect.OtherLegends = otherLegends.OrderBy(_l => _l.Index).ToArray();
+                    IList<RestrictionLegend> addLegends = new List<RestrictionLegend>();
+                    foreach (AdditionalLayer al in this.additionalLegends.Where(l => l.LayerInfo.LayerID == originId))
+                    {
+                        foreach (RestrictionResult other in mapResults.Where(or => or.LayerId == al.AdditionalInfo.LayerID))
+                        {
+                            if (addLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0)
+                            {
+                                addLegends.Add(other.Legend);
+                            }
+                        }
+                    }
+                    intersect.AdditionalLegends = addLegends.OrderBy(_l => _l.Index).ToArray();
 
                     first = false;
                 }
                 else
                 {
-                    intersect.LayerDefs = string.Format("{0}:{1}={2}", id, intersect.OIDFieldName, intersect.OID);
-                    intersect.OtherLegends = new RestrictionLegend[] { intersect.Legend };
+                    intersect.AllLegends = new RestrictionLegend[] { };
+                    intersect.AdditionalLegends = new RestrictionLegend[] { };
                 }
             }
         }
     }
 
-    private void MergeAdditionalLegends(IList<RestrictionResult> results, IdentifyResult[] irs)
+    private void StoreLegendSymbols(IList<RestrictionResult> results)
     {
+        Dictionary<string, byte[]> symbols = new Dictionary<string, byte[]>();
         foreach (RestrictionResult result in results)
         {
-            IList<RestrictionLegend> list = new List<RestrictionLegend>();
-
-            if (result.isFirst)
+            RestrictionLegend[] allLegends = result.AllLegends.Concat(result.AdditionalLegends).ToArray();
+            foreach (RestrictionLegend legend in allLegends)
             {
-                XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer",
-                    result.IdentResult.layerName);
-                string additionalLayers = XmlHelper.GetXmlAttribute(node, "additionalLayers", false);
-
-                if (!string.IsNullOrEmpty(additionalLayers))
+                string _code = legend.TypeCode.Replace(":", "_");
+                if (!symbols.ContainsKey(_code))
                 {
-                    foreach (string additionalLayer in additionalLayers.Split(new char[] { ',' }))
-                    {
-                        MapLayerInfo layInfo = this.layerInfo.GetLayerInfo(additionalLayer);
-                        foreach (IdentifyResult ir in irs.Where<IdentifyResult>(_ir => _ir.layerId == layInfo.LayerID))
-                        {
-                            list.Add(this.GetLegend(layInfo, ir.attributes));
-                        }
-                    }
-                    
+                    symbols.Add(_code, legend.Symbol);
+                }
+                if (!this.extractParams.withImages)
+                {
+                    legend.SymbolRef = Helper.GetSymbolUrl(_code);
+                    legend.Symbol = null;
                 }
             }
-
-            result.AdditionalLegends = list.ToArray();
+            string code = result.Legend.TypeCode.Replace(":", "_");
+            if (!symbols.ContainsKey(code))
+            {
+                symbols.Add(code, result.Legend.Symbol);
+            }
+            result.Legend.SymbolRef = Helper.GetSymbolUrl(code);
         }
+
+        if (this.storeSymbols)
+        {
+            foreach (string key in symbols.Keys)
+            {
+                string path = Helper.GetSymbolPath(key);
+                if (!File.Exists(path))
+                {
+                    File.WriteAllBytes(path, symbols[key]);
+                }
+            }
+        }
+    }
+
+    private int GetGeometryOrder(string type)
+    {
+        int order = 10;
+        switch (type)
+        {
+            case "esriGeometryPolygon":
+                order = 1;
+                break;
+            case "esriGeometryPolyline":
+                order = 2;
+                break;
+            default:
+                order = 3;
+                break;
+        }
+        return order;
+    }
+
+    private class AdditionalLayer
+    {
+        public MapLayerInfo LayerInfo { get; set; }
+        public MapLayerInfo AdditionalInfo { get; set; }
     }
 }
 
@@ -318,19 +407,22 @@ public class RestrictionResult
 {
     public IdentifyResult IdentResult;
     public int LayerId;
+    public string LayerName;
     public string OIDFieldName;
     public long OID;
     public string UniqueId;
     public bool isFirst;
-    public string LayerDefs;
     public byte[] Image;
     public string MapUrl;
     public int Area;
     public int Length;
     public double PartInPercent;
+    public int PointNumber;
     public RestrictionLegend Legend;
-    public RestrictionLegend[] OtherLegends;
+    public RestrictionLegend[] AllLegends;
     public RestrictionLegend[] AdditionalLegends;
+    public bool isAdditionalResult;
+    public bool isAdditionalLegend;
 
     public RestrictionResult(IdentifyResult ir)
     {
@@ -345,4 +437,6 @@ public class RestrictionLegend
     public byte[] Symbol;
     public string SymbolRef;
     public string TypeCode;
+    public string GeometryType;
+    public int Order;
 }

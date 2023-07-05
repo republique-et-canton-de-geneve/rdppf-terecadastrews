@@ -1,161 +1,125 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!-- $Rev: 25012 $ -->
+<!-- $Rev: 29950 $ -->
 <InformationConfig>
-    <ThemeWithoutData>
-        <Code></Code>
-        <Text></Text>
-    </ThemeWithoutData>
-    <LogoPLRCadastre>cadastrerdppfargb.jpg</LogoPLRCadastre>
-    <FederalLogo>logo_suisse.png</FederalLogo>
-    <CantonalLogo>LOGORCGE_rvb300dpi_FRU.jpg</CantonalLogo>
-    <MunicipalityLogo>blank.gif</MunicipalityLogo>
-    <PLRCadastreAuthority>
-        <Name>Office de l'urbanisme</Name>
-        <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
-        <Line1>Case postale 224</Line1>
-        <Line2>1211 Genève 8</Line2>
-        <Street>Rue David-Dufour</Street>
-        <Number>5</Number>
-        <PostalCode>1211</PostalCode>
-        <City>Genève 8</City>
-    </PLRCadastreAuthority>
-    <GeneralInformation>
-        Le contenu du cadastre RDPPF est supposé connu. Le canton de
-        Genève n’engage pas sa responsabilité sur l’exactitude ou la fiabilité
-        des documents législatifs dans leur version électronique. L’extrait a un
-        caractère informatif et ne crée aucun droit ou obligation. Les documents
-        juridiquement contraignants sont ceux qui ont été légalement adoptés
-        ou publiés. La certification d’un extrait confirme la concordance de
-        cet extrait avec le cadastre RDPPF à la date d’établissement dudit extrait.
-    </GeneralInformation>
-    <BaseData>
-        Données de la mensuration officielle,
-        Etat de la mensuration officielle: [###DMODATE###]
-    </BaseData>
-    <Glossary>
-      <Title>Cadastre RDPPF</Title>
-      <Content>Cadastre des restrictions de droit public à la propriété foncière</Content>
-    </Glossary>
-    <Glossary>
-        <Title>CSP</Title>
-        <Content>Cadastre des sites pollués</Content>
-    </Glossary>
-    <Glossary>
-        <Title>E-GRID</Title>
-        <Content>Identification fédérale des immeubles</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LA</Title>
-        <Content>Loi fédérale sur l’aviation (RS 748.0)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LAT</Title>
-        <Content>Loi fédérale sur l’aménagement du territoire (Loi sur l’aménagement du territoire) (RS 700)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LCdF</Title>
-        <Content>Loi fédérale sur les chemins de fer (RS 742.101)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LEaux</Title>
-        <Content>Loi fédérale sur la protection des eaux (RS 814.20)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LFo</Title>
-        <Content>Loi fédérale sur les forêts (Loi sur les forêts) (RS 921.0)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LGéo</Title>
-        <Content>Loi fédérale sur la géoinformation (Loi sur la géoinformation) (RS 510.62)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LPE</Title>
-        <Content>Loi fédérale sur la protection de l’environnement (Loi sur la protection de l’environnement) (RS 814.01)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>LRN</Title>
-        <Content>Loi fédérale sur les routes nationales (RS 725.11)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>No-OFS</Title>
-        <Content>Numéro officiel de la commune</Content>
-    </Glossary>
-    <Glossary>
-        <Title>OAT</Title>
-        <Content>Ordonnance sur l’aménagement du territoire (RS 700.1)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>OCRDP</Title>
-        <Content>Ordonnance sur le cadastre des restrictions de droit public à la propriété foncière (RS 510.622.4)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>OEaux</Title>
-        <Content>Ordonnance sur la protection des eaux (RS 814.201)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>OGéo</Title>
-        <Content>Ordonnance sur la géoinformation (RS 510.620)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>OPB</Title>
-        <Content>Ordonnance sur la protection contre le bruit (RS 814.41)</Content>
-    </Glossary>
-    
-    <Glossary>
-        <Title>OSIA</Title>
-        <Content>Ordonnance sur l’infrastructure aéronautique (RS 748.131.1)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>OSites</Title>
-        <Content>Ordonnance sur l’assainissement des sites pollués (Ordonnance sur les sites contaminés) (RS 814.680)</Content>
-    </Glossary>
-    <Glossary>
-        <Title>RDPPF</Title>
-        <Content>Restriction de droit publique à la propriété foncière</Content>
-    </Glossary>
-    <Glossary>
-        <Title>RF</Title>
-        <Content>Registre foncier</Content>
-    </Glossary>
-    <Glossary>
-        <Title>ORN</Title>
-        <Content>Ordonnance fédérale sur les routes nationales (RS 725.111)</Content>
-    </Glossary>
-    <ExclusionOfLiability>
-        <Title>Clause de non-responsabilité du cadastre des sites pollués (CSP)</Title>
-        <Content>
-            Le cadastre des sites pollués (CSP) est établi d’après les critères émis par
-            l’Office fédéral de l’environnement OFEV. Il est mis à jour continuellement
-            sur la base des nouvelles connaissances (investigations).
-            Les surfaces des sites indiqués dans le cadastre des sites pollués peut
-            ne pas correspondre à la surface effectivement polluée. Cela ne signifie
-            pas que tout terrain non inscrit au cadastre ne soit pas pollué et libre
-            de tout déchet et pollution. Les zones utilisées à des fins de transports
-            publics, militaire et aéronautique sont de la responsabilité de la
-            Confédération. Pour de plus amples informations veuillez vous adresser
-            au service spécialisé cantonal des déchets:
-            http://ge.ch/geologie/sous-sol/sites-pollues / email: gesdec@etat.ge.ch
-        </Content>
-    </ExclusionOfLiability>
-    <ExclusionOfLiability>
-        <Title>Clause de non-responsabilité – distance par rapport à la forêt</Title>
-        <Content>
-            La distance par rapport à la forêt est fixée sur la base de constatations 
-            de nature forestière établies en vertu de l'article 4 de la loi cantonale 
-            sur les forêts (LForêts, M 5 10). Ces décisions ponctuelles permettent de 
-            compléter et mettre à jour le cadastre forestier, mais elles ne revêtent 
-            pas de caractère systématique, ni exhaustif.
-            L'existence de la forêt étant dynamique et reliée uniquement à un état de 
-            fait, indépendamment de l'origine et du mode d'exploitation des boisés, 
-            cela implique qu'un boisé n'ayant pas fait l'objet d'un constat de nature 
-            forestière peut être de la forêt au sens de la législation sur les forêts, 
-            même si son contour géométrique n'a pas été déterminé précisément.  
-            Dès lors, il convient de prendre en compte que l'absence d'inscription 
-            d'une restriction de droit public relative à la distance par rapport à la 
-            forêt, portée sur un bien-fonds, ne signifie pas que ce bien-fonds ne soit 
-            pas concerné par cette restriction. Pour de plus amples informations, 
-            veuillez consulter le service cantonal des forêts et vous référer, à titre 
-            indicatif, au cadastre forestier
-        </Content>
-    </ExclusionOfLiability>
+  <!--<ThemeWithoutData>
+    <Code></Code>
+    <Index></Index>
+  </ThemeWithoutData>-->
+  <PLRCadastreAuthority>
+    <Name>Office de l'urbanisme</Name>
+    <OfficeAtWeb>http://ge.ch/amenagement</OfficeAtWeb>
+    <Line1>Case postale 224</Line1>
+    <Line2>1211 Genève 8</Line2>
+    <Street>Rue David-Dufour</Street>
+    <Number>5</Number>
+    <PostalCode>1211</PostalCode>
+    <City>Genève 8</City>
+  </PLRCadastreAuthority>
+  <Information>
+    <Title>Informations générales</Title>
+    <Content>
+      Le contenu du cadastre RDPPF est supposé connu. Le canton de Genève n'engage pas sa responsabilité sur l'exactitude ou la fiabilité des documents législatifs dans leur version électronique. L'extrait a un caractère informatif et ne crée aucun droit ou obligation. Les documents juridiquement contraignants sont ceux qui ont été légalement adoptés ou publiés. La certification d'un extrait confirme la concordance de cet extrait avec le cadastre RDPPF à la date d'établissement dudit extrait.
+    </Content>
+  </Information>
+  <BaseData>
+    <Title>Données de base</Title>
+    <Content>
+      Données de la mensuration officielle. Etat de la mensuration officielle: [###DMODATE###]
+    </Content>
+  </BaseData>
+  <Disclaimer useInStaticExtract="false">
+    <Title>Clause de non-responsabilité du cadastre des sites pollués (CSP)</Title>
+    <Content>
+      Le cadastre des sites pollués (CSP) est établi d'après les critères émis par l'Office fédéral de l'environnement OFEV. Il est mis à jour continuellement sur la base des nouvelles connaissances (investigations). Les surfaces des sites indiqués dans le cadastre des sites pollués peuvent ne pas correspondre à la surface effectivement polluée. Cela ne signifie pas que tout terrain non inscrit au cadastre ne soit pas pollué et qu'il soit libre de tout déchet et pollution. Les zones utilisées à des fins de transports publics, militaire et aéronautique sont de la responsabilité de la Confédération. Pour de plus amples informations veuillez vous adresser au service spécialisé cantonal des déchets: http://ge.ch/geologie/sous-sol/sites-pollues / email: gesdec@etat.ge.ch
+    </Content>
+  </Disclaimer>
+  <Disclaimer>
+    <Title>Clause de non-responsabilité - distance par rapport à la forêt</Title>
+    <Content>
+      La distance par rapport à la forêt est fixée sur la base de constatations de nature forestière établies en vertu de l'article 4 de la loi cantonale sur les forêts (LForêts, M 5 10). Ces décisions ponctuelles permettent de compléter et mettre à jour le cadastre forestier, mais elles ne revêtent pas de caractère systématique, ni exhaustif. L'existence de la forêt étant dynamique et reliée uniquement à un état de fait, indépendamment de l'origine et du mode d'exploitation des boisés, cela implique qu'un boisé n'ayant pas fait l'objet d'un constat de nature forestière peut être de la forêt au sens de la législation sur les forêts, même si son contour géométrique n'a pas été déterminé précisément. Dès lors, il convient de prendre en compte que l'absence d'inscription d'une restriction de droit public relative à la distance par rapport à la forêt, portée sur un bien-fonds, ne signifie pas que ce bien-fonds ne soit pas concerné par cette restriction. Pour de plus amples informations, veuillez consulter le service cantonal des forêts et vous référer, à titre indicatif, au cadastre forestier
+    </Content>
+  </Disclaimer>
+  <Glossary>
+    <TID>100</TID><!--Cadastre RDPPF-->
+  </Glossary>
+  <Glossary>
+    <TID>115</TID><!--CSP-->
+  </Glossary>
+  <Glossary>
+    <TID>103</TID><!--E-GRID-->
+  </Glossary>
+  <Glossary>
+    <Title>LA</Title>
+    <Content>Loi fédérale sur l’aviation (RS 748.0)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>LAT</Title>
+    <Content>Loi fédérale sur l’aménagement du territoire (Loi sur l’aménagement du territoire) (RS 700)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>LCdF</Title>
+    <Content>Loi fédérale sur les chemins de fer (RS 742.101)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>LEaux</Title>
+    <Content>Loi fédérale sur la protection des eaux (RS 814.20)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>LFo</Title>
+    <Content>Loi fédérale sur les forêts (Loi sur les forêts) (RS 921.0)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>LGéo</Title>
+    <Content>Loi fédérale sur la géoinformation (Loi sur la géoinformation) (RS 510.62)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>LPE</Title>
+    <Content>Loi fédérale sur la protection de l’environnement (Loi sur la protection de l’environnement) (RS 814.01)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>LRN</Title>
+    <Content>Loi fédérale sur les routes nationales (RS 725.11)</Content>
+  </Glossary>
+  <Glossary>
+    <TID>104</TID><!--N° OFS-->
+  </Glossary>
+  <Glossary>
+    <Title>OAT</Title>
+    <Content>Ordonnance sur l’aménagement du territoire (RS 700.1)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>OCRDP</Title>
+    <Content>Ordonnance sur le cadastre des restrictions de droit public à la propriété foncière (RS 510.622.4)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>OEaux</Title>
+    <Content>Ordonnance sur la protection des eaux (RS 814.201)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>OGéo</Title>
+    <Content>Ordonnance sur la géoinformation (RS 510.620)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>OPB</Title>
+    <Content>Ordonnance sur la protection contre le bruit (RS 814.41)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>ORN</Title>
+    <Content>Ordonnance fédérale sur les routes nationales (RS 725.111)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>OSIA</Title>
+    <Content>Ordonnance sur l’infrastructure aéronautique (RS 748.131.1)</Content>
+  </Glossary>
+  <Glossary>
+    <Title>OSites</Title>
+    <Content>Ordonnance sur l’assainissement des sites pollués (Ordonnance sur les sites contaminés) (RS 814.680)</Content>
+  </Glossary>
+  <Glossary>
+    <TID>101</TID><!--RDPPF-->
+  </Glossary>
+  <Glossary>
+    <Title>RF</Title>
+    <Content>Registre foncier</Content>
+  </Glossary>  
 </InformationConfig>

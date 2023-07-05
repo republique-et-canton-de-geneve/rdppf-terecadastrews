@@ -1,113 +1,98 @@
-﻿/* $Rev: 22885 $ */
+﻿/* $Rev: 30309 $ */
+using ESRI.ArcGIS.SOAP;
+using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Xml;
-using System.Text.RegularExpressions;
-using Topomat.Web.Common;
-using ExtractData_v103;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml;
+using Topomat.Web.Common;
 
 public class CommonReq
 {
-    private static string regexThemeCode = @"LandUsePlans|MotorwaysProjectPlaningZones|MotorwaysBuildingLines|RailwaysProjectPlanningZones|RailwaysBuildingLines|AirportsProjectPlanningZones|AirportsBuildingLines|AirportsSecurityZonePlans|ContaminatedSites|ContaminatedMilitarySites|ContaminatedCivilAviationSites|ContaminatedPublicTransportSites|GroundwaterProtectionZones|GroundwaterProtectionSites|NoiseSensitivityLevels|ForestPerimeters|ForestDistanceLines|(ch\.[A-Z]{2}\.[a-zA-Z][a-zA-Z0-9]*)|(ch\.[0-9]{4}\.[a-zA-Z][a-zA-Z0-9]*)|(fl\.[a-zA-Z][a-zA-Z0-9]*)";
-
+    protected OeREBKRMHelper oerebHelper;
     protected LayerInfo mapLayerInfo;
     protected LegendInfo mapLegendInfo;
     protected QueryWorker queryWorker;
     protected RestrictionWorker restrWorker;
-    protected string flavour;
     protected GetExtractParamReq param;
     protected XmlNode requestConfig;
     protected XmlNode infoConfig;
-    protected XmlNode legalConfig;
+    protected XmlNode docConfig;
     protected MapPrintParams printParams;
 
     public CommonReq()
     {
     }
 
-    public bool IsReduced()
-    {
-        return string.Compare(this.flavour.ToUpper(), "REDUCED") == 0 ? true : false;
-    }
-    
-    public bool IsEmbeddable()
-    {
-        return string.Compare(this.flavour.ToUpper(), "EMBEDDABLE") == 0 ? true : false;
-    }
-
     public QueryResultFeature ProcessEGRID(string egrid)
     {
-        int id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("ParcelleLayerName")).LayerID;
-        string clause = string.Format("{0}='{1}'", WebHelper.GetConfigValue("ParcelleEGRIDFieldName"), egrid);
+        MapLayerInfo info = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("ParcelleLayerName"), true);
+        Field field = this.mapLayerInfo.GetFieldInfo(info, WebHelper.GetConfigValue("ParcelleEGRIDFieldName"));
 
-        QueryResult qr = this.queryWorker.QueryAttrRequest(id, clause, ParcelleType.BienFonds, true);
-
+        QueryResult qr = this.queryWorker.QueryAttrRequest(info.LayerID, QueryWorker.GetWhereClause(field, egrid), ParcelleType.BienFonds, true);
         if (qr.features.Length == 0)
         {
-            id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DDPLayerName")).LayerID;
-            clause = string.Format("{0}='{1}'", WebHelper.GetConfigValue("DDPEGRIDFieldName"), egrid);
+            info = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DDPLayerName"), true);
+            field = this.mapLayerInfo.GetFieldInfo(info, WebHelper.GetConfigValue("DDPEGRIDFieldName"));
 
-            qr = this.queryWorker.QueryAttrRequest(id, clause, ParcelleType.DDP, true);
+            qr = this.queryWorker.QueryAttrRequest(info.LayerID, QueryWorker.GetWhereClause(field, egrid), ParcelleType.DDP, true);
         }
-        
+
         return qr.features.Length > 0 ? qr.features[0] : null;
     }
 
     public QueryResultFeature ProcessID(string identdn, string number)
     {
-        int id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("ParcelleLayerName")).LayerID;
-        string clause = string.Format("{0}={1} AND {2}={3}", WebHelper.GetConfigValue("ParcelleNoCommFieldName"), identdn,
-            WebHelper.GetConfigValue("ParcelleNoFieldName"), number);
+        MapLayerInfo info = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("ParcelleLayerName"), true);
+        Field noComField = this.mapLayerInfo.GetFieldInfo(info, WebHelper.GetConfigValue("ParcelleNoCommFieldName"));
+        Field noParcField = this.mapLayerInfo.GetFieldInfo(info, WebHelper.GetConfigValue("ParcelleNoFieldName"));
 
-        QueryResult qr = this.queryWorker.QueryAttrRequest(id, clause, ParcelleType.BienFonds, true);
+        string clause = string.Format("{0} AND {1}", QueryWorker.GetWhereClause(noComField, identdn),
+            QueryWorker.GetWhereClause(noParcField, number));
+        QueryResult qr = this.queryWorker.QueryAttrRequest(info.LayerID, clause, ParcelleType.BienFonds, true);
 
         if (qr.features.Length == 0)
         {
-            id = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DDPLayerName")).LayerID;
-            clause = string.Format("{0}={1} AND {2}={3}", WebHelper.GetConfigValue("DDPNoCommFieldName"), identdn,
-                WebHelper.GetConfigValue("DDPNoFieldName"), number);
+            info = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DDPLayerName"), true);
+            noComField = this.mapLayerInfo.GetFieldInfo(info, WebHelper.GetConfigValue("DDPNoCommFieldName"));
+            noParcField = this.mapLayerInfo.GetFieldInfo(info, WebHelper.GetConfigValue("DDPNoFieldName"));
 
-            qr = this.queryWorker.QueryAttrRequest(id, clause, ParcelleType.DDP, true);
+            clause = string.Format("{0} AND {1}", QueryWorker.GetWhereClause(noComField, identdn),
+                QueryWorker.GetWhereClause(noParcField, number));
+            qr = this.queryWorker.QueryAttrRequest(info.LayerID, clause, ParcelleType.DDP, true);
         }
 
         return qr.features.Length > 0 ? qr.features[0] : null;
     }
 
-    protected void Init(GetExtractParamReq param, string flavour, bool forReport)
-	{
+    protected void Init(GetExtractParamReq param, bool forReport)
+    {
         Stopwatch timer = Stopwatch.StartNew();
 
         string token = TokenManager.GetToken();
 
-        Helper.LogInfo(this.GetType().ToString(), "Init - récupération du token", timer.ElapsedMilliseconds);
-        timer.Restart();
-
+        this.oerebHelper = new OeREBKRMHelper(new DataManager());
         this.mapLayerInfo = new LayerInfo(token, WebHelper.GetConfigValue("MapServiceUrl"));
         this.queryWorker = new QueryWorker(token);
 
-        Helper.LogInfo(this.GetType().ToString(), "Init - récupération des layer infos", timer.ElapsedMilliseconds);
+        Helper.LogInfo(this.GetType().ToString(), "Récupération des layer infos", timer.ElapsedMilliseconds);
         timer.Restart();
 
-        this.flavour = flavour;
         this.param = param;
 
         this.requestConfig = XmlHelper.GetConfig("request.xml", "RequestConfig");
         this.infoConfig = XmlHelper.GetConfig("information.xml", "InformationConfig");
-        this.legalConfig = XmlHelper.GetConfig("legalProvision.xml", "LegalProvisionConfig");
-
-        Helper.LogInfo(this.GetType().ToString(), "Init - récupération de la configuration", timer.ElapsedMilliseconds);
-        timer.Restart();
+        this.docConfig = XmlHelper.GetConfig("document.xml", "DocumentConfig");
 
         // call after mapLayerInfo and requestConfig has been instantiated
         this.mapLegendInfo = this.GetLegendInfo(token, WebHelper.GetConfigValue("MapServiceUrl"), forReport);
-        this.restrWorker = new RestrictionWorker(this.mapLayerInfo, this.mapLegendInfo, this.queryWorker, param);
+        this.restrWorker = new RestrictionWorker(this.mapLayerInfo, this.mapLegendInfo, this.queryWorker, param, !forReport);
 
-        Helper.LogInfo(this.GetType().ToString(), "Init - récupération des legend infos", timer.ElapsedMilliseconds);
+        Helper.LogInfo(this.GetType().ToString(), "Récupération des legend infos", timer.ElapsedMilliseconds);
         timer.Stop();
-	}
+    }
 
     protected LegendInfo GetLegendInfo(string token, string url, bool forReport)
     {
@@ -115,23 +100,36 @@ public class CommonReq
         foreach (XmlNode node in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
         {
             string layerName = XmlHelper.GetXmlAttribute(node, "layer", true);
-            layerIds.Add(this.mapLayerInfo.GetLayerInfo(layerName).LayerID);
+            layerIds.Add(this.mapLayerInfo.GetLayerInfo(layerName, true).LayerID);
 
             string additionalLayers = XmlHelper.GetXmlAttribute(node, "additionalLayers", false);
             if (!string.IsNullOrEmpty(additionalLayers))
             {
                 foreach (string additionalLayer in additionalLayers.Split(new char[] { ',' }))
                 {
-                    int id = this.mapLayerInfo.GetLayerInfo(additionalLayer).LayerID;
-                    if(!layerIds.Contains(id))
+                    int id = this.mapLayerInfo.GetLayerInfo(additionalLayer, true).LayerID;
+                    if (!layerIds.Contains(id))
                     {
                         layerIds.Add(id);
-                    }                    
+                    }
+                }
+            }
+
+            string additionalLegends = XmlHelper.GetXmlAttribute(node, "additionalLegends", false);
+            if (!string.IsNullOrEmpty(additionalLegends))
+            {
+                foreach (string additionalLegend in additionalLegends.Split(new char[] { ',' }))
+                {
+                    int id = this.mapLayerInfo.GetLayerInfo(additionalLegend, true).LayerID;
+                    if (!layerIds.Contains(id))
+                    {
+                        layerIds.Add(id);
+                    }
                 }
             }
         }
 
-        return new LegendInfo(token, url, layerIds.ToArray(), this.param.withImages, forReport);
+        return new LegendInfo(token, url, layerIds.ToArray(), forReport);
     }
 
     protected int[] GetMapLayerIds(string[] layerNodeNames)
@@ -143,7 +141,7 @@ public class CommonReq
             {
                 if (layerNode != null && !string.IsNullOrEmpty(layerNode.InnerText))
                 {
-                    layerIds.Add(this.mapLayerInfo.GetLayerInfo(layerNode.InnerText).LayerID);
+                    layerIds.Add(this.mapLayerInfo.GetLayerInfo(layerNode.InnerText, true).LayerID);
                 }
             }
         }
@@ -169,8 +167,8 @@ public class CommonReq
         {
             noCom = feature.attributes[WebHelper.GetConfigValue("DDPNoCommFieldName")];
             noParc = feature.attributes[WebHelper.GetConfigValue("DDPNoFieldName")];
-        }            
-        
+        }
+
         return string.Format("{0}-{1}-{2}", guid, noCom, noParc);
     }
 
@@ -189,7 +187,7 @@ public class CommonReq
 
     protected DateTime? GetDMODate()
     {
-        int layerId = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DateDmoLayerName")).LayerID;
+        int layerId = this.mapLayerInfo.GetLayerInfo(WebHelper.GetConfigValue("DateDmoLayerName"), true).LayerID;
         string field = WebHelper.GetConfigValue("DateDmoFieldName");
 
         QueryResult qr = this.queryWorker.QueryAttrRequest(layerId, "1=1", ParcelleType.Undefined, false);
@@ -207,136 +205,113 @@ public class CommonReq
         return null;
     }
 
+    protected IList<RestrictionTheme> GetThemes()
+    {
+        IList<RestrictionTheme> themes = new List<RestrictionTheme>();
+
+        foreach (XmlNode rNode in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
+        {
+            XmlNode tNode = rNode.SelectSingleNode("Theme");
+            themes.Add(new RestrictionTheme
+            {
+                Code = XmlHelper.GetXmlElementValue(tNode, "Code"),
+                SubText = XmlHelper.GetXmlElementValue(tNode, "Text"),
+                Index = int.Parse(XmlHelper.GetXmlElementValue(tNode, "Index")),
+                Layer = XmlHelper.GetXmlAttribute(rNode, "layer", true)
+            });
+        }
+
+        foreach (IList<RestrictionTheme> group in themes.GroupBy(t => t.Code))
+        {
+            foreach (RestrictionTheme theme in group)
+            {
+                theme.Text = this.oerebHelper.GetThemeText(theme.Code, "fr");
+                theme.SubCode = string.Empty;
+                theme.IsSubTheme = false;
+                if (group.Count > 1)
+                {
+                    if (string.IsNullOrEmpty(theme.SubText))
+                    {
+                        string info = string.Format("Noeud <RestrictionOnLandownership> avec attribut layer={0}", theme.Layer);
+                        throw new WsUserException(string.Format(Resources.Resource.ERROR_REQUESTS, info));
+                    }
+                    theme.SubCode = string.Format("ch.GE.{0}", Regex.Replace(theme.SubText, @"[^a-zA-Z]", string.Empty));
+                    theme.IsSubTheme = true;
+                }
+            }
+        }
+
+        return themes.OrderBy(t => t.Index).ToList();
+    }
+
     protected Theme[] GetThemeWithoutData()
     {
-        IList<Theme> list = new List<Theme>();
-
-        foreach (XmlNode node in this.infoConfig.SelectNodes("ThemeWithoutData"))
+        IList<RestrictionTheme> themes = new List<RestrictionTheme>();
+        foreach (XmlNode node in infoConfig.SelectNodes("ThemeWithoutData"))
         {
-            list.Add(this.GetTheme(node));
+            string code = XmlHelper.GetXmlElementValue(node, "Code");
+            themes.Add(new RestrictionTheme
+            {
+                Code = code,
+                Text = oerebHelper.GetThemeText(code, "fr"),
+                Index = int.Parse(XmlHelper.GetXmlElementValue(node, "Index"))
+            });
         }
 
+        IList<Theme> list = new List<Theme>();
+        foreach (RestrictionTheme theme in themes.OrderBy(t => t.Index))
+        {
+            list.Add(this.GetTheme(theme));
+        }
         return list.ToArray();
     }
 
-    protected Theme GetTheme(XmlNode node)
+    protected Theme GetTheme(RestrictionTheme theme)
     {
-        Regex r = new Regex(CommonReq.regexThemeCode);
-
-        string code = "Undefined";
-        if (r.IsMatch(node.SelectSingleNode("Code").InnerText))
-        {
-            code = node.SelectSingleNode("Code").InnerText;
-        }
-
+        string text = theme.IsSubTheme ? string.Format("{0}: {1}", theme.Text, theme.SubText) : theme.Text;
         return new Theme
         {
+            Code = theme.Code,
+            SubCode = theme.IsSubTheme ? theme.SubCode : null,
+            Text = GetLocalisedText(text)
+        };
+    }
+
+    protected RealEstateType GetRealEstateType(ParcelleType type, string value)
+    {
+        RealEstateTypeCode code = GetRealEstateTypeCode(type, value);
+        return new RealEstateType
+        {
             Code = code,
-            Text = new LocalisedText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = node.SelectSingleNode("Text").InnerText
-            }
+            Text = GetLocalisedText(oerebHelper.GetRealEstateTypeText(code, "fr"))
         };
     }
 
-    protected LocalisedMText[] GetBaseData()
+    protected RealEstateTypeCode GetRealEstateTypeCode(ParcelleType type, string value)
     {
-        IList<LocalisedMText> list = new List<LocalisedMText>();
-
-        foreach (XmlNode node in this.infoConfig.SelectNodes("BaseData"))
+        RealEstateTypeCode code = RealEstateTypeCode.RealEstate;
+        switch (type)
         {
-            string text = node.InnerText;
-            if (text.Contains("###DMODATE###"))
-            {
-                text = text.Replace("###DMODATE###", this.GetFormattedDMODate());
-            }
-            list.Add(new LocalisedMText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = text
-            });
+            case ParcelleType.BienFonds:
+                code = RealEstateTypeCode.RealEstate;
+                break;
+            case ParcelleType.DDP:
+                switch (value)
+                {
+                    case "1":
+                    case "2":
+                        code = RealEstateTypeCode.Distinct_and_permanent_rightsBuildingRight;
+                        break;
+                    case "3":
+                        code = RealEstateTypeCode.Distinct_and_permanent_rightsright_to_spring_water;
+                        break;
+                    default:
+                        code = RealEstateTypeCode.Distinct_and_permanent_rightsother;
+                        break;
+                }
+                break;
         }
-
-        return list.ToArray();
-    }
-
-    protected Glossary[] GetGlossary()
-    {
-        IList<Glossary> list = new List<Glossary>();
-
-        foreach (XmlNode node in this.infoConfig.SelectNodes("Glossary"))
-        {
-            LocalisedText title = new LocalisedText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = XmlHelper.GetXmlElementValue(node, "Title")
-            };
-            LocalisedMText content = new LocalisedMText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = XmlHelper.GetXmlElementValue(node, "Content")
-            };
-            list.Add(new Glossary
-            {
-                Title = new LocalisedText[] { title },
-                Content = new LocalisedMText[] { content }
-            });
-        }
-
-        return list.ToArray();
-    }
-
-    protected ExclusionOfLiability[] GetExclusionOfLiability()
-    {
-        IList<ExclusionOfLiability> list = new List<ExclusionOfLiability>();
-
-        foreach (XmlNode node in this.infoConfig.SelectNodes("ExclusionOfLiability"))
-        {
-            LocalisedText title = new LocalisedText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = XmlHelper.GetXmlElementValue(node, "Title")
-            };
-            LocalisedMText content = new LocalisedMText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = XmlHelper.GetXmlElementValue(node, "Content")
-            };
-            list.Add(new ExclusionOfLiability
-            {
-                Title = new LocalisedText[] { title },
-                Content = new LocalisedMText[] { content }
-            });
-        }
-
-        return list.ToArray();
-    }
-
-    protected Office GetPLRCadastreAuthority(XmlNode root, string name)
-    {
-        XmlNode node = root.SelectSingleNode(name);
-
-        return new Office
-        {
-            Name = this.GetLocalisedText(node, "Name"),
-            OfficeAtWeb = new WebReference
-            {
-                Value = XmlHelper.GetXmlElementValue(node, "OfficeAtWeb")
-            },
-            Line1 = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Line1"), 80),
-            Line2 = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Line2"), 80),
-            City = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "City"), 60),
-            Number = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Number"), 7),
-            PostalCode = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "PostalCode"), 4),
-            Street = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Street"), 100)
-        };
+        return code;
     }
 
     protected LocalisedMText[] GetLocalisedMText(XmlNode root, string name)
@@ -347,11 +322,27 @@ public class CommonReq
         {
             list.Add(new LocalisedMText
             {
-                LanguageSpecified = true,
                 Language = LanguageCode.fr,
                 Text = node.InnerText
             });
         }
+
+        return list.ToArray();
+    }
+
+    protected LocalisedMText[] GetLocalisedMText(string[] texts)
+    {
+        IList<LocalisedMText> list = new List<LocalisedMText>();
+
+        foreach (string text in texts)
+        {
+            list.Add(new LocalisedMText
+            {
+                Language = LanguageCode.fr,
+                Text = text
+            });
+        }
+            
 
         return list.ToArray();
     }
@@ -364,7 +355,6 @@ public class CommonReq
         {
             list.Add(new LocalisedText
             {
-                LanguageSpecified = true,
                 Language = LanguageCode.fr,
                 Text = node.InnerText
             });
@@ -373,9 +363,113 @@ public class CommonReq
         return list.ToArray();
     }
 
-    protected string GetNormalizedString(string input, int length)
+    protected LocalisedText[] GetLocalisedText(string text)
     {
-        return input.Length > length ?
-            input.Substring(0, length) : input;
+        LocalisedText localisedText = new LocalisedText
+        {
+            Language = LanguageCode.fr,
+            Text = text == null ? string.Empty : text
+        };
+
+        return new LocalisedText[] { localisedText };
     }
+
+    protected LocalisedUri[] GetLocalisedUri(XmlNode root, string name)
+    {
+        IList<LocalisedUri> list = new List<LocalisedUri>();
+
+        foreach (XmlNode node in root.SelectNodes(name))
+        {
+            list.Add(new LocalisedUri
+            {
+                Language = LanguageCode.fr,
+                Text = node.InnerText
+            });
+        }
+
+        return list.ToArray();
+    }
+
+    protected LocalisedUri[] GetLocalisedUri(string text)
+    {
+        LocalisedUri uri = new LocalisedUri
+        {
+            Language = SchemaHelper.GetLanguageCode(this.param.lang),
+            Text = text == null ? string.Empty : text
+        };
+
+        return new LocalisedUri[] { uri };
+    }
+
+    protected LocalisedBlob[] GetLocalisedBlob(byte[] data)
+    {
+        LocalisedBlob blob = new LocalisedBlob
+        {
+            Language = SchemaHelper.GetLanguageCode(this.param.lang),
+            Blob = data
+        };
+
+        return new LocalisedBlob[] { blob };
+    }
+
+    protected IList<InformationText> GetInformationConfig(string nodeId)
+    {
+        IList<InformationText> infos = new List<InformationText>();
+        foreach (XmlNode node in this.infoConfig.SelectNodes(nodeId))
+        {
+            string id = XmlHelper.GetXmlElementValue(node, "TID");
+            if (!string.IsNullOrEmpty(id))
+            {
+                KeyValuePair<string, string> info = new KeyValuePair<string, string>(string.Empty, string.Empty);
+                switch (nodeId)
+                {
+                    case "Disclaimer":
+                        info = oerebHelper.GetDisclaimer(id, param.lang);
+                        break;
+                    case "Glossary":
+                        info = oerebHelper.GetGlossary(id, param.lang);
+                        break;
+                }
+                infos.Add(new InformationText
+                {
+                    Title = info.Key,
+                    Contents = new string[] { info.Value }
+                });
+            }
+            else
+            {
+                IList<string> contents = new List<string>();
+                foreach (XmlNode n in node.SelectNodes("Content"))
+                {
+                    contents.Add(n.InnerText);
+                }
+                string use = XmlHelper.GetXmlAttribute(node, "useInStaticExtract", false);
+                infos.Add(new InformationText
+                {
+                    UseInStaticExtract = !string.IsNullOrEmpty(use) && string.Compare(use, "false") == 0 ? false : true,
+                    Title = XmlHelper.GetXmlElementValue(node, "Title"),
+                    Contents = contents.ToArray()
+                });
+            }            
+        }
+        return infos;
+    }
+}
+
+public class RestrictionTheme
+{
+    public string Code { get; set; }
+    public string SubCode { get; set; }
+    public string Text { get; set; }
+    public string SubText { get; set; }
+    public int Index { get; set; }
+    public string Layer { get; set; }
+    public bool IsSubTheme { get; set; }
+}
+
+public class InformationText
+{
+    public bool UseInStaticExtract { get; set; }
+    public string Title { get; set; }
+    public string[] Contents { get; set; }
 }

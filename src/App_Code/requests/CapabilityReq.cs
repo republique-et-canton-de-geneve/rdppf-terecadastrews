@@ -1,16 +1,15 @@
-﻿/* $Rev: 19578 $ */
+﻿/* $Rev: 29893 $ */
+using ExtractDataModel_v20;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
-using ExtractData_v103;
 
-[XmlRoot("CommuneConfig")]
-public class CapabilityReq
+public class CapabilityReq : CommonReq
 {
     private static IList<string> flavours = new List<string>
     {
-        { "REDUCED" }, { "FULL" }, { "EMBADDABLE" }
+        { "REDUCED" }
     };
     public static IList<string> languages = new List<string>
     {
@@ -22,33 +21,42 @@ public class CapabilityReq
     };
 
     private CommuneConfig communeCfg;
-    private XmlNode requestConfig;
 
     public CapabilityReq()
-	{
+    {
         this.communeCfg = XmlHelper.GetCommuneConfig();
-        this.requestConfig = XmlHelper.GetConfig("request.xml", "RequestConfig");
-	}
+        //this.Init(new GetExtractParamReq(), false);
+    }
 
     public XmlElement GetCapabilitiesAsXml()
     {
-        return XmlHelper.GetXmlElement(GetCapabilities());
+        XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+        ns.Add(string.Empty, SchemaHelper.Namespaces["extract"].Value);
+        ns.Add(SchemaHelper.Namespaces["data"].Key, SchemaHelper.Namespaces["data"].Value);
+        ns.Add(SchemaHelper.Namespaces["xsd"].Key, SchemaHelper.Namespaces["xsd"].Value);
+        ns.Add(SchemaHelper.Namespaces["xsi"].Key, SchemaHelper.Namespaces["xsi"].Value);
+
+        XmlElement root = XmlHelper.GetXmlElement(GetCapabilities(), ns);
+        root.SetAttribute("schemaLocation", SchemaHelper.Namespaces["xsi"].Value, SchemaHelper.GetSchemaLocation(new string[] { "extract", "data" }));
+
+        return root;
     }
 
     public GetCapabilitiesResponseType GetCapabilities()
     {
         GetCapabilitiesResponseType GetCapabilitiesResponse = new GetCapabilitiesResponseType();
 
-        IList<Theme> themes = new List<Theme>();
-        foreach (XmlNode node in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
+        IDictionary<string, Theme> themes = new Dictionary<string, Theme>();
+        foreach (RestrictionTheme theme in GetThemes())
         {
-            Theme theme = new Theme();
-            theme.Code = XmlHelper.GetXmlElementValue(node, "Theme/Code");
-            theme.Text = new LocalisedText();
-            theme.Text.LanguageSpecified = true;
-            theme.Text.Language = LanguageCode.fr;
-            theme.Text.Text = XmlHelper.GetXmlElementValue(node, "Theme/Text");
-            themes.Add(theme);
+            if (!themes.ContainsKey(theme.Code))
+            {
+                themes.Add(theme.Code, new Theme
+                {
+                    Code = theme.Code,
+                    Text = GetLocalisedText(theme.Text)
+                });
+            }
         }
 
         IList<string> municipalities = new List<string>();
@@ -56,11 +64,11 @@ public class CapabilityReq
         {
             if (com.hasData == true)
             {
-                municipalities.Add(com.name);
+                municipalities.Add(com.num);
             }
         }
 
-        GetCapabilitiesResponse.topic = themes.ToArray();
+        GetCapabilitiesResponse.topic = themes.Values.ToArray();
         GetCapabilitiesResponse.municipality = municipalities.ToArray();
         GetCapabilitiesResponse.flavour = flavours.ToArray();
         GetCapabilitiesResponse.language = languages.ToArray();

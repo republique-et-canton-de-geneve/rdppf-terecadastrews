@@ -1,11 +1,11 @@
-﻿/* $Rev: 25011 $ */
+﻿/* $Rev: 30023 $ */
 using System;
-using System.Linq;
-using System.Web.Script.Serialization;
-using System.Net;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Net;
 using System.Text;
+using System.Web.Script.Serialization;
 using Topomat.Web.Common;
 
 public class SurfaceWorker
@@ -13,7 +13,6 @@ public class SurfaceWorker
     private JavaScriptSerializer serializer;
     private string geometryServiceUrl;
     private string token;
-    private ComputeSurface result;
 
     public SurfaceWorker()
     {
@@ -22,12 +21,12 @@ public class SurfaceWorker
 
         this.geometryServiceUrl = WebHelper.GetConfigValue("GeometryServiceUrl");
         this.token = TokenManager.GetToken();
-
-        this.result = new ComputeSurface();
     }
 
     public void GetSurfaces(QueryResultFeature feature, bool isComplete, bool isOverlap, RestrictionResult[] restrictions)
     {
+        ClipperInterface clipper = new ClipperInterface();
+
         if (string.Compare(restrictions[0].IdentResult.geometryType, "esriGeometryPoint") == 0)
         {
             foreach (RestrictionResult restriction in restrictions)
@@ -35,66 +34,70 @@ public class SurfaceWorker
                 restriction.Length = 0;
                 restriction.Area = 0;
                 restriction.PartInPercent = 0.0f;
+                restriction.PointNumber = 1;
             }
             return;
         }
         else if (string.Compare(restrictions[0].IdentResult.geometryType, "esriGeometryPolyline") == 0)
         {
-            IList<GeometryResult> geometries = new List<GeometryResult>();
+            List<double[][][]> polylines = new List<double[][][]>();
             for (int i = 0; i < restrictions.Length; i++)
             {
-                geometries.Add(restrictions[i].IdentResult.geometry);
+                polylines.Add(restrictions[i].IdentResult.geometry.paths);
             }
-            RequestGeometries intersectResult = this.IntersectRequest(feature.geometry, geometries.ToArray());
-            AreasAndLengthsResult areaResult = this.LengthsRequest(intersectResult);
+            double[] lengths = clipper.IntersectPolylines(polylines, feature.geometry.rings);
 
             for (int i = 0; i < restrictions.Length; i++)
             {
-                restrictions[i].Length = areaResult.lengths != null ? (int)Math.Round(areaResult.lengths[i]) : 0;
+                restrictions[i].Length = (int)Math.Round(lengths[i]);
                 restrictions[i].Area = 0;
                 restrictions[i].PartInPercent = 0.0f;
+                restrictions[i].PointNumber = 0;
             }
         }
         else
         {
-            AreasAndLengthsResult areaResult = null;
+            IList<double> areaResults = new List<double>();
 
-            if (isOverlap) // particular case, the entities are overlaping
+            if (isOverlap) // cas particulier, les entités peuvent être superposées
             {
-                // calculate area of the result of union on entities
+                // Calculer la surface intersectée de l'union des géométries
                 IList<GeometryResult> geometries = new List<GeometryResult>();
                 for (int i = 0; i < restrictions.Length; i++)
                 {
                     geometries.Add(restrictions[i].IdentResult.geometry);
                 }
                 RequestGeometry unionGeometry = this.UnionRequest(geometries.ToArray());
-                RequestGeometries unionIntersectResult = this.IntersectRequest(feature.geometry, unionGeometry);
-                AreasAndLengthsResult unionAreaResult = this.AreasAndLengthsRequest(unionIntersectResult);
+                List<double[][][]> unionPolygons = new List<double[][][]>() { unionGeometry.geometry.rings };
+                double[] unionAreas = clipper.IntersectPolygons(unionPolygons, feature.geometry.rings);           
 
-                // calculate areas for each entities
-                RequestGeometries intersectResult = this.IntersectRequest(feature.geometry, geometries.ToArray());
-                areaResult = this.AreasAndLengthsRequest(intersectResult);
+                // Calculer les surfaces intersectées pour chaque entité
+                List<double[][][]> polygons = new List<double[][][]>();
+                for (int i = 0; i < restrictions.Length; i++)
+                {
+                    polygons.Add(restrictions[i].IdentResult.geometry.rings);
+                }
+                double[] areas = clipper.IntersectPolygons(polygons, feature.geometry.rings);
 
-                // ponderate real areas with union area
+                // Pondérer les surfaces avec la surface intersectée de l'union
                 double sumArea = 0.0;
-                foreach (double area in areaResult.areas)
+                foreach (double area in areas)
                 {
                     sumArea += area;
                 }
-                for (int i = 0; i < areaResult.areas.Length; i++)
+                for (int i = 0; i < areas.Length; i++)
                 {
-                    areaResult.areas[i] = areaResult.areas[i] / sumArea * unionAreaResult.areas[0];
+                    areaResults.Add(areas[i] / sumArea * unionAreas[0]);
                 }
             }
             else
             {
-                IList<GeometryResult> geometries = new List<GeometryResult>();
+                List<double[][][]> polygons = new List<double[][][]>();
                 for (int i = 0; i < restrictions.Length; i++)
                 {
-                    geometries.Add(restrictions[i].IdentResult.geometry);
+                    polygons.Add(restrictions[i].IdentResult.geometry.rings);
                 }
-                RequestGeometries intersectResult = this.IntersectRequest(feature.geometry, geometries.ToArray());
-                areaResult = this.AreasAndLengthsRequest(intersectResult);
+                areaResults = new List<double>(clipper.IntersectPolygons(polygons, feature.geometry.rings));
             }
 
             double SG = 0, ST = 0;
@@ -113,13 +116,14 @@ public class SurfaceWorker
             }            
 
             ComputeSurface cs = new ComputeSurface();
-            if (cs.Process(isComplete, SG, ST, areaResult.areas) == ComputeSurface.RESULT_FINISHED)
+            if (cs.Process(isComplete, SG, ST, areaResults.ToArray()) == ComputeSurface.RESULT_FINISHED)
             {
                 for (int i = 0; i < restrictions.Length; i++)
                 {
                     restrictions[i].Length = 0;
                     restrictions[i].Area = cs.GetSurfaces()[i];
                     restrictions[i].PartInPercent = Math.Round(cs.GetPercents()[i], 2);
+                    restrictions[i].PointNumber = 0;
                 }
             }
             else
@@ -144,87 +148,6 @@ public class SurfaceWorker
 
             return serializer.Deserialize<RequestGeometry>(json);
         }
-    }
-
-    private RequestGeometries IntersectRequest(GeometryResult geometry, RequestGeometry geom)
-    {
-        RequestGeometries geometries = new RequestGeometries
-        {
-            geometryType = geom.geometryType,
-            geometries = new RequestPolygon[] { geom.geometry }
-        };
-        return this.IntersectRequest(geometry, this.serializer.Serialize(geometries));
-    }
-
-    private RequestGeometries IntersectRequest(GeometryResult geometry, GeometryResult[] geometries)
-    {
-        return this.IntersectRequest(geometry, this.GetRequestGeometries(geometries));
-    }
-
-    private RequestGeometries IntersectRequest(GeometryResult geometry, string geometries)
-    {
-        using (WebClient client = new WebClient())
-        {
-            NameValueCollection values = new NameValueCollection();
-
-            values["geometries"] = geometries;
-            values["geometry"] = this.GetRequestGeometry(geometry);
-            values["sr"] = QueryWorker.WKID_MN95.ToString();
-            values["f"] = "json";
-
-            byte[] response = client.UploadValues(string.Format("{0}/intersect?token={1}", this.geometryServiceUrl, this.token), values);
-            string json = Encoding.UTF8.GetString(response);
-
-            return serializer.Deserialize<RequestGeometries>(json); ;
-        }
-    }
-
-    private AreasAndLengthsResult AreasAndLengthsRequest(RequestGeometries reqGeometries)
-    {
-        using (WebClient client = new WebClient())
-        {
-            NameValueCollection values = new NameValueCollection();
-
-            values["polygons"] = this.serializer.Serialize(reqGeometries.geometries);
-            values["sr"] = QueryWorker.WKID_MN95.ToString();
-            values["f"] = "json";
-
-            byte[] response = client.UploadValues(string.Format("{0}/areasAndLengths?token={1}", this.geometryServiceUrl, this.token), values);
-            string json = Encoding.UTF8.GetString(response);
-
-            return serializer.Deserialize<AreasAndLengthsResult>(json);
-        }
-    }
-
-    private AreasAndLengthsResult LengthsRequest(RequestGeometries reqGeometries)
-    {
-        using (WebClient client = new WebClient())
-        {
-            NameValueCollection values = new NameValueCollection();
-
-            values["polylines"] = this.serializer.Serialize(reqGeometries.geometries);
-            values["sr"] = QueryWorker.WKID_MN95.ToString();
-            values["f"] = "json";
-
-            byte[] response = client.UploadValues(string.Format("{0}/lengths?token={1}", this.geometryServiceUrl, this.token), values);
-            string json = Encoding.UTF8.GetString(response);
-
-            return serializer.Deserialize<AreasAndLengthsResult>(json);
-        }
-    }
-
-    private string GetRequestGeometry(GeometryResult geometry)
-    {
-        RequestGeometry obj = new RequestGeometry
-        {
-            geometryType = "esriGeometryPolygon",
-            geometry = new RequestPolygon
-                {
-                    rings = geometry.rings
-                }
-        };
-
-        return this.serializer.Serialize(obj);
     }
 
     private string GetRequestGeometries(GeometryResult[] geometries)
@@ -270,47 +193,6 @@ public class SurfaceWorker
             string json = "{\"x\":" + this.serializer.Serialize(geometry.x) +
                 ", \"y\":" + this.serializer.Serialize(geometry.y) + "}";
             return new KeyValuePair<string, object>("esriGeometryPoint", this.serializer.Deserialize<object>(json));
-        }
-    }
-}
-
-public class SurfaceWorkerThread : CommonThread
-{
-    private SurfaceWorker worker;
-    private QueryResultFeature feature;
-    private bool isComplete;
-    private bool isOverlap;
-    private RestrictionResult[] restrictions;
-
-    public SurfaceWorkerThread(SurfaceWorker worker)
-    {
-        this.worker = worker;
-    }
-
-    public void Init(QueryResultFeature feature, bool complete, bool overlap, RestrictionResult[] restrictions)
-    {
-        this.feature = feature;
-        this.isComplete = complete;
-        this.isOverlap = overlap;
-        this.restrictions = restrictions;
-    }
-    
-    public void Start()
-    {
-        try
-        {
-            this.worker.GetSurfaces(this.feature, this.isComplete, this.isOverlap, this.restrictions);
-            this.Success = true;
-        }
-        catch (WsUserException ex)
-        {
-            this.ErrorMessage = ex.Message;
-            this.Success = false;
-        }
-        catch (Exception ex)
-        {
-            this.ErrorMessage = ex.Message;
-            this.Success = false;
         }
     }
 }

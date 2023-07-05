@@ -1,10 +1,10 @@
-﻿/* $Rev: 22885 $ */
+﻿/* $Rev: 29811 $ */
 using System;
 using System.Collections.Generic;
-using System.Web.Script.Serialization;
-using System.Net;
 using System.Collections.Specialized;
+using System.Net;
 using System.Text;
+using System.Web.Script.Serialization;
 using Topomat.Web.Common;
 
 public class QueryWorker
@@ -92,6 +92,16 @@ public class QueryWorker
         string jsonGeometry = this.serializer.Serialize(extent);
 
         return this.IdentifyRequest(ids, jsonGeometry, "esriGeometryEnvelope", extent, returnGeometry);
+    }
+
+    public static string GetWhereClause(ESRI.ArcGIS.SOAP.Field field, string value)
+    {
+        string clause = string.Format("{0}={1}", field.Name, value);
+        if (field.Type == ESRI.ArcGIS.SOAP.esriFieldType.esriFieldTypeString)
+        {
+            clause = string.Format("{0}='{1}'", field.Name, value);
+        }
+        return clause;
     }
 
     private IdentifyResult[] IdentifyRequest(string ids, string jsonGeometry, string geometryType, Extent ext, bool returnGeometry)

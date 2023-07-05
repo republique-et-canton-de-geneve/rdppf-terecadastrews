@@ -1,8 +1,7 @@
-﻿/* $Rev: 19053 $ */
+﻿/* $Rev: 29811 $ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 /* Nomenclature
  * SG: Surface géographique de la parcelle

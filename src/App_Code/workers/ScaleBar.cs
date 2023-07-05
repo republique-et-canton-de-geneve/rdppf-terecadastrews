@@ -1,14 +1,12 @@
-﻿/* $Rev: 19264 $ */
+﻿/* $Rev: 30309 $ */
 using System;
 using System.Drawing;
-using System.IO;
-using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 
 public class ScaleBar
 {
     public static int LINE_WIDTH = 2;
-    public static int HALO_WIDTH = 2;
+    public static int HALO_WIDTH = 3;
     public static int MARGIN_LEFT = 10;
     public static int MARGIN_RIGHT = 60;
     public static int MARGIN_BOTTOM = 40;
@@ -25,7 +23,7 @@ public class ScaleBar
         this.InitBarParams(rect.Width, rect.Height);
     }
 
-    public Bitmap DrawBar()
+    public Bitmap DrawBar(string fontName)
     {
         int centerX = (int)Math.Floor(this.barWidth / 2.0);
         int centerY = (int)Math.Floor(this.barHeight / 2.0);
@@ -76,17 +74,12 @@ public class ScaleBar
 
         // draw values
         int middleBarValue = rightBarValue / 2;
-        this.DrawTextWithHalo(graph, "0", new Point(ScaleBar.MARGIN_LEFT, barHeight + 5));
-        this.DrawTextWithHalo(graph, middleBarValue.ToString(), new Point(ScaleBar.MARGIN_LEFT + centerX, barHeight + 5));
-        this.DrawTextWithHalo(graph, rightBarValue.ToString(), new Point(ScaleBar.MARGIN_LEFT + barWidth, barHeight + 5));
-        this.DrawTextWithHalo(graph, "m", new Point(ScaleBar.MARGIN_LEFT + barWidth + ScaleBar.MARGIN_RIGHT - 16, barHeight + 5));
+        this.DrawTextWithHalo(graph, fontName, "0", new Point(ScaleBar.MARGIN_LEFT, barHeight + 5));
+        this.DrawTextWithHalo(graph, fontName, middleBarValue.ToString(), new Point(ScaleBar.MARGIN_LEFT + centerX, barHeight + 5));
+        this.DrawTextWithHalo(graph, fontName, rightBarValue.ToString(), new Point(ScaleBar.MARGIN_LEFT + barWidth, barHeight + 5));
+        this.DrawTextWithHalo(graph, fontName, "m", new Point(ScaleBar.MARGIN_LEFT + barWidth + ScaleBar.MARGIN_RIGHT - 16, barHeight + 5));
 
         return bmp;
-    }
-
-    public int GetBarWidth()
-    {
-        return this.barWidth;
     }
 
     private void InitBarParams(int width, int height)
@@ -97,14 +90,14 @@ public class ScaleBar
         this.barHeight = height;
     }
 
-    private void DrawTextWithHalo(Graphics graph, string text, Point point)
+    private void DrawTextWithHalo(Graphics graph, string fontName, string text, Point point)
     {
         StringFormat sf = new StringFormat(StringFormatFlags.NoClip)
         {
             Alignment = StringAlignment.Center
         };
 
-        Font font = new Font("Arial", 32.0f, FontStyle.Bold);
+        Font font = new Font(fontName, 28.0f, FontStyle.Regular);
         Pen pen = new Pen(Color.White, ScaleBar.HALO_WIDTH + 1);
         pen.LineJoin = LineJoin.Round;
 

@@ -1,16 +1,11 @@
-﻿/* $Rev: 25011 $ */
-using ExtractData_v103;
+﻿/* $Rev: 29788 $ */
+using ExtractDataModel_v20;
 
 namespace JsonExtract
 {
     public class JsonExtract
     {
         public Extract Item { get; set; }
-    }
-
-    public class JsonEmbeddableExtract
-    {
-        public GetExtractByIdResponseTypeEmbeddable Item { get; set; }
     }
 
     public class JsonEGRID

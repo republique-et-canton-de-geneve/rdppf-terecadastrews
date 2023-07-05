@@ -1,10 +1,12 @@
-﻿/* $Rev: 14634 $ */
+﻿/* $Rev: 29811 $ */
 using System;
-using System.Web;
-using Topomat.Web.Common;
+using System.Collections.Specialized;
 using System.Net;
-using System.IO;
+using System.Text;
+using System.Web;
 using System.Web.Caching;
+using System.Web.Script.Serialization;
+using Topomat.Web.Common;
 
 public class TokenManager
 {
@@ -26,19 +28,24 @@ public class TokenManager
 
         if (HttpRuntime.Cache.Get(cacheId) == null)
         {
-            // get token
-            string request = string.Format("{0}?request=getToken&username={1}&password={2}", serverUrl, user, 
-                WebHelper.GetConfigValue("TokenServerPwd"));
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(request);
-            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            ServicePointManager.ServerCertificateValidationCallback = (obj, certificate, chain, errors) => true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            Stream dataStream = resp.GetResponseStream();
-            StreamReader reader = new StreamReader(dataStream);
-            token = reader.ReadToEnd();
-            resp.Close();
+            NameValueCollection data = new NameValueCollection();
+            data["username"] = user;
+            data["password"] = WebHelper.GetConfigValue("TokenServerPwd");
+            data["f"] = "json";
+
+            WebClient webClient = new WebClient();
+            byte[] response = webClient.UploadValues(serverUrl, data);
+            string responseData = Encoding.UTF8.GetString(response);
+
+            token = new JavaScriptSerializer().Deserialize<TokenInfo>(responseData).token;
 
             double minutes = 10;
             double.TryParse(WebHelper.GetConfigValue("TokenExpiration"), out minutes);
+
+            HttpRuntime.Cache.Remove(cacheId);
             HttpRuntime.Cache.Add(cacheId, token, null, DateTime.Now.AddMinutes(minutes), Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
         }
         else
@@ -48,4 +55,10 @@ public class TokenManager
 
         return token;
     }
+}
+
+public class TokenInfo
+{
+    public string token { get; set; }
+    public long expires { get; set; }
 }

@@ -1,40 +1,55 @@
-﻿/* $Rev: 22461 $ */
+﻿/* $Rev: 30309 $ */
+using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 using System.IO;
-using System.Diagnostics;
-using System.Threading;
-using ESRI.ArcGIS.SOAP;
-using ExtractData_v103;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Xml;
 using Topomat.Web.Common;
-using DataExtract.Gml.Simplified;
 
 public class GetExtractReq : CommonReq
 {
-    private static string regexThemeCode = @"LandUsePlans|MotorwaysProjectPlaningZones|MotorwaysBuildingLines|RailwaysProjectPlanningZones|RailwaysBuildingLines|AirportsProjectPlanningZones|AirportsBuildingLines|AirportsSecurityZonePlans|ContaminatedSites|ContaminatedMilitarySites|ContaminatedCivilAviationSites|ContaminatedPublicTransportSites|GroundwaterProtectionZones|GroundwaterProtectionSites|NoiseSensitivityLevels|ForestPerimeters|ForestDistanceLines|(ch\.[A-Z]{2}\.[a-zA-Z][a-zA-Z0-9]*)|(ch\.[0-9]{4}\.[a-zA-Z][a-zA-Z0-9]*)|(fl\.[a-zA-Z][a-zA-Z0-9]*)";
     private static IDictionary<LawstatusCode, string> lawStatus = new Dictionary<LawstatusCode, string>
     {
         { LawstatusCode.inForce, "En vigueur"},
-        { LawstatusCode.runningModifications, "En cours de modification"}
+        { LawstatusCode.changeWithoutPreEffect, "Modification sans effet anticipé"},
+        { LawstatusCode.changeWithPreEffect, "Modification avec effet anticipé"}
     };
+    private IDictionary<string, LawstatusCode> invLawStatus = new Dictionary<string, LawstatusCode>();
 
-    private bool returnGeometry;
-
-    public GetExtractReq(GetExtractParamReq param, string flavour, bool returnGeometry)
+    public GetExtractReq(GetExtractParamReq param)
     {
-        this.Init(param, flavour, false);
-        this.returnGeometry = returnGeometry;
+        foreach (LawstatusCode key in lawStatus.Keys)
+        {
+            invLawStatus.Add(lawStatus[key], key);
+        }
+        this.Init(param, false);
     }
-    
+
     public GetExtractByIdResponseType GetResponseAsXml(QueryResultFeature feature)
     {
         GetExtractByIdResponseType response = new GetExtractByIdResponseType();
 
-        response.Item = this.GetExtract(feature);        
+        response.Extract = this.GetExtract(feature);
 
         return response;
+    }
+
+    public string GetResponseAsUrl(QueryResultFeature feature)
+    {
+        //TODO: Voir si on a un équivalent à Genève, SITG ? consultation du RDPPF ?
+        string egrid;
+        if (feature.type == ParcelleType.BienFonds)
+        {
+            egrid = XmlHelper.GetAttributeFromNode(feature, this.requestConfig.SelectSingleNode("RealEstate/Parcelle"), "EGRID");
+        }
+        else
+        {
+            egrid = XmlHelper.GetAttributeFromNode(feature, this.requestConfig.SelectSingleNode("RealEstate/DDP"), "EGRID");
+        }
+
+        return string.Format("{0}?egrid={1}", WebHelper.GetConfigValue("WebSiteUrl"), egrid);
     }
 
     public JsonExtract.JsonExtract GetResponseAsJson(QueryResultFeature feature)
@@ -46,28 +61,9 @@ public class GetExtractReq : CommonReq
         return response;
     }
 
-    public GetExtractByIdResponseTypeEmbeddable GetEmbeddableResponseAsXml(byte[] report)
-    {
-        GetExtractByIdResponseTypeEmbeddable response = new GetExtractByIdResponseTypeEmbeddable();
-
-        return this.GetEmbaddaleExtract(report);
-    }
-
-    public JsonExtract.JsonEmbeddableExtract GetEmbeddableResponseAsJson(byte[] report)
-    {
-        JsonExtract.JsonEmbeddableExtract response = new JsonExtract.JsonEmbeddableExtract();
-
-        response.Item = this.GetEmbaddaleExtract(report);
-
-        return response;
-    }
-
     private Extract GetExtract(QueryResultFeature feature)
     {
-        IDictionary<Thread, MapWorkerThread> dictMapThreads = new Dictionary<Thread, MapWorkerThread>();
-        IDictionary<Thread, SurfaceWorkerThread> dictSurfThreads = new Dictionary<Thread, SurfaceWorkerThread>();
-
-        // first get maps
+        IList<MapWorker> mapWorkers = new List<MapWorker>();
         Extent geomExtent = this.queryWorker.GetGeometryExtent(feature.geometry);
         this.printParams = new MapPrintParams(XmlHelper.GetMapPrintConfig(), geomExtent);
 
@@ -80,244 +76,174 @@ public class GetExtractReq : CommonReq
         }
 
         int[] ids = this.GetMapLayerIds(new string[] { "addMapLayer", "mainMapLayer" });
-        dictMapThreads.Add(this.GetMapWorkerThread(this.printParams, geomExtent, ids, MapWorkerThread.TYPE_MAIN,
-            string.Empty, string.Empty, this.param.withImages));
+        mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.basemap, string.Empty, ids, string.Empty));
 
         ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "mainMapLayer" });
         int markerId = this.GetMapLayerIds(new string[] { marker })[0];
         string layerDefs = string.Format("{0}:OBJECTID={1}", markerId, feature.attributes["OBJECTID"]);
-
-        dictMapThreads.Add(this.GetMapWorkerThread(this.printParams, geomExtent, ids, MapWorkerThread.TYPE_PAGE,
-            string.Empty, layerDefs, this.param.withImages));
+        mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.marker, string.Empty, ids, layerDefs));
 
         foreach (RestrictionResult restriction in restrictions)
         {
-            IList<int> idList = new List<int>(new int[] { restriction.LayerId });
+            layerDefs = string.Format("{0}:{1}={2}", restriction.IdentResult.layerId, restriction.OIDFieldName, restriction.OID);
+            mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restriction, restriction.UniqueId, new int[] { restriction.IdentResult.layerId }, layerDefs));
+        }
 
-            XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", restriction.IdentResult.layerName);
-            string additionalLayers = XmlHelper.GetXmlAttribute(node, "additionalLayers", false);
-            if (restriction.isFirst && !string.IsNullOrEmpty(additionalLayers))
+        // calcul des surfaces
+        Parallel.ForEach(restrictions.GroupBy(rr => rr.IdentResult.layerId), restrList =>
+        {
+            bool isComplete = false;
+            bool isOverlap = false;
+
+            if (!restrList.First().isAdditionalResult)
             {
-                foreach (string additionalLayer in additionalLayers.Split(new char[] { ',' }))
+                XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", restrList.First().IdentResult.layerName);
+
+                isComplete = bool.Parse(XmlHelper.GetXmlAttribute(node, "complete", true));
+                string overlapValue = XmlHelper.GetXmlAttribute(node, "overlap", false);
+                if (!string.IsNullOrEmpty(overlapValue))
                 {
-                    idList.Add(this.mapLayerInfo.GetLayerInfo(additionalLayer).LayerID);
+                    bool.TryParse(overlapValue, out isOverlap);
                 }
             }
 
-            dictMapThreads.Add(this.GetMapWorkerThread(this.printParams, geomExtent, idList.ToArray(),
-                    MapWorkerThread.TYPE_RESTRICTION, restriction.UniqueId, restriction.LayerDefs, this.param.withImages));
-        }
+            SurfaceWorker worker = new SurfaceWorker();
+            worker.GetSurfaces(feature, isComplete, isOverlap, restrList.ToArray());
+        });
 
-        // compute surfaces
-        IEnumerable<IGrouping<int, RestrictionResult>> groups = restrictions.GroupBy(rr => rr.LayerId);
-        foreach (IList<RestrictionResult> restrList in groups)
-        {
-            string layerName = restrList.First().IdentResult.layerName;
-            XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", layerName);
-
-            bool isComplete = bool.Parse(XmlHelper.GetXmlAttribute(node, "complete", true));
-            bool isOverlap = false;
-            string overlapValue = XmlHelper.GetXmlAttribute(node, "overlap", false);
-            if (!string.IsNullOrEmpty(overlapValue))
-            {
-                bool.TryParse(overlapValue, out isOverlap);
-            }
-
-            SurfaceWorkerThread swThread = new SurfaceWorkerThread(new SurfaceWorker());
-            swThread.Init(feature, isComplete, isOverlap, restrList.ToArray());
-
-            Thread thread = new Thread(new ThreadStart(swThread.Start));
-            thread.Start();
-
-            dictSurfThreads.Add(thread, swThread);
-        }
-
-        // wait for threads to finish
+        // récupération des cartes
         byte[] mainMapImage = null, pageMapImage = null;
         string mainMapUrl = string.Empty, pageMapUrl = string.Empty;
-        foreach (KeyValuePair<Thread, SurfaceWorkerThread> pair in dictSurfThreads)
-        {
-            pair.Key.Join();
-            if (!pair.Value.IsSuccessfull())
-            {
-                throw new WsUserException(pair.Value.GetErrorMessage());
-            }
-        }
-        foreach (KeyValuePair<Thread, MapWorkerThread> pair in dictMapThreads)
-        {
-            pair.Key.Join();
-            if (!pair.Value.IsSuccessfull())
-            {
-                throw new WsUserException(pair.Value.GetErrorMessage());
-            }
 
-            if (pair.Value.GetMapType() == MapWorkerThread.TYPE_MAIN)
+        if (this.param.withImages)
+        {
+            Parallel.ForEach(mapWorkers, worker =>
             {
-                mainMapImage = pair.Value.GetResultAsImage();
-                mainMapUrl = pair.Value.GetResultAsUrl();
-            }
-            else if (pair.Value.GetMapType() == MapWorkerThread.TYPE_PAGE)
-            {
-                pageMapImage = pair.Value.GetResultAsImage();
-                pageMapUrl = pair.Value.GetResultAsUrl();
-            }
-            else
-            {
-                RestrictionResult res = restrictions.First<RestrictionResult>(rr => string.Compare(rr.UniqueId,
-                    pair.Value.GetEntityId()) == 0);
-                res.Image = pair.Value.GetResultAsImage();
-                res.MapUrl = pair.Value.GetResultAsUrl();
-            }
+                byte[] imageData = worker.GetExtractMapAsImage(geomExtent);
+                switch (worker.GetWorkerType())
+                {
+                    case MapWorker.MapWorkerTypes.basemap:
+                        mainMapImage = imageData;
+                        break;
+                    case MapWorker.MapWorkerTypes.marker:
+                        pageMapImage = imageData;
+                        break;
+                    default:
+                        RestrictionResult res = restrictions.First<RestrictionResult>(rr => string.Compare(rr.UniqueId, worker.GetEntityId()) == 0);
+                        res.Image = imageData;
+                        break;
+                }
+            });
         }
+        else
+        {
+            Parallel.ForEach(mapWorkers, worker =>
+            {
+                string url = worker.GetExtractMapAsUrl(geomExtent);
+                switch (worker.GetWorkerType())
+                {
+                    case MapWorker.MapWorkerTypes.basemap:
+                        mainMapUrl = url;
+                        break;
+                    case MapWorker.MapWorkerTypes.marker:
+                        pageMapUrl = url;
+                        break;
+                    case MapWorker.MapWorkerTypes.restriction:
+                        RestrictionResult res = restrictions.First<RestrictionResult>(rr => string.Compare(rr.UniqueId, worker.GetEntityId()) == 0);
+                        res.MapUrl = url;
+                        break;
+                }
+            });
+        }
+
+        IList<RestrictionTheme> cfgThemes = GetThemes();
 
         Extract extract = new Extract();
 
         extract.CreationDate = DateTime.Now;
         //extract.Signature = this.GetSignature();
-        extract.ConcernedTheme = this.GetConcernedTheme(restrictions, true);
-        extract.NotConcernedTheme = this.GetConcernedTheme(restrictions, false);
+        extract.ConcernedTheme = this.GetConcernedTheme(cfgThemes, restrictions, true);
+        extract.NotConcernedTheme = this.GetConcernedTheme(cfgThemes, restrictions, false);
         extract.ThemeWithoutData = this.GetThemeWithoutData();
-        extract.isReduced = this.IsReduced();
 
         if (this.param.withImages)
         {
-            extract.Item = File.ReadAllBytes(System.IO.Path.Combine(WebHelper.GetConfigValue("LogoPath"),
-                XmlHelper.GetXmlElementValue(this.infoConfig, "LogoPLRCadastre")));
-            extract.Item1 = File.ReadAllBytes(System.IO.Path.Combine(WebHelper.GetConfigValue("LogoPath"),
-                XmlHelper.GetXmlElementValue(this.infoConfig, "FederalLogo")));
-            extract.Item2 = File.ReadAllBytes(System.IO.Path.Combine(WebHelper.GetConfigValue("LogoPath"),
-                XmlHelper.GetXmlElementValue(this.infoConfig, "CantonalLogo")));
-            extract.Item3 = File.ReadAllBytes(System.IO.Path.Combine(WebHelper.GetConfigValue("LogoPath"),
-                XmlHelper.GetXmlElementValue(this.infoConfig, "MunicipalityLogo")));
+            extract.Item = Convert.FromBase64String(oerebHelper.GetLogo("ch.plr", this.param.lang));
+            extract.Item1 = Convert.FromBase64String(oerebHelper.GetLogo("ch", this.param.lang));
+            extract.Item2 = File.ReadAllBytes(Path.Combine(WebHelper.GetConfigValue("LogoPath"), "LOGORCGE_rvb300dpi_FRU.jpg"));
+            extract.Item3 = File.ReadAllBytes(Path.Combine(WebHelper.GetConfigValue("LogoPath"), "blank.gif"));
         }
         else
         {
-            extract.Item = WebHelper.GetConfigValue("LogoUrl") + "/" +
-                XmlHelper.GetXmlElementValue(this.infoConfig, "LogoPLRCadastre");
-            extract.Item1 = WebHelper.GetConfigValue("LogoUrl") + "/" +
-                XmlHelper.GetXmlElementValue(this.infoConfig, "FederalLogo");
-            extract.Item2 = WebHelper.GetConfigValue("LogoUrl") + "/" +
-                XmlHelper.GetXmlElementValue(this.infoConfig, "CantonalLogo");
-            extract.Item3 = WebHelper.GetConfigValue("LogoUrl") + "/" +
-                XmlHelper.GetXmlElementValue(this.infoConfig, "MunicipalityLogo");
+            extract.Item = string.Format("{0}/ch.plr.{1}.png", WebHelper.GetConfigValue("LogoUrl"), this.param.lang);
+            extract.Item1 = string.Format("{0}/ch.{1}.png", WebHelper.GetConfigValue("LogoUrl"), this.param.lang);
+            extract.Item2 = string.Format("{0}/LOGORCGE_rvb300dpi_FRU.jpg", WebHelper.GetConfigValue("LogoUrl"));
+            extract.Item3 = string.Format("{0}/blank.gif", WebHelper.GetConfigValue("LogoUrl"));
         }
-        extract.ExtractIdentifier = this.GetNormalizedString(this.GetIdentifier(feature), 50);
-        extract.Item4 = extract.Item3; // TODO, QRCode
+        extract.ExtractIdentifier = Helper.GetNormalizedString(this.GetIdentifier(feature), 50);
+        extract.Item4 = string.Empty; // TODO, QRCode
 
-        extract.GeneralInformation = this.GetLocalisedMText(this.infoConfig, "GeneralInformation");
-        extract.BaseData = this.GetBaseData();
+        extract.GeneralInformation = this.GetLocalisedMText(GetInformationConfig("Information").First().Contents.ToArray());
         extract.Glossary = this.GetGlossary();
 
         if (this.param.withImages)
         {
-            extract.RealEstate = this.GetRealEstate(feature, restrictions, mainMapImage, pageMapImage);
+            extract.RealEstate = this.GetRealEstate(cfgThemes, feature, restrictions, mainMapImage, pageMapImage);
         }
         else
         {
-            extract.RealEstate = this.GetRealEstate(feature, restrictions, mainMapUrl, pageMapUrl);
+            extract.RealEstate = this.GetRealEstate(cfgThemes, feature, restrictions, mainMapUrl, pageMapUrl);
         }
-        extract.ExclusionOfLiability = this.GetExclusionOfLiability();
+        extract.Disclaimer = this.GetDisclaimer();
         extract.PLRCadastreAuthority = this.GetPLRCadastreAuthority(this.infoConfig, "PLRCadastreAuthority");
+        extract.UpdateDateCS = DateTime.Now;
 
         return extract;
     }
 
-    private GetExtractByIdResponseTypeEmbeddable GetEmbaddaleExtract(byte[] report)
+    private MapWorker InitMapWorker(MapPrintParams printParams, MapWorker.MapWorkerTypes type, string id, int[] layerIds, string layerDefs)
     {
-        Office authority = this.GetPLRCadastreAuthority(this.infoConfig, "PLRCadastreAuthority");
-        DateTime? dmoDate = this.GetDMODate();
-
-        IList<GetExtractByIdResponseTypeEmbeddableDatasource> datasources =
-            new List<GetExtractByIdResponseTypeEmbeddableDatasource>();
-        foreach (XmlNode node in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
-        {
-            Office office = this.GetOffice(node.SelectSingleNode("ResponsibleOffice"));
-
-            datasources.Add(new GetExtractByIdResponseTypeEmbeddableDatasource
-            {
-                dataownerName = office.Name[0].Text,
-                topic = this.GetTheme(node.SelectSingleNode("Theme")),
-                transferFromSource = (DateTime)dmoDate
-            });
-        }
-
-        return new GetExtractByIdResponseTypeEmbeddable
-        {
-            cadasterOrganisationName = authority.Name[0].Text,
-            cadasterState = (DateTime)dmoDate,
-            dataownerNameCadastralSurveying = authority.Name[0].Text,
-            datasource = datasources.ToArray(),
-            pdf = report,
-            transferFromSourceCadastralSurveying = (DateTime)dmoDate
-        };
+        MapWorker worker = new MapWorker(printParams);
+        worker.Init(type, id, layerIds, layerDefs);
+        return worker;
     }
 
-    private KeyValuePair<Thread, MapWorkerThread> GetMapWorkerThread(MapPrintParams printParams, Extent extent,
-        int[] layerIds, int type, string id, string layerDefs, bool withImages)
-    {
-        MapWorkerThread mapThread = new MapWorkerThread(new MapWorker(printParams), type, id, withImages);
-        mapThread.Init(extent, layerIds, layerDefs);
-
-        Thread thread = new Thread(new ThreadStart(mapThread.Start));
-        thread.Start();
-
-        return new KeyValuePair<Thread, MapWorkerThread>(thread, mapThread);
-    }
-
-    private Theme[] GetConcernedTheme(RestrictionResult[] restrictions, bool concerned)
+    private Theme[] GetConcernedTheme(IList<RestrictionTheme> themes, RestrictionResult[] restrictions, bool concerned)
     {
         IList<Theme> list = new List<Theme>();
-        IList<RestrictionResult> restrictionList = new List<RestrictionResult>(restrictions);
-        foreach (XmlNode node in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
+
+        foreach (RestrictionTheme theme in themes)
         {
-            string layerName = XmlHelper.GetXmlAttribute(node, "layer", true);
-            int id = this.mapLayerInfo.GetLayerInfo(layerName).LayerID;
-            int count = restrictionList.Count<RestrictionResult>(rr => rr.IdentResult.layerId == id);
+            int id = mapLayerInfo.GetLayerInfo(theme.Layer, true).LayerID;
+            int count = restrictions.Count(rr => rr.LayerId == id);
+
             if ((concerned == true && count > 0) || concerned == false && count == 0)
             {
-                Theme theme = new Theme
-                {
-                    Code = XmlHelper.GetXmlElementValue(node, "Theme/Code"),
-                    Text = new LocalisedText
-                    {
-                        LanguageSpecified = true,
-                        Language = LanguageCode.fr,
-                        Text = XmlHelper.GetXmlElementValue(node, "Theme/Text")
-                    }
-                };
-                list.Add(theme);
+                list.Add(GetTheme(theme));
             }
         }
+
         return list.ToArray();
-    }
-
-    private string GetMunicipalityLogoRef(QueryResult qResult)
-    {
-        return string.Empty;
-
-        //XmlNode reNode = this.requestConfig.SelectSingleNode("RealEstate");
-        //string commune = this.GetAttributeFromNode(qResult.features[0], reNode, "Municipality");
-
-        //return string.Format(XmlHelper.GetXmlElementValue(this.infoConfig, "MunicipalityLogoRef"), commune);
     }
 
     private Lawstatus GetLawstatus(XmlNode node)
     {
-        LawstatusCode code = LawstatusCode.runningModifications;
-        if (string.Compare(node.SelectSingleNode("Lawstatus").InnerText, "1") == 0)
+        LawstatusCode code = LawstatusCode.inForce;
+        string cfgCode = node.SelectSingleNode("Lawstatus").InnerText;
+        switch (cfgCode)
         {
-            code = LawstatusCode.inForce;
+            case "2":
+                code = LawstatusCode.changeWithoutPreEffect;
+                break;
+            case "3":
+                code = LawstatusCode.changeWithPreEffect;
+                break;
         }
 
         return new Lawstatus
         {
             Code = code,
-            Text = new LocalisedText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = GetExtractReq.lawStatus[code]
-            }
+            Text = GetLocalisedText(lawStatus[code])
         };
     }
 
@@ -325,44 +251,19 @@ public class GetExtractReq : CommonReq
     {
         LawstatusCode code = LawstatusCode.inForce;
         string dbStatus = XmlHelper.GetAttributeFromAttribute(restriction.IdentResult.attributes, node, "field");
-        if (!string.IsNullOrEmpty(dbStatus))
+        if (!string.IsNullOrEmpty(dbStatus) && invLawStatus.ContainsKey(dbStatus))
         {
-            if (string.Compare(dbStatus, GetExtractReq.lawStatus[LawstatusCode.runningModifications]) == 0)
-            {
-                code = LawstatusCode.runningModifications;
-            }
+            code = invLawStatus[dbStatus];
         }
 
         return new Lawstatus
         {
             Code = code,
-            Text = new LocalisedText
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = GetExtractReq.lawStatus[code]
-            }
+            Text = GetLocalisedText(lawStatus[code])
         };
     }
 
-    private LocalisedUri[] GetLocalisedUri(XmlNode root, string name)
-    {
-        IList<LocalisedUri> list = new List<LocalisedUri>();
-
-        foreach (XmlNode node in root.SelectNodes(name))
-        {
-            list.Add(new LocalisedUri
-            {
-                LanguageSpecified = true,
-                Language = LanguageCode.fr,
-                Text = node.InnerText
-            });
-        }
-
-        return list.ToArray();
-    }
-
-    private RealEstate_DPR GetRealEstate(QueryResultFeature feature, RestrictionResult[] restrictions, Map mainMap, Map printMap)
+    private RealEstate_DPR GetRealEstate(IList<RestrictionTheme> themes, QueryResultFeature feature, RestrictionResult[] restrictions, Map mainMap, Map printMap)
     {
         RealEstate_DPR re = new RealEstate_DPR();
 
@@ -374,13 +275,14 @@ public class GetExtractReq : CommonReq
         XmlNode reNode = this.requestConfig.SelectSingleNode(xpath);
 
         re.Canton = CantonCode.GE;
-        re.EGRID = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "EGRID"), 14);
-        re.FosNr = XmlHelper.GetAttributeFromNode(feature, reNode, "FosNr");
-        re.IdentDN = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "IdentDN"), 12);
+        re.EGRID = Helper.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "EGRID"), 14);
+        re.IdentDN = Helper.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "IdentDN"), 12);
         re.LandRegistryArea = XmlHelper.GetAttributeFromNode(feature, reNode, "LandRegistryArea");
         re.MetadataOfGeographicalBaseData = XmlHelper.GetXmlElementValue(reNode, "MetadataOfGeographicalBaseData");
-        re.Municipality = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "Municipality"), 60);
-        re.Number = this.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "Number"), 12);
+        re.MunicipalityName = Helper.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityName"), 60);
+        re.MunicipalityCode = XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityCode");
+        re.Number = Helper.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "Number"), 12);
+        re.Type = GetRealEstateType(feature.type, XmlHelper.GetAttributeFromNode(feature, reNode, "Type"));
 
         // layerIndex quand on a plusieurs couches ?
         mainMap.layerIndex = "-1";
@@ -391,153 +293,137 @@ public class GetExtractReq : CommonReq
         re.PlanForLandRegisterMainPage = printMap;
         re.Limit = this.GetLimit(feature);
 
-        re.RestrictionOnLandownership = this.GetRestrictionOnLandownership(restrictions, re.FosNr);
-        re.SubunitOfLandRegister = string.Empty; // si définit, utiliser: this.GetNormalizedString("", 60);
-        re.Type = RealEstateType.RealEstate;
+        re.RestrictionOnLandownership = this.GetRestrictionOnLandownership(themes, restrictions);
 
         return re;
     }
 
-    private RealEstate_DPR GetRealEstate(QueryResultFeature feature, RestrictionResult[] restrictions, byte[] mainImage, byte[] printImage)
+    private RealEstate_DPR GetRealEstate(IList<RestrictionTheme> themes, QueryResultFeature feature, RestrictionResult[] restrictions, byte[] mainImage, byte[] printImage)
     {
         Map mainMap = this.GetPlanForLandRegister(mainImage);
         Map printMap = this.GetPlanForLandRegister(printImage);
 
-        return this.GetRealEstate(feature, restrictions, mainMap, printMap);
+        return this.GetRealEstate(themes, feature, restrictions, mainMap, printMap);
     }
 
-    private RealEstate_DPR GetRealEstate(QueryResultFeature feature, RestrictionResult[] restrictions, string mapUrl, string printUrl)
+    private RealEstate_DPR GetRealEstate(IList<RestrictionTheme> themes, QueryResultFeature feature, RestrictionResult[] restrictions, string mapUrl, string printUrl)
     {
         Map mainMap = this.GetPlanForLandRegister(mapUrl);
         Map pageMap = this.GetPlanForLandRegister(printUrl);
 
-        return this.GetRealEstate(feature, restrictions, mainMap, pageMap);
+        return this.GetRealEstate(themes, feature, restrictions, mainMap, pageMap);
     }
 
-    private RestrictionOnLandownership[] GetRestrictionOnLandownership(RestrictionResult[] restrictions, string municipality)
+    private RestrictionOnLandownership[] GetRestrictionOnLandownership(IList<RestrictionTheme> themes, RestrictionResult[] restrictions)
     {
         IList<RestrictionOnLandownership> list = new List<RestrictionOnLandownership>();
 
         foreach (RestrictionResult restriction in restrictions)
         {
-            MapLayerInfo info = this.mapLayerInfo.GetLayerInfo(restriction.IdentResult.layerName);
-            XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig,
-                "RestrictionOnLandownership", "layer", restriction.IdentResult.layerName);
+            XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", restriction.LayerName);
 
             if (node != null)
             {
-                RestrictionOnLandownership rol = new RestrictionOnLandownership();
-                rol.Information = this.GetLocalisedMText(node, "Information");
-                rol.Theme = this.GetTheme(node.SelectSingleNode("Theme"));
-                rol.SubTheme = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "SubTheme"), 60);
-                rol.TypeCode = this.GetNormalizedString(restriction.Legend.TypeCode, 40);
-                rol.Lawstatus = this.GetLawstatus(node, restriction);
-                rol.AreaShare = restriction.Area.ToString();
-                rol.LengthShare = restriction.Length.ToString();
-                if (restriction.PartInPercent > 0.0f)
+                RestrictionResult first = restrictions.First(r => r.LayerId == restriction.LayerId && r.isFirst);
+                list.Add(GetRestrictionOnLandownership(node, themes, first.AllLegends, restriction));
+                foreach(int addId in this.restrWorker.GetAdditionalLayerIds(restriction.LayerId))
                 {
-                    rol.PartInPercentSpecified = true;
-                    rol.PartInPercent = (decimal)restriction.PartInPercent;
+                    foreach(RestrictionResult addResult in restrictions.Where(r => r.LayerId == addId).ToArray())
+                    {
+                        list.Add(GetRestrictionOnLandownership(node, themes, first.AllLegends, addResult));
+                    }
                 }
-                else
-                {
-                    rol.PartInPercentSpecified = false;
-                }
-                if (this.param.withImages == true)
-                {
-                    rol.Item = restriction.Legend.Symbol;
-                }
-                else
-                {
-                    rol.Item = restriction.Legend.SymbolRef;
-                }
-
-                rol.Geometry = this.GetGeometries(node, restriction,
-                    rol.Lawstatus, this.GetOffice(node.SelectSingleNode("ResponsibleOffice")));
-                rol.Map = this.GetMap(node, restriction, rol.Theme, rol.SubTheme);
-
-                rol.ResponsibleOffice = this.GetOffice(node.SelectSingleNode("ResponsibleOffice"));
-                IList<Document> legalProvisions = new List<Document>(
-                    this.GetRegulations(node, restriction, municipality, rol.ResponsibleOffice));
-                legalProvisions = legalProvisions.Concat<Document>(
-                    this.GetInformations(node, restriction, municipality, rol.ResponsibleOffice)).ToList();
-                legalProvisions = legalProvisions.Concat<Document>(
-                    this.GetLaws(node, municipality, rol.ResponsibleOffice)).ToList();
-
-                rol.LegalProvisions = legalProvisions.ToArray();
-
-                list.Add(rol);
             }
         }
 
         return list.ToArray();
     }
 
+    private RestrictionOnLandownership GetRestrictionOnLandownership(XmlNode node, IList<RestrictionTheme> themes, RestrictionLegend[] allLegends, RestrictionResult restriction)
+    {
+        string code = XmlHelper.GetXmlElementValue(node, "Theme/Code");
+        int index = int.Parse(XmlHelper.GetXmlElementValue(node, "Theme/Index"));
+        RestrictionTheme theme = themes.First(t => string.Compare(t.Code, code) == 0 && t.Index == index);
+
+        RestrictionOnLandownership rol = new RestrictionOnLandownership();
+        rol.LegendText = this.GetLocalisedMText(new string[] { restriction.Legend.Text });
+        rol.Theme = this.GetTheme(theme);
+        rol.TypeCode = Helper.ReduceString(restriction.Legend.TypeCode, 40);
+        rol.Lawstatus = this.GetLawstatus(node, restriction);
+        rol.AreaShare = restriction.Area.ToString();
+        rol.PartInPercent = (decimal)restriction.PartInPercent;
+        rol.LengthShare = restriction.Length.ToString();
+        rol.NrOfPoints = restriction.PointNumber.ToString();
+
+        if (this.param.withImages == true)
+        {
+            rol.Item = restriction.Legend.Symbol;
+        }
+        else
+        {
+            rol.Item = restriction.Legend.SymbolRef;
+        }
+
+        rol.Geometry = this.GetGeometries(node, restriction, rol.Lawstatus);
+        rol.Map = this.GetMap(allLegends, restriction, rol.Theme);
+
+        rol.ResponsibleOffice = this.GetOffice(node.SelectSingleNode("ResponsibleOffice"));
+        IList<Document> documents = new List<Document>(
+            this.GetLegalProvisions(node, restriction, rol.ResponsibleOffice));
+        documents = documents.Concat<Document>(
+            this.GetHints(node, restriction, rol.ResponsibleOffice)).ToList();
+        documents = documents.Concat<Document>(
+            this.GetLaws(node, rol.ResponsibleOffice)).ToList();
+
+        rol.LegalProvisions = documents.ToArray();
+
+        return rol;
+    }
+
     private Map GetPlanForLandRegister(byte[] image)
     {
-        Map map = this.GetMap(WebHelper.GetConfigValue("MainLegendName"), image);
+        Map map = this.GetMap(image);
 
         return map;
     }
 
     private Map GetPlanForLandRegister(string url)
     {
-        Map map = this.GetMap(WebHelper.GetConfigValue("MainLegendName"), url);
+        Map map = this.GetMap(url);
 
         return map;
     }
 
-    private Map GetMap(string legend)
+    private Map GetMap(byte[] image)
     {
         Map map = new Map();
 
-        map.LegendAtWeb = new WebReference
-        {
-            Value = string.Format("{0}/{1}.htm", WebHelper.GetConfigValue("LegendUrl"), legend.ToLower())
-        };
+        map.Image = this.GetLocalisedBlob(image);
 
         return map;
     }
 
-    private Map GetMap(string legend, byte[] image)
+    private Map GetMap(string url)
     {
-        Map map = this.GetMap(legend);
+        Map map = new Map();
 
-        map.Image = image;
-
-        return map;
-    }
-
-    private Map GetMap(string legend, string url)
-    {
-        Map map = this.GetMap(legend);
-
-        map.ReferenceWMS = url;
+        map.ReferenceWMS = this.GetLocalisedUri(url);
 
         return map;
     }
 
-    private LegendEntry[] GetOtherLegends(RestrictionResult restriction, Theme theme, string subTheme)
+    private LegendEntry[] GetOtherLegends(RestrictionLegend[] allLegends, string typeCode, Theme theme)
     {
         IList<LegendEntry> otherLegendList = new List<LegendEntry>();
 
-        foreach (RestrictionLegend legend in restriction.OtherLegends)
+        foreach (RestrictionLegend legend in allLegends.Where(l => string.Compare(l.TypeCode, typeCode) != 0))
         {
             LegendEntry entry = new LegendEntry
             {
-                LegendText = new LocalisedText[]
-                {
-                    new LocalisedText
-                    {
-                        LanguageSpecified = true,
-                        Language = LanguageCode.fr,
-                        Text = legend.Text
-                    }
-                },
-                TypeCode = this.GetNormalizedString(legend.TypeCode, 40),
+                LegendText = GetLocalisedText(legend.Text),
+                TypeCode = Helper.ReduceString(legend.TypeCode, 40),
                 TypeCodelist = "-",
-                Theme = theme,
-                SubTheme = this.GetNormalizedString(subTheme, 60)
+                Theme = theme
             };
 
             if (this.param.withImages == true)
@@ -554,47 +440,35 @@ public class GetExtractReq : CommonReq
         return otherLegendList.ToArray();
     }
 
-    private Map GetMap(XmlNode node, RestrictionResult restriction, Theme theme, string subTheme)
+    private Map GetMap(RestrictionLegend[] allLegends, RestrictionResult restriction, Theme theme)
     {
-        Map map = null;
+        Map map;
 
         if (this.param.withImages)
         {
-            map = this.GetMap(restriction.IdentResult.layerName, restriction.Image);
+            map = this.GetMap(restriction.Image);
         }
         else
         {
-            map = this.GetMap(restriction.IdentResult.layerName, restriction.MapUrl);
+            map = this.GetMap(restriction.MapUrl);
         }
 
-        map.OtherLegend = this.GetOtherLegends(restriction, theme, subTheme);
+        map.OtherLegend = this.GetOtherLegends(allLegends, restriction.Legend.TypeCode, theme);
         map.layerIndex = restriction.LayerId.ToString();
         map.layerOpacity = 1.0;
 
         return map;
     }
 
-    private MultiSurfacePropertyType GetLimit(QueryResultFeature feature)
+    private MultiSurfaceType GetLimit(QueryResultFeature feature)
     {
-        MultiSurfacePropertyType result = null;
+        MultiSurfaceType result = null;
 
-        if (this.returnGeometry)
+        if (param.returnGeometry)
         {
-            result = new MultiSurfacePropertyType();
-            IList<SurfacePropertyType> surfaces = new List<SurfacePropertyType>();
-
-            foreach (PolygonType poly in this.GetPolygons(feature.geometry))
+            result = new MultiSurfaceType()
             {
-                surfaces.Add(new SurfacePropertyType
-                {
-                    Polygon = poly
-                });
-            }
-
-            result.MultiSurface = new MultiSurfaceType
-            {
-                srsName = "urn:ogc:def:crs:EPSG::2056",
-                surfaceMember = surfaces.ToArray()
+                surface = GeometryHelper.GetPolygons(feature.geometry, GeometryHelper.GEOMETRY_SOURCE.esri)
             };
         }
 
@@ -606,178 +480,79 @@ public class GetExtractReq : CommonReq
         return new Office
         {
             Name = this.GetLocalisedText(node, "Name"),
-            OfficeAtWeb = new WebReference
-            {
-                Value = XmlHelper.GetXmlElementValue(node, "OfficeAtWeb")
-            }
+            OfficeAtWeb = this.GetLocalisedUri(node, "OfficeAtWeb")
         };
     }
 
-    private ExtractData_v103.Geometry[] GetGeometries(XmlNode node, RestrictionResult restriction, Lawstatus status, Office office)
+    private Geometry[] GetGeometries(XmlNode node, RestrictionResult restriction, Lawstatus status)
     {
-        IList<ExtractData_v103.Geometry> results = new List<ExtractData_v103.Geometry>();
+        IList<Geometry> results = new List<Geometry>();
 
-        if (this.returnGeometry)
+        if (this.param.returnGeometry)
         {
             if (restriction.IdentResult.geometryType == "esriGeometryPolygon")
             {
-                foreach (PolygonType polygon in this.GetPolygons(restriction.IdentResult.geometry))
-                {
-                    ExtractData_v103.Geometry result = this.InitGeometry(node, status, office);
-
-                    polygon.srsName = "urn:ogc:def:crs:EPSG::2056";
-                    result.Item = new SurfacePropertyType
-                    {
-                        Polygon = polygon
-                    };
-
-                    results.Add(result);
-                }
+                Geometry result = this.InitGeometry(node, status);
+                result.Item = GeometryHelper.GetPolygons(restriction.IdentResult.geometry, GeometryHelper.GEOMETRY_SOURCE.esri);
+                results.Add(result);
             }
             else if (restriction.IdentResult.geometryType == "esriGeometryPolyline")
             {
-                foreach (LinearStringType linear in this.GetPolylines(restriction.IdentResult.geometry))
+                foreach (PolylineType polyline in GeometryHelper.GetPolylines(restriction.IdentResult.geometry))
                 {
-                    ExtractData_v103.Geometry result = this.InitGeometry(node, status, office);
-
-                    linear.srsName = "urn:ogc:def:crs:EPSG::2056";
-                    result.Item = new CurvePropertyType
-                    {
-                        LineString = linear
-                    };
-
+                    Geometry result = this.InitGeometry(node, status);
+                    result.Item = polyline;
                     results.Add(result);
                 }
             }
             else
             {
-                PointType point = this.GetPoint(restriction.IdentResult.geometry);
-                ExtractData_v103.Geometry result = this.InitGeometry(node, status, office);
-
-                point.srsName = "urn:ogc:def:crs:EPSG::2056";
-                result.Item = new PointPropertyType
+                foreach (CoordType point in GeometryHelper.GetPoints(restriction.IdentResult.geometry))
                 {
-                    Point = point
-                };
-
-                results.Add(result);
+                    Geometry result = this.InitGeometry(node, status);
+                    result.Item = point;
+                    results.Add(result);
+                }
             }
         }
         else
         {
-            ExtractData_v103.Geometry result = this.InitGeometry(node, status, office);
+            Geometry result = this.InitGeometry(node, status);
             results.Add(result);
         }
 
         return results.ToArray();
     }
 
-    private ExtractData_v103.Geometry InitGeometry(XmlNode node, Lawstatus status, Office office)
+    private Geometry InitGeometry(XmlNode node, Lawstatus status)
     {
-        return new ExtractData_v103.Geometry
+        return new Geometry
         {
             Lawstatus = status,
-            MetadataOfGeographicalBaseData = XmlHelper.GetXmlElementValue(node, "MetadataOfGeographicalBaseData"),
-            ResponsibleOffice = office
+            MetadataOfGeographicalBaseData = XmlHelper.GetXmlElementValue(node, "MetadataOfGeographicalBaseData")
         };
     }
 
-    private PolygonType[] GetPolygons(GeometryResult geometry)
-    {
-        IList<PolygonType> results = new List<PolygonType>();
-
-        foreach (EsriToGmlPolygon polygon in GeometryHelper.GetPolygons(geometry.rings))
-        {
-            PolygonType result = new PolygonType();
-
-            IList<LinearRingType> intRings = new List<LinearRingType>();
-
-            result.exterior = new AbstractRingPropertyType
-            {
-                LinearRing = new LinearRingType
-                {
-                    posList = GeometryHelper.StringifyCoords(polygon.ExteriorCoords)
-                }
-            };
-            if (polygon.InteriorRings.Count > 0)
-            {
-                IList<AbstractRingPropertyType> interiorList = new List<AbstractRingPropertyType>();
-
-                foreach (double[][] ring in polygon.InteriorRings)
-                {
-                    interiorList.Add(new AbstractRingPropertyType
-                    {
-                        LinearRing = new LinearRingType
-                        {
-                            posList = GeometryHelper.StringifyCoords(ring)
-                        }
-                    });
-                }
-
-                result.interior = interiorList.ToArray();
-            }
-
-            results.Add(result);
-        }
-
-        return results.ToArray();
-    }
-
-    private LinearStringType[] GetPolylines(GeometryResult geometry)
-    {
-        IList<LinearStringType> linears = new List<LinearStringType>();
-        foreach (double[][] path in geometry.paths)
-        {
-            linears.Add(new LinearStringType
-            {
-                posList = GeometryHelper.StringifyCoords(path)
-            });
-        }
-        return linears.ToArray();
-    }
-
-    private PointType GetPoint(GeometryResult geometry)
-    {
-        PointType point = new PointType
-        {
-            pos = GeometryHelper.StringifyCoords(geometry.points)
-        };
-        return point;
-    }
-
-    private Document[] GetRegulations(XmlNode root, RestrictionResult restriction, string municipality, Office responsibleOffice)
+    private Document[] GetLegalProvisions(XmlNode root, RestrictionResult restriction, Office responsibleOffice)
     {
         IList<Document> list = new List<Document>();
 
-        foreach (XmlNode node in root.SelectNodes("regulationId"))
+        int index = 1;
+        foreach (XmlNode node in root.SelectNodes("LegalProvisionId"))
         {
             if (!string.IsNullOrEmpty(node.InnerText))
             {
                 try
                 {
-                    XmlNode regNode = XmlHelper.GetNodeByAttribute(this.legalConfig.SelectSingleNode("Regulations"),
-                        "LegalProvisions", "id", node.InnerText);
-                    Document doc = this.GetDocument(regNode, municipality, responsibleOffice);
-                    doc.DocumentType = DocumentBaseDocumentType.LegalProvision;
+                    XmlNode lpNode = XmlHelper.GetNodeByAttribute(this.docConfig, "LegalProvision", "id", node.InnerText);
+                    Document doc = this.GetDocument(DocumentTypeCode.LegalProvision, lpNode, restriction, responsibleOffice, XmlHelper.GetXmlAttribute(node, "dateField", false));
+                    doc.Index = index++.ToString();
 
-                    IList<LocalisedUri> textAtWebList = new List<LocalisedUri>();
-                    string textAtWeb = XmlHelper.GetAttributeFromAttribute(restriction.IdentResult.attributes, regNode, "field");
-                    if (!string.IsNullOrEmpty(textAtWeb))
-                    {
-                        textAtWebList.Add(new LocalisedUri
-                        {
-                            LanguageSpecified = true,
-                            Language = LanguageCode.fr,
-                            Text = textAtWeb
-                        });
-                        doc.TextAtWeb = textAtWebList.ToArray();
-                        list.Add(doc);
-                    }
+                    list.Add(doc);
                 }
                 catch (Exception)
                 {
-                    throw new WsUserException(string.Format(Resources.Resource.ERROR_REGULATIONS,
-                        node.InnerText, restriction.IdentResult.layerName));
+                    throw new WsUserException(string.Format(Resources.Resource.ERROR_LEGALPROVISION, node.InnerText, restriction.IdentResult.layerName));
                 }
             }
         }
@@ -785,40 +560,26 @@ public class GetExtractReq : CommonReq
         return list.ToArray();
     }
 
-    private Document[] GetInformations(XmlNode root, RestrictionResult restriction,
-        string municipality, Office responsibleOffice)
+    private Document[] GetHints(XmlNode root, RestrictionResult restriction, Office responsibleOffice)
     {
         IList<Document> list = new List<Document>();
 
-        foreach (XmlNode node in root.SelectNodes("informationId"))
+        int index = 1;
+        foreach (XmlNode node in root.SelectNodes("HintId"))
         {
             if (!string.IsNullOrEmpty(node.InnerText))
             {
                 try
                 {
-                    XmlNode lawNode = XmlHelper.GetNodeByAttribute(this.legalConfig.SelectSingleNode("Informations"),
-                        "LegalProvisions", "id", node.InnerText);
-                    Document doc = this.GetDocument(lawNode, municipality, responsibleOffice);
-                    doc.DocumentType = DocumentBaseDocumentType.Hint;
+                    XmlNode hintNode = XmlHelper.GetNodeByAttribute(this.docConfig, "Hint", "id", node.InnerText);
+                    Document doc = this.GetDocument(DocumentTypeCode.Hint, hintNode, restriction, responsibleOffice, string.Empty);
+                    doc.Index = index++.ToString();
 
-                    IList<LocalisedUri> textAtWebList = new List<LocalisedUri>();
-                    string textAtWeb = XmlHelper.GetAttributeFromAttribute(restriction.IdentResult.attributes, lawNode, "field");
-                    if (!string.IsNullOrEmpty(textAtWeb))
-                    {
-                        textAtWebList.Add(new LocalisedUri
-                        {
-                            LanguageSpecified = true,
-                            Language = LanguageCode.fr,
-                            Text = textAtWeb
-                        });
-                        doc.TextAtWeb = textAtWebList.ToArray();
-                        list.Add(doc);
-                    }
+                    list.Add(doc);
                 }
                 catch (Exception)
                 {
-                    throw new WsUserException(string.Format(Resources.Resource.ERROR_INFORMATIONS,
-                        node.InnerText, restriction.IdentResult.layerName));
+                    throw new WsUserException(string.Format(Resources.Resource.ERROR_INFORMATIONS, node.InnerText, restriction.IdentResult.layerName));
                 }
             }
         }
@@ -826,39 +587,154 @@ public class GetExtractReq : CommonReq
         return list.ToArray();
     }
 
-    private Document[] GetLaws(XmlNode root, string municipality, Office responsibleOffice)
+    private Document[] GetLaws(XmlNode root, Office responsibleOffice)
     {
         IList<Document> list = new List<Document>();
 
-        foreach (XmlNode node in root.SelectNodes("lawId"))
+        foreach (XmlNode node in root.SelectNodes("LawId"))
         {
             if (!string.IsNullOrEmpty(node.InnerText))
             {
-                XmlNode lawNode = XmlHelper.GetNodeByAttribute(this.legalConfig.SelectSingleNode("Laws"),
-                    "LegalProvisions", "id", node.InnerText);
-                Document doc = this.GetDocument(lawNode, municipality, responsibleOffice);
-                doc.DocumentType = DocumentBaseDocumentType.Law;
+                XmlNode lawNode = XmlHelper.GetNodeByAttribute(this.docConfig, "Law", "id", node.InnerText);
+                string id = XmlHelper.GetXmlElementValue(lawNode, "TID");
+
+                Document doc = new Document();
+                if (string.IsNullOrEmpty(id))
+                {
+                    doc.Title = this.GetLocalisedText(lawNode, "Title");
+                    doc.Abbreviation = this.GetLocalisedText(lawNode, "Abbreviation");
+                    doc.OfficialNumber = this.GetLocalisedText(lawNode, "OfficialNumber");
+                    doc.TextAtWeb = this.GetLocalisedUri(lawNode, "TextAtWeb");
+                    doc.Lawstatus = this.GetLawstatus(lawNode);
+                    doc.Index = XmlHelper.GetXmlElementValue(lawNode, "Index");
+                    doc.ResponsibleOffice = responsibleOffice;
+                }
+                else
+                {
+                    doc = oerebHelper.GetLaw(id, "fr");
+                }
+                doc.Type = new DocumentType
+                {
+                    Code = DocumentTypeCode.Law,
+                    Text = GetLocalisedText(oerebHelper.GetDocumentTypeText(DocumentTypeCode.Law, "fr"))
+                };
+                doc.ArticleNumber = new string[] { string.Empty };
+
 
                 list.Add(doc);
             }
         }
 
+        return list.OrderBy(d => d.Index).ToArray();
+    }
+
+    private Document GetDocument(DocumentTypeCode code, XmlNode node, RestrictionResult restriction, Office responsibleOffice, string dateField)
+    {
+        string textAtWeb = XmlHelper.GetAttributeFromAttribute(restriction.IdentResult.attributes, node, "field");
+        string date;
+
+        if (string.IsNullOrEmpty(dateField))
+        {
+            date = XmlHelper.GetAttributeFromAttribute(restriction.IdentResult.attributes, node, "dateField");
+        }
+        else
+        {
+            date = restriction.IdentResult.attributes[dateField];
+        }
+
+
+        Document doc = new Document();
+        doc.Type = new DocumentType
+        {
+            Code = code,
+            Text = GetLocalisedText(oerebHelper.GetDocumentTypeText(code, "fr"))
+        };
+        doc.Title = this.GetLocalisedText(node, "Title");
+        doc.TextAtWeb = this.GetLocalisedUri(textAtWeb);
+        doc.Lawstatus = this.GetLawstatus(node);
+        doc.ResponsibleOffice = responsibleOffice;
+
+        DocumentExtension docExt = new DocumentExtension
+        {
+            Date = date
+        };
+        doc.extensions = new extensions
+        {
+            DocumentExtensions = new DocumentExtension[] { docExt }
+        };
+
+        return doc;
+    }
+    private Glossary[] GetGlossary()
+    {
+        IList<Glossary> list = new List<Glossary>();
+
+        foreach (InformationText info in GetInformationConfig("Glossary"))
+        {
+            list.Add(new Glossary
+            {
+                Title = GetLocalisedText(info.Title),
+                Content = GetLocalisedMText(info.Contents)
+            });
+        }
+
         return list.ToArray();
     }
 
-    private Document GetDocument(XmlNode node, string municipality, Office responsibleOffice)
+    private Disclaimer[] GetDisclaimer()
     {
-        Document doc = new Document();
-        doc.Abbreviation = this.GetLocalisedText(node, "Abbreviation");
-        doc.CantonSpecified = true;
-        doc.Canton = CantonCode.GE;
-        doc.Lawstatus = this.GetLawstatus(node);
-        doc.Municipality = municipality;
-        doc.OfficialNumber = this.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "OfficialNumber"), 20);
-        doc.OfficialTitle = this.GetLocalisedText(node, "OfficialTitle");
-        doc.ResponsibleOffice = responsibleOffice;
-        doc.TextAtWeb = this.GetLocalisedUri(node, "TextAtWeb");
-        doc.Title = this.GetLocalisedText(node, "Title");
-        return doc;
+        IList<Disclaimer> list = new List<Disclaimer>();
+
+        foreach (InformationText info in GetInformationConfig("Disclaimer"))
+        {
+            list.Add(new Disclaimer
+            {
+                Title = GetLocalisedText(info.Title),
+                Content = GetLocalisedMText(info.Contents)
+            });
+        }
+
+        return list.ToArray();
+    }
+
+    private Office GetPLRCadastreAuthority(XmlNode root, string name)
+    {
+        XmlNode node = root.SelectSingleNode(name);
+
+        return new Office
+        {
+            Name = this.GetLocalisedText(node, "Name"),
+            OfficeAtWeb = this.GetLocalisedUri(node, "OfficeAtWeb"),
+            Line1 = Helper.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Line1"), 80),
+            Line2 = Helper.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Line2"), 80),
+            City = Helper.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "City"), 60),
+            Number = Helper.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Number"), 7),
+            PostalCode = Helper.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "PostalCode"), 4),
+            Street = Helper.GetNormalizedString(XmlHelper.GetXmlElementValue(node, "Street"), 100)
+        };
+    }
+}
+
+public class DocumentExtension
+{
+    public string Date;
+}
+
+namespace ExtractDataModel_v20
+{
+    public partial class extensions
+    {
+        private DocumentExtension[] documentExtensions;
+        public DocumentExtension[] DocumentExtensions
+        {
+            get
+            {
+                return this.documentExtensions;
+            }
+            set
+            {
+                this.documentExtensions = value;
+            }
+        }
     }
 }

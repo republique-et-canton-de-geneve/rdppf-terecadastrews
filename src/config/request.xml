@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<!-- $Rev: 25012 $ -->
+<!-- $Rev: 30309 $ -->
 <RequestConfig>
   <markerMapLayer>marker</markerMapLayer>
   <markerDDPMapLayer>marker_DDP</markerDDPMapLayer>
@@ -31,7 +31,7 @@
   <mainMapLayer>1001_PFA1_PFA2</mainMapLayer>
   <mainMapLayer>1001_PFA3</mainMapLayer>
   <mainMapLayer>1060_OBJETDIVERS_SUR_BATIMENTS</mainMapLayer>
-  <mainMapLayer>1030_OBJETDIVERS_VERANDAS</mainMapLayer>  
+  <mainMapLayer>1030_OBJETDIVERS_VERANDAS</mainMapLayer>
   <mainMapLayer>1015_CAD_CARTE_OTEMO</mainMapLayer>
   <mainMapLayer>1016_CAD_CARTE_OTEMO</mainMapLayer>
   <mainMapLayer>1050_BATIMENT_HORS_SOL</mainMapLayer>
@@ -45,8 +45,9 @@
       <Number>NO_PARCELLE</Number>
       <IdentDN>NO_COMM</IdentDN>
       <EGRID>EGRID</EGRID>
-      <Municipality>COMMUNE</Municipality>
-      <FosNr>NUFECO</FosNr>
+      <MunicipalityName>COMMUNE</MunicipalityName>
+      <MunicipalityCode>NUFECO</MunicipalityCode>
+      <Type>TYPE_PROPRI</Type>
       <LandRegistryArea>SURFACE</LandRegistryArea>
       <MetadataOfGeographicalBaseData>
         http://ge.ch/sitg/sitg_catalog/data_details/575b9f91-bd6e-462d-acbf-76a95ab78db6/xhtml_raw
@@ -56,21 +57,40 @@
       <Number>NO_DDP</Number>
       <IdentDN>NO_COMM</IdentDN>
       <EGRID>EGRID</EGRID>
-      <Municipality>COMMUNE</Municipality>
-      <FosNr>NUFECO</FosNr>
+      <MunicipalityName>COMMUNE</MunicipalityName>
+      <MunicipalityCode>NUFECO</MunicipalityCode>
+      <Type>GENRE</Type>
       <LandRegistryArea>SURFACE_TECHNIQUE</LandRegistryArea>
       <MetadataOfGeographicalBaseData>
         https://ge.ch/sitg/sitg_catalog/data_details/33fde7a1-9f29-4db7-84b7-926804574388/xhtml_raw
       </MetadataOfGeographicalBaseData>
     </DDP>
   </RealEstate>
-  <RestrictionOnLandownership layer="RDPPF_ZONES_SYNT" complete="true" additionalLayers="RDPPF_ZONES_SYNT_DEV">
-    <Information>Amenagement-73</Information>
+  <RestrictionOnLandownership layer="RDPPF_ZR" complete="false">
     <Theme>
-      <Code>LandUsePlans</Code>
-      <Text>Zones d'affectation - synthèse</Text>
+      <Code>ch.Planungszonen</Code>
+      <Index>10</Index>
     </Theme>
-    <SubTheme>zone_affectation_synthèse</SubTheme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId>DATE_FIN_VALID</LegalProvisionId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>RaLAT</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
+    <ResponsibleOffice>
+      <Name>Office de l'urbanisme</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_ZONES_SYNT" complete="true" additionalLegends="RDPPF_ZONES_SYNT_DEV">
+    <Theme>
+      <Code>ch.Nutzungsplanung</Code>
+      <Text>Zones d'affectation - synthèse</Text>
+      <Index>20</Index>
+    </Theme>
     <Lawstatus field="" />
     <MetadataOfGeographicalBaseData />
     <ResponsibleOffice>
@@ -79,690 +99,609 @@
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZONES_PRIM" complete="true">
-    <Information>Amenagement-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Zone d'affectation primaire</Text>
+      <Index>21</Index>
     </Theme>
-    <SubTheme>zone_affectation_primaire</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_GRAND_CONSEIL</regulationId>
-    <regulationId>DATE_ARRETE_PUBLI_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_LOI</regulationId>
-    <regulationId>LIEN_ARRETE_PUBLI_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LGZD</lawId>
-    <lawId>LZIAM</lawId>
-    <lawId>LCI</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_GRAND_CONSEIL</LegalProvisionId>
+    <LegalProvisionId>LIEN_LOI</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_PUBLI_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LGZD</LawId>
+    <LawId>LZIAM</LawId>
+    <LawId>LCI</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZONES_DEV" complete="false">
-    <Information>Amenagement-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Zone d'affectation superposée</Text>
+      <Index>22</Index>
     </Theme>
-    <SubTheme>zone_affectation_superposee</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_GRAND_CONSEIL</regulationId>
-    <regulationId>DATE_ARRETE_PUBLI_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_LOI</regulationId>
-    <regulationId>LIEN_ARRETE_PUBLI_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LGZD</lawId>
-    <lawId>LZIAM</lawId>
-    <lawId>LCI</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_GRAND_CONSEIL</LegalProvisionId>
+    <LegalProvisionId>LIEN_LOI</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_PUBLI_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LGZD</LawId>
+    <LawId>LZIAM</LawId>
+    <LawId>LCI</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PLQ" complete="false">
-    <Information>Amenagement-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Plan localisé de quartier</Text>
+      <Index>30</Index>
     </Theme>
-    <SubTheme>plan_localise_quartier</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LGZD</lawId>
-    <lawId>LCI</lawId>
-    <lawId>Lext</lawId>
-    <informationId>LIEN_CONCEPT_ENERG_TER</informationId>
-    <informationId>LIEN_RAPPORT_IMPACT_ENVIRON</informationId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
-    <informationId>LIEN_DOSSIER_SAD_CONSULT</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LGZD</LawId>
+    <LawId>LCI</LawId>
+    <LawId>Lext</LawId>
+    <HintId>LIEN_CONCEPT_ENERG_TER</HintId>
+    <HintId>LIEN_RAPPORT_IMPACT_ENVIRON</HintId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
+    <HintId>LIEN_DOSSIER_SAD_CONSULT</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PS" complete="false">
-    <Information>Patrimoine-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Plan de site</Text>
+      <Index>31</Index>
     </Theme>
-    <SubTheme>plan_site</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_INSTANCE</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LCI</lawId>
-    <lawId>LPMNS</lawId>
-    <lawId>LPRLac</lawId>
-    <lawId>LPRRhône</lawId>
-    <lawId>LPRArve</lawId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LCI</LawId>
+    <LawId>LPMNS</LawId>
+    <LawId>LPRLac</LawId>
+    <LawId>LPRRhône</LawId>
+    <LawId>LPRArve</LawId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_PDZI" complete="false">
-    <Information>Amenagement-73</Information>
+  <RestrictionOnLandownership layer="RDPPF_PDZAM" complete="false">
     <Theme>
-      <Code>LandUsePlans</Code>
-      <Text>Plan directeur des zones de développement industriel</Text>
+      <Code>ch.Nutzungsplanung</Code>
+      <Text>Plan directeur des zones de développement d'activités mixtes</Text>
+      <Index>32</Index>
     </Theme>
-    <SubTheme>plan_directeur_zones_developpement_industriel</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LZIAM</lawId>
-    <lawId>LCI</lawId>
-    <lawId>RAZIDI</lawId>
-    <informationId>LIEN_CONCEPT_ENERG_TER</informationId>
-    <informationId>LIEN_RAPPORT_IMPACT_ENVIRON</informationId>
-    <informationId>LIEN_PREAVIS_REIE</informationId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
-    <informationId>LIEN_DOSSIER_SAD_CONSULT</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LZIAM</LawId>
+    <LawId>LCI</LawId>
+    <LawId>RAZIDI</LawId>
+    <HintId>LIEN_CONCEPT_ENERG_TER</HintId>
+    <HintId>LIEN_RAPPORT_IMPACT_ENVIRON</HintId>
+    <HintId>LIEN_PREAVIS_REIE</HintId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
+    <HintId>LIEN_DOSSIER_SAD_CONSULT</HintId>
+    <ResponsibleOffice>
+      <Name>Office de l'urbanisme</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_PDZI" complete="false">
+    <Theme>
+      <Code>ch.Nutzungsplanung</Code>
+      <Text>Plan directeur des zones de développement industriel</Text>
+      <Index>33</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LZIAM</LawId>
+    <LawId>LCI</LawId>
+    <LawId>RAZIDI</LawId>
+    <HintId>LIEN_CONCEPT_ENERG_TER</HintId>
+    <HintId>LIEN_RAPPORT_IMPACT_ENVIRON</HintId>
+    <HintId>LIEN_PREAVIS_REIE</HintId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
+    <HintId>LIEN_DOSSIER_SAD_CONSULT</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PLA" complete="false">
-    <Information>Amenagement-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Plan localisé agricole</Text>
+      <Index>34</Index>
     </Theme>
-    <SubTheme>plan_localise_agricole</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LGZD</lawId>
-    <lawId>LCI</lawId>
-    <lawId>Lext</lawId>
-    <informationId>LIEN_CONCEPT_ENERG_TER</informationId>
-    <informationId>LIEN_RAPPORT_IMPACT_ENVIRON</informationId>
-    <informationId>LIEN_PREAVIS_REIE</informationId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LGZD</LawId>
+    <LawId>LCI</LawId>
+    <LawId>Lext</LawId>
+    <HintId>LIEN_CONCEPT_ENERG_TER</HintId>
+    <HintId>LIEN_RAPPORT_IMPACT_ENVIRON</HintId>
+    <HintId>LIEN_PREAVIS_REIE</HintId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PUS" complete="false">
-    <Information>Amenagement-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Plan d'utilisation du sol</Text>
+      <Index>35</Index>
     </Theme>
-    <SubTheme>plan_utilisation_sol</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LCI</lawId>
-    <lawId>Lext</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LCI</LawId>
+    <LawId>Lext</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PLCP" complete="false">
-    <Information>Amenagement-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Plan localisé de chemin pédestre</Text>
+      <Index>36</Index>
     </Theme>
-    <SubTheme>plan_localisé_chemin_pedestre</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LGZD</lawId>
-    <lawId>LCI</lawId>
-    <lawId>Lext</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LGZD</LawId>
+    <LawId>LCI</LawId>
+    <LawId>Lext</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_EXTRACTION_GRAVIERES" complete="false">
-    <Information>Geologie-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Plan d'extraction des gravières</Text>
+      <Index>37</Index>
     </Theme>
-    <SubTheme>plan_extraction_gravieres</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>Lext</lawId>
-    <lawId>LGEA</lawId>
-    <lawId>RGEA</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN</LegalProvisionId>
+    <LegalProvisionId dateField="Date d'adoption">LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>Lext</LawId>
+    <LawId>LGEA</LawId>
+    <LawId>RGEA</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_SI" complete="false">
-    <Information>Eau-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Plan des surfaces inconstructibles</Text>
+      <Index>38</Index>
     </Theme>
-    <SubTheme>plan_surfaces_inconstructibles</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LZIAM</lawId>
-    <lawId>LCI</lawId>
-    <lawId>LEaux-GE</lawId>
-    <lawId>REaux-GE</lawId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LZIAM</LawId>
+    <LawId>LCI</LawId>
+    <LawId>LEaux-GE</LawId>
+    <LawId>REaux-GE</LawId>
     <ResponsibleOffice>
       <Name>Direction générale de l'eau</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/oceau-service-planification-eau</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PNP" complete="false">
-    <Information>Patrimoine-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Zone superposée de protection de la nature du paysage</Text>
+      <Index>50</Index>
     </Theme>
-    <SubTheme>zone_superposee_protection_nature_paysage</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_INSTANCE</regulationId>
-    <regulationId>DATE_ARRETE_PUBLI_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_LOI_GRAND_CONSEIL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_PUBLI_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LPRLac</lawId>
-    <lawId>LPRRhône</lawId>
-    <lawId>LPRArve</lawId>
-    <lawId>LPRVers</lawId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId dateField="Date d'adoption (instance selon type de plan)">LIEN_PLAN</LegalProvisionId>
+    <LegalProvisionId>LIEN_LOI_GRAND_CONSEIL</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_PUBLI_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_PROMULG_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LPRLac</LawId>
+    <LawId>LPRRhône</LawId>
+    <LawId>LPRArve</LawId>
+    <LawId>LPRVers</LawId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_RS" complete="false">
-    <Information>Patrimoine-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Règlements spéciaux</Text>
+      <Index>60</Index>
     </Theme>
-    <SubTheme>reglements_speciaux</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LCI</lawId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LCI</LawId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZP" complete="false">
-    <Information>Patrimoine-73</Information>
     <Theme>
-      <Code>LandUsePlans</Code>
+      <Code>ch.Nutzungsplanung</Code>
       <Text>Zone protégée</Text>
+      <Index>70</Index>
     </Theme>
-    <SubTheme>zone_protegee</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>LALAT</lawId>
-    <lawId>LGZD</lawId>
-    <lawId>LZIAM</lawId>
-    <lawId>LCI</lawId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>LALAT</LawId>
+    <LawId>LGZD</LawId>
+    <LawId>LZIAM</LawId>
+    <LawId>LCI</LawId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office du patrimoine et des sites</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_ZR" complete="false">
-    <Information>Amenagement-76</Information>
-    <Theme>
-      <Code>LandUsePlans</Code>
-      <Text>Zone réservée</Text>
-    </Theme>
-    <SubTheme>zone_reservee</SubTheme>
-    <Lawstatus field="STATUT_JUR" />
-    <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_CONSEIL_ETAT</regulationId>
-    <regulationId>DATE_FIN_VALID</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>LAT</lawId>
-    <lawId>RaLAT</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
-    <ResponsibleOffice>
-      <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
-    </ResponsibleOffice>
-  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_ROUTES_NAT" complete="false">
-    <Information>Routes_nationales-87</Information>
     <Theme>
-      <Code>MotorwaysProjectPlaningZones</Code>
-      <Text>Zones réservées des routes nationales</Text>
+      <Code>ch.ProjektierungszonenNationalstrassen</Code>
+      <Index>110</Index>
     </Theme>
-    <SubTheme>alignements_routes_nationales</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId></regulationId>
-    <lawId>LRN</lawId>
-    <lawId>ONR</lawId>
-    <informationId></informationId>
+    <LegalProvisionId></LegalProvisionId>
+    <LawId>LRN</LawId>
+    <LawId>ONR</LawId>
+    <HintId></HintId>
     <ResponsibleOffice>
       <Name>Office fédérale des routes</Name>
       <OfficeAtWeb>https://www.astra.admin.ch/astra/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ALIGNE_ROUTE_NATION" complete="false">
-    <Information>Routes_nationales-88</Information>
     <Theme>
-      <Code>MotorwaysBuildingLines</Code>
-      <Text>Alignements des routes nationales</Text>
+      <Code>ch.BaulinienNationalstrassen</Code>
+      <Index>120</Index>
     </Theme>
-    <SubTheme>alignements_routes_nationales</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
-    <lawId>LRN</lawId>
-    <lawId>ONR</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId dateField="Date d'entrée en vigueur">LIEN_DISPO_JURIDIQUE</LegalProvisionId>
+    <LawId>LRN</LawId>
+    <LawId>ONR</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office fédérale des routes</Name>
       <OfficeAtWeb>https://www.astra.admin.ch/astra/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_FER" complete="false">
-    <Information>Installations ferroviaires-96</Information>
     <Theme>
-      <Code>RailwaysProjectPlanningZones</Code>
-      <Text>Zones réservées des installations ferroviaires</Text>
+      <Code>ch.ProjektierungszonenEisenbahnanlagen</Code>
+      <Index>210</Index>
     </Theme>
-    <SubTheme>zone_reservee_installation_ferroviaire</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId></regulationId>
-    <lawId>LCdF</lawId>
-    <informationId></informationId>
+    <LegalProvisionId></LegalProvisionId>
+    <LawId>LCdF</LawId>
+    <HintId></HintId>
     <ResponsibleOffice>
       <Name>Office fédérale des transports</Name>
       <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_FER" complete="false">
-    <Information>Alignement installations ferroviaires-97</Information>
     <Theme>
-      <Code>RailwaysBuildingLines</Code>
-      <Text>Alignements des installations ferroviaires</Text>
+      <Code>ch.BaulinienEisenbahnanlagen</Code>
+      <Index>220</Index>
     </Theme>
-    <SubTheme>alignement_installation_ferroviaire</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId></regulationId>
-    <lawId>LCdF</lawId>
-    <informationId></informationId>
+    <LegalProvisionId></LegalProvisionId>
+    <LawId>LCdF</LawId>
+    <HintId></HintId>
     <ResponsibleOffice>
       <Name>Office fédérale des transports</Name>
       <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_AEROPORT" complete="false">
-    <Information>Aeroport-104</Information>
-    <Theme>
-      <Code>AirportsBuildingLines</Code>
-      <Text>Alignements des installations aéroportuaires</Text>
-    </Theme>
-    <SubTheme>alignement_installation_aeroport</SubTheme>
-    <Lawstatus field="STATUT_JUR" />
-    <MetadataOfGeographicalBaseData />
-    <regulationId></regulationId>
-    <lawId>LA</lawId>
-    <lawId>OSIA</lawId>
-    <informationId></informationId>
-    <ResponsibleOffice>
-      <Name>Office fédéral de l'aviation civile</Name>
-      <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
-    </ResponsibleOffice>
-  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_AERO" complete="false">
-    <Information>Aeroport-103</Information>
     <Theme>
-      <Code>AirportsProjectPlanningZones</Code>
-      <Text>Zones réservées des installations aéroportuaires</Text>
+      <Code>ch.ProjektierungszonenFlughafenanlagen</Code>
+      <Index>310</Index>
     </Theme>
-    <SubTheme>zone_reservee_installation_aeroport</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
-    <lawId>LA</lawId>
-    <lawId>OSIA</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId dateField="Date d'entrée en vigueur">LIEN_DISPO_JURIDIQUE</LegalProvisionId>
+    <LawId>LA</LawId>
+    <LawId>OSIA</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
       <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_SECU_AERO" complete="false">
-    <Information>Aeroport-108</Information>
+  <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_AEROPORT" complete="false">
     <Theme>
-      <Code>AirportsSecurityZonePlans</Code>
-      <Text>Plan de la zone de sécurité</Text>
+      <Code>ch.BaulinienFlughafenanlagen</Code>
+      <Index>320</Index>
     </Theme>
-    <SubTheme>plan_zone_securite</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
-    <lawId>LA</lawId>
-    <lawId>OSIA</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId></LegalProvisionId>
+    <LawId>LA</LawId>
+    <LawId>OSIA</LawId>
+    <HintId></HintId>
+    <ResponsibleOffice>
+      <Name>Office fédéral de l'aviation civile</Name>
+      <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>  
+  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_SECU_AERO" complete="false">
+    <Theme>
+      <Code>ch.Sicherheitszonenplan</Code>
+      <Index>330</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId dateField="Date d'entrée en vigueur">LIEN_DISPO_JURIDIQUE</LegalProvisionId>
+    <LawId>LA</LawId>
+    <LawId>OSIA</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
       <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CADASTRE_SITES_POLLUES" complete="false">
-    <Information>Geologie-116</Information>
     <Theme>
-      <Code>ContaminatedSites</Code>
-      <Text>Cadastre des sites pollués</Text>
+      <Code>ch.BelasteteStandorte</Code>
+      <Index>410</Index>
     </Theme>
-    <SubTheme>cadastre_sites_pollues</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-	<regulationId>LIEN_DISPO_JURIDIQUE</regulationId>
-    <lawId>LPE</lawId>
-    <lawId>Osites</lawId>
-    <lawId>LaLSC</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_DISPO_JURIDIQUE</LegalProvisionId>
+    <LawId>LPE</LawId>
+    <LawId>Osites</LawId>
+    <LawId>LaLSC</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-    <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_MILIT" complete="false" additionalLayers="RDPPF_CH_SITES_POLLUES_MILIT_P">>
-    <Information>Militaire-117</Information>
+  <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_MILIT" complete="false" additionalLayers="RDPPF_CH_SITES_POLLUES_MILIT_P">
     <Theme>
-      <Code>ContaminatedArmySites</Code>
-      <Text>Cadastre des sites pollués : domaine militaire</Text>
+      <Code>ch.BelasteteStandorteMilitaer</Code>
+      <Index>420</Index>
     </Theme>
-    <SubTheme>site_pollue_milit</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-	<regulationId>LIEN_INFOS_COMPL</regulationId>
-    <lawId>LPE</lawId>
-    <lawId>Osites</lawId>
+    <LegalProvisionId>LIEN_INFOS_COMPL</LegalProvisionId>
+    <LawId>LPE</LawId>
+    <LawId>Osites</LawId>
     <ResponsibleOffice>
       <Name>Secrétariat général du Département fédéral de la défense, de la protection de la population et des sports</Name>
       <OfficeAtWeb>https://www.vbs.admin.ch/fr/ddps/organisation/unites-administratives/secretariat-general.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_AERO_S" complete="false" additionalLayers="RDPPF_CH_SITES_POLLUES_AERO_P">
-    <Information>Aeroport-118</Information>
     <Theme>
-      <Code>ContaminatedCivilAviationSites</Code>
-      <Text>Cadastre des sites pollués : domaine des aérodromes civils</Text>
+      <Code>ch.BelasteteStandorteZivileFlugplaetze</Code>
+      <Index>430</Index>
     </Theme>
-    <SubTheme>site_pollue_aero</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <regulationId>LIEN_INFOS_COMPL</regulationId>
-    <lawId>LPE</lawId>
-    <lawId>Osites</lawId>
+    <LegalProvisionId>LIEN_INFOS_COMPL</LegalProvisionId>
+    <LawId>LPE</LawId>
+    <LawId>Osites</LawId>
     <ResponsibleOffice>
       <Name>Office fédéral de l'aviation civile</Name>
       <OfficeAtWeb>https://www.bazl.admin.ch/bazl/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_SITES_POLLUES_TP" complete="false">
-    <Information>Transports-publics-119</Information>
     <Theme>
-      <Code>ContaminatedPublicTransportSites</Code>
-      <Text>Cadastre des sites pollués : domaine des transports publics</Text>
+      <Code>ch.BelasteteStandorteOeffentlicherVerkehr</Code>
+      <Index>440</Index>
     </Theme>
-    <SubTheme>site_pollue_tp</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <lawId>LPE</lawId>
-    <lawId>Osites</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_INFOS_COMPL</LegalProvisionId>
+    <LawId>LPE</LawId>
+    <LawId>Osites</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office fédéral des transports</Name>
       <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home/allgemeine-themen/umwelt/altlasten.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_ZONES_PROTECTION_EAUX" complete="false">
-    <Information>Geologie-131</Information>
     <Theme>
-      <Code>GroundwaterProtectionZones</Code>
-      <Text>Zones de protection des eaux souterraines</Text>
+      <Code>ch.Grundwasserschutzzonen</Code>
+      <Index>510</Index>
     </Theme>
-    <SubTheme>zone_protection_eaux_souterraines</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <lawId>LEaux</lawId>
-    <lawId>OEaux</lawId>
-    <lawId>LEaux-GE</lawId>
-    <lawId>REaux-GE</lawId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LEaux</LawId>
+    <LawId>OEaux</LawId>
+    <LawId>LEaux-GE</LawId>
+    <LawId>REaux-GE</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PERIM_PROT_EAU_SOUT" complete="false">
-    <Information>Geologie-132</Information>
     <Theme>
-        <Code>GroundwaterProtectionSites</Code>
-        <Text>Périmètres de protection des eaux souterraines</Text>
+      <Code>ch.Grundwasserschutzareale</Code>
+      <Index>520</Index>
     </Theme>
-    <SubTheme>perimetre_protection_eaux_souterraines</SubTheme>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
     </ResponsibleOffice>
-  </RestrictionOnLandownership>  
+  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_DSOPB" complete="false">
     <Information>Amenagement-145</Information>
     <Theme>
-      <Code>NoiseSensitivityLevels</Code>
-      <Text>Degré de sensibilité au bruit (dans les zones d'affectation)</Text>
+      <Code>ch.Laermempfindlichkeitsstufen</Code>
+      <Index>610</Index>
     </Theme>
-    <SubTheme>degre_sensibilite_bruit</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_INSTANCE</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <lawId>OPB</lawId>
-    <lawId>LALPE</lawId>
-    <lawId>RPBV</lawId>
-    <informationId>LIEN_CONCEPT_ENERG_TER</informationId>
-    <informationId>LIEN_RAPPORT_IMPACT_ENVIRON</informationId>
-    <informationId>LIEN_PREAVIS_REIE</informationId>
-    <informationId>LIEN_PLAN_MESURE_PAYSAGERE</informationId>
-    <informationId>LIEN_RAPPORT_EXPLICATIF</informationId>
-    <informationId>LIEN_INFOS_COMPL</informationId>
+    <LegalProvisionId dateField="Date d'adoption (instance selon type de plan)">LIEN_PLAN</LegalProvisionId>
+    <LegalProvisionId dateField="Date d'adoption (instance selon type de plan)">LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>OPB</LawId>
+    <LawId>LALPE</LawId>
+    <LawId>RPBV</LawId>
+    <HintId>LIEN_CONCEPT_ENERG_TER</HintId>
+    <HintId>LIEN_RAPPORT_IMPACT_ENVIRON</HintId>
+    <HintId>LIEN_PREAVIS_REIE</HintId>
+    <HintId>LIEN_PLAN_MESURE_PAYSAGERE</HintId>
+    <HintId>LIEN_RAPPORT_EXPLICATIF</HintId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_LIMITE_FORET" complete="false" additionalLayers="FFP_CADASTRE_FORET_COUL">
+  <RestrictionOnLandownership layer="RDPPF_LIMITE_FORET" complete="false" additionalLegends="FFP_CADASTRE_FORET_COUL">
     <Information>Amenagement_157</Information>
     <Theme>
-      <Code>ForestPerimeters</Code>
-      <Text>Limites forestières statiques</Text>
+      <Code>ch.StatischeWaldgrenzen</Code>
+      <Index>710</Index>
     </Theme>
-    <SubTheme>limite_foret</SubTheme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ADOPT_INSTANCE</regulationId>
-    <regulationId>DATE_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_PLAN</regulationId>
-    <regulationId>LIEN_LOI</regulationId>
-    <regulationId>LIEN_ARRETE_CONSEIL_ETAT</regulationId>
-    <regulationId>LIEN_REGLEMENT</regulationId>
-    <regulationId>LIEN_DISPO_JURID_COMPL</regulationId>
-    <regulationId>LIEN_INFOS_COMPL</regulationId>
-    <lawId>LFo</lawId>
-    <lawId>OFo</lawId>
-    <lawId>LForêt</lawId>
-    <lawId>RForêt</lawId>
+    <LegalProvisionId dateField="Date d'adoption (instance selon type de plan)">LIEN_PLAN</LegalProvisionId>
+    <LegalProvisionId dateField="Date d'adoption (instance selon type de plan)">LIEN_LOI</LegalProvisionId>
+    <LawId>LFo</LawId>
+    <LawId>OFo</LawId>
+    <LawId>LForêt</LawId>
+    <LawId>RForêt</LawId>
     <ResponsibleOffice>
       <Name>Office de l'urbanisme</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_DISTANCES_FORET_S" complete="false" additionalLayers="RDPPF_DISTANCES_FORET_L,FFP_CADASTRE_FORET_COUL">
-    <Information>Foret-159</Information>
+  <RestrictionOnLandownership layer="RDPPF_DISTANCES_FORET_S" complete="false" additionalLayers="RDPPF_DISTANCES_FORET_L" additionalLegends="FFP_CADASTRE_FORET_COUL">
     <Theme>
-      <Code>ForestDistanceLines</Code>
-      <Text>Distances par rapport à la forêt</Text>	  
+      <Code>ch.Waldabstandslinien</Code>
+      <Index>720</Index>
     </Theme>
-    <SubTheme>distance_rapport_foret</SubTheme>
     <Lawstatus field="STATUT_JURIDIQUE" />
     <MetadataOfGeographicalBaseData />
-    <regulationId>DATE_ENTREE_VIGUEUR</regulationId>
-    <regulationId>LIEN_CONSTAT_NATURE_FOREST</regulationId>
-    <lawId>LFo</lawId>
-    <lawId>OFo</lawId>
-    <lawId>LForêt</lawId>
-    <lawId>RForêt</lawId>
+    <LegalProvisionId>LIEN_CONSTAT_NATURE_FOREST</LegalProvisionId>
+    <LawId>LFo</LawId>
+    <LawId>OFo</LawId>
+    <LawId>LForêt</LawId>
+    <LawId>RForêt</LawId>
     <ResponsibleOffice>
       <Name>Direction générale de l'agriculture et de la nature</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>

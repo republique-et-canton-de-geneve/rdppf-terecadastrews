@@ -1,4 +1,4 @@
-﻿/* $Rev: 14634 $ */
+﻿/* $Rev: 29788 $ */
 using System.Xml.Serialization;
 using System.Collections.Generic;
 
@@ -10,10 +10,12 @@ public partial class ErrorResponseType
     {
         { 200, "Succès." },
         { 204, "Aucun résultat." },
+        { 303, "Redirection." },
         { 400, "Paramètres d'entrée incorrects." },
         { 401, "La langue passée en paramètre n'est pas supportée." },
         { 500, "Erreur serveur." },
-        { 501, "Pas implémenté." }
+        { 501, "Pas implémenté." },
+        { 503, "Service indisponible." }
     };
 
     private int codeNumber;

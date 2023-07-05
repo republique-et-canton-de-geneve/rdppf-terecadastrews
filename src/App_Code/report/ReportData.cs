@@ -1,10 +1,10 @@
-﻿/* $Rev: 22477 $ */
+﻿/* $Rev: 30309 $ */
 using System;
 
 public class ReportData
 {
     public mainSection section;
-    public glossary[] glossaries;
+    public InformationText[] glossaries;
 
     public ReportData()
     {
@@ -21,78 +21,50 @@ public class ReportData
 public class mainSection
 {
     public string reference;
-    public string type;
     public string mapUrl;
     public string date = string.Empty;
     public string dmoDate;
-    public data[] datas;
+    public RealEstateData realEstate;
     public toc[] tocs;
     public restriction[] restrictions;
     public string[] noDataThemes;
-    public string[] generalInfos;
-    public string[] baseData;
+    public InformationText generalInfos;
+    public InformationText baseData;
+    public InformationText[] disclaimers;
     public office office;
     public string marginStyle = "height:10mm";
     public bool breakAfterToc = false;
 }
 
-public class data
+public class RealEstateData
 {
-    public string id;
-    public section[] sections;
-}
-
-public class section
-{
-    public string id;
-    public dataLayer[] dataLayers;
-}
-
-public class dataLayer
-{
-    public string layer;
-    public field[] fields;
-    public externalData[] externalDatas;
-    public dataLayer[] dataLayers;
-}
-
-public class externalData
-{
-    public field[] fields;
-}
-
-public class field
-{
-    public string name;
-    public string value;
+    public string number;
+    public string type;
+    public string egrid;
+    public string municipalityName;
+    public string municipalityCode;
+    public string area;
+    public string state;
 }
 
 public class restriction
 {
     public string id;
     public string title;
-    public string layer;
+	public int order;
     public bool result;
-    public regulation[] regulations;
+    public string lawStatus;
+    public legalProvision[] legalProvisions;
     public law[] laws;
-    public information[] informations;
+    public hint[] hints;
     public service service;
-    public string titleMarginStyle;
     public string mapUrl;
-    public string geometryType = string.Empty;
-    public string legendLink = string.Empty;    
     public legend[] legends;
     public legend[] otherLegends = null;
-    public legend[] additionnalLegends = null;
-    public annex[] annexes;
-    public bool breakAfterLegend = false;
-    public bool breakAfterRegulation = false;
-    public bool breakAfterLaw = false;
-    public bool breakAfterInfo = false;
-    public bool breakAfterService = false;
+    public legend[] additionalLegends = null;
 }
 
-public class regulation
+public class legalProvision
 {
     public string label;
     public string[] values;
@@ -100,11 +72,12 @@ public class regulation
 
 public class law
 {
+    public string index;
     public string title;
     public string link;
 }
 
-public class information
+public class hint
 {
     public string label;
     public string[] values;
@@ -120,29 +93,19 @@ public class legend
 {
     public string imageUrl;
     public string label;
-    public int length;
+    public string geometryType;
+    public int geometryOrder;
+    public double length;
     public int surface;
     public double surfPercent;
     public string surfPercentFormatted;
+    public int points;
 }
 
 public class toc
 {
     public string title;
     public string page;
-    public annex[] annexes = null;
-}
-
-public class clause
-{
-    public string title;
-    public string content;
-}
-
-public class glossary
-{
-    public string title;
-    public string content;
 }
 
 public class office
@@ -151,10 +114,4 @@ public class office
     public string rue;
     public string localite;
     public string link;
-}
-
-public class annex
-{
-    public int number;
-    public string title;
 }

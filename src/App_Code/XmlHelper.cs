@@ -1,12 +1,11 @@
-﻿/* $Rev: 25011 $ */
+﻿/* $Rev: 29811 $ */
 using System;
-using System.Xml;
-using System.Text;
-using System.Xml.Serialization;
-using System.IO;
-using Topomat.Web.Common;
 using System.Collections.Generic;
-using System.Xml.Linq;
+using System.IO;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
+using Topomat.Web.Common;
 
 public class XmlHelper
 {
@@ -73,24 +72,26 @@ public class XmlHelper
         return xmlDoc.DocumentElement;
     }
 
-    public static XmlElement GetXmlElement(IDictionary<string, string> info, List<KeyValuePair<string, string>> items)
+    public static XmlElement GetXmlElement(object obj, XmlSerializerNamespaces ns)
     {
         XmlDocument doc = new XmlDocument();
 
-        if (info.ContainsKey("name") && info.ContainsKey("namespace"))
+        using (XmlWriter writer = doc.CreateNavigator().AppendChild())
         {
-            XmlElement rootElement = doc.CreateElement(info["name"], info["namespace"]);
-            doc.AppendChild(rootElement);
-
-            foreach (KeyValuePair<string, string> item in items)
-            {
-                XmlElement el = doc.CreateElement(item.Key, info["namespace"]);
-                el.AppendChild(doc.CreateTextNode(item.Value));
-                rootElement.AppendChild(el);
-            }
+            new XmlSerializer(obj.GetType()).Serialize(writer, obj, ns);
         }
 
         return doc.DocumentElement;
+    }
+
+    public static XmlElement GetXmlElement(XmlDocument doc, string prefix, string name, string ns, string text)
+    {
+        XmlElement el = doc.CreateElement(prefix, name, ns);
+        if (!string.IsNullOrEmpty(text))
+        {
+            el.InnerText = text;
+        }
+        return el;
     }
 
     public static string GetXmlElementValue(XmlNode root, string name)
@@ -144,73 +145,5 @@ public class XmlHelper
         }
 
         return result;
-    }
-
-    public static XmlElement AppendElement(XmlDocument doc, XmlElement parent, string name)
-    {
-        return XmlHelper.AppendElement(doc, parent, name, null, null);
-    }
-
-    public static XmlElement AppendElement(XmlDocument doc, XmlElement parent, string name, string content)
-    {
-        return XmlHelper.AppendElement(doc, parent, name, content, null);
-    }
-
-    public static XmlElement AppendElement(XmlDocument doc, XmlElement parent, string name, IDictionary<string, string> attributes)
-    {
-        return XmlHelper.AppendElement(doc, parent, name, null, attributes);
-    }
-
-    public static XmlElement AppendElement(XmlDocument doc, XmlElement parent, string name, string content, IDictionary<string, string> attributes)
-    {
-        XmlElement element = doc.CreateElement(name);
-
-        if (!string.IsNullOrEmpty(content))
-        {
-            element.InnerText = content;
-        }
-
-        if (attributes != null)
-        {
-            foreach (string key in attributes.Keys)
-            {
-                element.SetAttribute(key, attributes[key]);
-            }
-        }
-
-        parent.AppendChild(element);
-
-        return element;
-    }
-
-    public static XmlElement ToXmlElement(XElement element)
-    {
-        using (XmlReader xmlReader = element.CreateReader())
-        {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(xmlReader);
-            return xmlDoc.DocumentElement;
-        }
-    }
-
-    public static XElement ToXElement(Type inputType, object input)
-    {
-        XDocument doc = new XDocument();
-        XmlSerializer xmlSerializer = new XmlSerializer(inputType);
-        using (XmlWriter writer = doc.CreateWriter())
-        {
-            xmlSerializer.Serialize(writer, input);
-        }
-        return doc.Root;
-    }
-
-    public static string SerializeToString(Type inputType, object input)
-    {
-        XmlSerializer xmlSerializer = new XmlSerializer(inputType);
-        using (StringWriter writer = new StringWriter())
-        {
-            xmlSerializer.Serialize(writer, input);
-            return writer.ToString();
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿/* $Rev: 22885 $ */
+﻿/* $Rev: 30309 $ */
 using System.Collections.Generic;
 
 public enum ParcelleType { BienFonds, DDP, Undefined };
@@ -87,12 +87,6 @@ public class RequestPolygon
     public double[][][] rings;
 }
 
-public class AreasAndLengthsResult
-{
-    public double[] areas;
-    public double[] lengths;
-}
-
 namespace LayerInfoJson
 {
     public class LayerInfo
@@ -104,6 +98,7 @@ namespace LayerInfoJson
     {
         public int id;
         public string name;
+        public string geometryType;
         public DrawingInfo drawingInfo;
     }
 
@@ -124,5 +119,25 @@ namespace LayerInfoJson
     {
         public string value;
         public string label;
+    }
+}
+
+namespace LegendInfoJson
+{
+    public class LegendInfo
+    {
+        public Layer[] layers;
+    }
+
+    public class Layer
+    {
+        public int layerId;
+        public Legend[] legend;
+    }
+
+    public class Legend
+    {
+        public string label;
+        public string url;
     }
 }

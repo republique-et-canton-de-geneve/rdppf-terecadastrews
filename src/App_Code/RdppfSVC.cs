@@ -1,13 +1,14 @@
-﻿/* $Rev: 25011 $ */
-using System.Xml;
-using System.ServiceModel.Web;
-using System.Web.Script.Serialization;
+﻿/* $Rev: 30309 $ */
+using ExtractDataModel_v20;
 using System;
 using System.IO;
-using System.Text;
-using Topomat.Web.Common;
-using System.Diagnostics;
 using System.Net;
+using System.ServiceModel.Web;
+using System.Text;
+using System.Web.Script.Serialization;
+using System.Xml;
+using System.Xml.Serialization;
+using Topomat.Web.Common;
 
 public class RdppfSVC : IRdppfSVC
 {
@@ -15,19 +16,80 @@ public class RdppfSVC : IRdppfSVC
     {
         try
         {
-            GetEGRIDParamReq paramReq = GetEGRIDParamReq.GetEGRIDParam(
-                WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters["xy"],
-                WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters["gnss"]
-            );
-
-            if (paramReq != null)
+            GetEGRIDParamReq param = new GetEGRIDParamReq();
+            if (param.Parse(WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters))
             {
-                GetEGRIDReq req = new GetEGRIDReq();
-                QueryResult qr = req.GetEGRID(paramReq);
-
-                if (qr.features.Length > 0)
+                QueryResult qr = null;
+                GetEGRIDReq req = new GetEGRIDReq(param.returnGeometry);
+                switch (param.method)
                 {
-                    return XmlHelper.GetXmlElement(req.GetEGRIDResponseTypeInfo(), req.GetGenericEGRIDRResponse(qr));
+                    case GetEGRIDParamReq.GetEGRIDMethod.Coordinates:
+                        qr = req.GetEGRIDByCoordinates(param.coordX, param.coordY, param.isGNSS);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Idents:
+                        qr = req.GetEGRIDByID(param.identDN, param.number);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Localisation:
+                        qr = req.GetEGRIDByLocalisation(param.postalCode, param.localisation, param.number);
+                        break;
+                }
+
+                if (qr.features != null && qr.features.Length > 0)
+                {
+                    XmlDocument doc = new XmlDocument();
+
+                    XmlElement rootElement = doc.CreateElement("GetEGRIDResponse", SchemaHelper.Namespaces["extract"].Value);
+                    rootElement.SetAttribute(string.Format("xmlns:{0}", SchemaHelper.Namespaces["data"].Key), SchemaHelper.Namespaces["data"].Value);
+                    if (param.returnGeometry)
+                    {
+                        rootElement.SetAttribute(string.Format("xmlns:{0}", SchemaHelper.Namespaces["geometry"].Key), SchemaHelper.Namespaces["geometry"].Value);
+                    }
+                    rootElement.SetAttribute(string.Format("xmlns:{0}", SchemaHelper.Namespaces["xsd"].Key), SchemaHelper.Namespaces["xsd"].Value);
+                    rootElement.SetAttribute(string.Format("xmlns:{0}", SchemaHelper.Namespaces["xsi"].Key), SchemaHelper.Namespaces["xsi"].Value);
+                    rootElement.SetAttribute("schemaLocation", SchemaHelper.Namespaces["xsi"].Value, SchemaHelper.GetSchemaLocation(new string[] { "extract", "data" }));
+
+                    doc.AppendChild(rootElement);
+
+                    foreach (GetEGRIDResponseType data in req.GetEGRIDResponse(qr))
+                    {
+                        rootElement.AppendChild(XmlHelper.GetXmlElement(doc, string.Empty, "egrid", SchemaHelper.Namespaces["extract"].Value, data.egrid));
+                        rootElement.AppendChild(XmlHelper.GetXmlElement(doc, string.Empty, "number", SchemaHelper.Namespaces["extract"].Value, data.number));
+                        rootElement.AppendChild(XmlHelper.GetXmlElement(doc, string.Empty, "identDN", SchemaHelper.Namespaces["extract"].Value, data.identDN));
+
+                        XmlElement elType = XmlHelper.GetXmlElement(doc, string.Empty, "type", SchemaHelper.Namespaces["extract"].Value, string.Empty);
+                        rootElement.AppendChild(elType);
+                        elType.AppendChild(XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["data"].Key, "Code", SchemaHelper.Namespaces["data"].Value, data.type.Code.ToString()));
+
+                        XmlElement elText = XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["data"].Key, "Text", SchemaHelper.Namespaces["data"].Value, string.Empty);
+                        elType.AppendChild(elText);
+
+                        foreach (LocalisedText text in data.type.Text)
+                        {
+                            XmlElement elLocalisedText = XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["data"].Key, "LocalisedText", SchemaHelper.Namespaces["data"].Value, string.Empty);
+                            elText.AppendChild(elLocalisedText);
+                            elLocalisedText.AppendChild(XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["data"].Key, "Language", SchemaHelper.Namespaces["data"].Value, text.Language.ToString()));
+                            elLocalisedText.AppendChild(XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["data"].Key, "Text", SchemaHelper.Namespaces["data"].Value, text.Text));
+                        }
+
+                        if (param.returnGeometry)
+                        {
+                            XmlElement elLimit = XmlHelper.GetXmlElement(doc, string.Empty, "limit", SchemaHelper.Namespaces["extract"].Value, string.Empty);
+                            rootElement.AppendChild(elLimit);
+                            XmlElement elSurface = XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["geometry"].Key, "surface", SchemaHelper.Namespaces["geometry"].Value, string.Empty);
+                            elLimit.AppendChild(elSurface);
+
+                            foreach (BoundaryType ext in data.limit.surface.exterior)
+                            {
+                                OutputBoundaryXml(doc, elSurface, ext, "exterior");
+                            }
+                            foreach (BoundaryType ext in data.limit.surface.interior)
+                            {
+                                OutputBoundaryXml(doc, elSurface, ext, "interior");
+                            }
+                        }
+                    }
+
+                    return doc.DocumentElement;
                 }
                 else
                 {
@@ -37,8 +99,7 @@ public class RdppfSVC : IRdppfSVC
             }
             else
             {
-                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-                return XmlHelper.GetXmlElement(new ErrorResponseType(400));
+                throw new WsUserException(HttpStatusCode.BadRequest.ToString());
             }
         }
         catch (Exception ex)
@@ -60,17 +121,25 @@ public class RdppfSVC : IRdppfSVC
         {
             string json = string.Empty;
 
-            GetEGRIDParamReq paramReq = GetEGRIDParamReq.GetEGRIDParam(
-                WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters["xy"],
-                WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters["gnss"]
-            );
-
-            if (paramReq != null)
+            GetEGRIDParamReq param = new GetEGRIDParamReq();
+            if (param.Parse(WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters))
             {
-                GetEGRIDReq req = new GetEGRIDReq();
-                QueryResult qr = req.GetEGRID(paramReq);
+                QueryResult qr = null;
+                GetEGRIDReq req = new GetEGRIDReq(param.returnGeometry);
+                switch (param.method)
+                {
+                    case GetEGRIDParamReq.GetEGRIDMethod.Coordinates:
+                        qr = req.GetEGRIDByCoordinates(param.coordX, param.coordY, param.isGNSS);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Idents:
+                        qr = req.GetEGRIDByID(param.identDN, param.number);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Localisation:
+                        qr = req.GetEGRIDByLocalisation(param.postalCode, param.localisation, param.number);
+                        break;
+                }
 
-                if (qr.features.Length > 0)
+                if (qr.features != null && qr.features.Length > 0)
                 {
                     JsonExtract.JsonEGRID response = new JsonExtract.JsonEGRID();
                     response.Item = req.GetEGRIDResponse(qr);
@@ -85,8 +154,7 @@ public class RdppfSVC : IRdppfSVC
             }
             else
             {
-                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.BadRequest;
-                json = serializer.Serialize(new ErrorResponseType(400));
+                throw new WsUserException(HttpStatusCode.BadRequest.ToString());
             }
 
             return new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -101,21 +169,49 @@ public class RdppfSVC : IRdppfSVC
         }
     }
 
-    public XmlElement GetEGRIDByIDAsXml(string identdn, string number)
+    public XmlElement GetExtractAsXml()
     {
         try
         {
-            GetEGRIDReq req = new GetEGRIDReq();
-            QueryResult qr = req.GetEGRIDByID(identdn, number);
-
-            if (qr.features.Length > 0)
+            GetExtractParamReq param = new GetExtractParamReq();
+            if (param.Parse(WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters))
             {
-                return XmlHelper.GetXmlElement(req.GetEGRIDResponseTypeInfo(), req.GetGenericEGRIDRResponse(qr));
+                GetExtractReq extractRequest = new GetExtractReq(param);
+
+                QueryResultFeature feature = null;
+                switch (param.method)
+                {
+                    case GetEGRIDParamReq.GetEGRIDMethod.EGRID:
+                        feature = extractRequest.ProcessEGRID(param.EGRID);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Idents:
+                        feature = extractRequest.ProcessID(param.identDN, param.number);
+                        break;
+                }
+
+                if (feature == null)
+                {
+                    WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
+                    return XmlHelper.GetXmlElement(new ErrorResponseType(204));
+                }
+
+                GetExtractByIdResponseType resp = extractRequest.GetResponseAsXml(feature);
+
+                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+                ns.Add(string.Empty, SchemaHelper.Namespaces["extract"].Value);
+                ns.Add(SchemaHelper.Namespaces["data"].Key, SchemaHelper.Namespaces["data"].Value);
+                ns.Add(SchemaHelper.Namespaces["geometry"].Key, SchemaHelper.Namespaces["geometry"].Value);
+                ns.Add(SchemaHelper.Namespaces["xsd"].Key, SchemaHelper.Namespaces["xsd"].Value);
+                ns.Add(SchemaHelper.Namespaces["xsi"].Key, SchemaHelper.Namespaces["xsi"].Value);
+
+                XmlElement root = XmlHelper.GetXmlElement(resp, ns);
+                root.SetAttribute("schemaLocation", SchemaHelper.Namespaces["xsi"].Value, SchemaHelper.GetSchemaLocation(new string[] { "extract", "data", "geometry" }));
+
+                return root;
             }
             else
             {
-                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-                return XmlHelper.GetXmlElement(new ErrorResponseType(204));
+                throw new WsUserException(HttpStatusCode.BadRequest.ToString());
             }
         }
         catch (Exception ex)
@@ -126,34 +222,90 @@ public class RdppfSVC : IRdppfSVC
         }
     }
 
-    public Stream GetEGRIDByIDAsJson(string identdn, string number)
+    public XmlElement GetExtractAsUrl()
+    {
+        try
+        {
+
+            GetExtractParamReq param = new GetExtractParamReq();
+            if (param.Parse(WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters))
+            {
+                GetExtractReq extractRequest = new GetExtractReq(param);
+
+                QueryResultFeature feature = null;
+                switch (param.method)
+                {
+                    case GetEGRIDParamReq.GetEGRIDMethod.EGRID:
+                        feature = extractRequest.ProcessEGRID(param.EGRID);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Idents:
+                        feature = extractRequest.ProcessID(param.identDN, param.number);
+                        break;
+                }
+
+                if (feature == null)
+                {
+                    WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
+                    return XmlHelper.GetXmlElement(new ErrorResponseType(204));
+                }
+
+                string resp = extractRequest.GetResponseAsUrl(feature);
+
+                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.SeeOther;
+                WebOperationContext.Current.OutgoingResponse.Location = resp;
+                return XmlHelper.GetXmlElement(new ErrorResponseType(303));
+            }
+            else
+            {
+                throw new WsUserException(HttpStatusCode.BadRequest.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            Helper.LogError(new WsUserException(ex));
+            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
+            return XmlHelper.GetXmlElement(new ErrorResponseType(500));
+        }
+    }
+
+    public Stream GetExtractAsJson()
     {
         WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
-
         JavaScriptSerializer serializer = new JavaScriptSerializer();
         serializer.MaxJsonLength = Int32.MaxValue;
 
         try
         {
-            string json = string.Empty;
-
-            GetEGRIDReq req = new GetEGRIDReq();
-            QueryResult qr = req.GetEGRIDByID(identdn, number);
-
-            if (qr.features.Length > 0)
+            GetExtractParamReq param = new GetExtractParamReq();
+            if (param.Parse(WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters))
             {
-                JsonExtract.JsonEGRID response = new JsonExtract.JsonEGRID();
-                response.Item = req.GetEGRIDResponse(qr);
+                GetExtractReq extractRequest = new GetExtractReq(param);
 
-                json = serializer.Serialize(response);
+                QueryResultFeature feature = null;
+                switch (param.method)
+                {
+                    case GetEGRIDParamReq.GetEGRIDMethod.EGRID:
+                        feature = extractRequest.ProcessEGRID(param.EGRID);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Idents:
+                        feature = extractRequest.ProcessID(param.identDN, param.number);
+                        break;
+                }
+
+                if (feature == null)
+                {
+                    WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
+                    return new MemoryStream(Encoding.UTF8.GetBytes(serializer.Serialize(new ErrorResponseType(204))));
+                }
+
+                JsonExtract.JsonExtract extract = extractRequest.GetResponseAsJson(feature);
+                string json = serializer.Serialize(extract);
+                return new MemoryStream(Encoding.UTF8.GetBytes(json));
             }
             else
             {
-                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-                json = serializer.Serialize(new ErrorResponseType(204));
+                throw new WsUserException(HttpStatusCode.BadRequest.ToString());
             }
-
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
         }
         catch (Exception ex)
         {
@@ -161,245 +313,50 @@ public class RdppfSVC : IRdppfSVC
 
             WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
             string json = serializer.Serialize(new ErrorResponseType(500));
+
             return new MemoryStream(Encoding.UTF8.GetBytes(json));
         }
     }
 
-    public XmlElement GetEGRIDByLocalisationAsXml(string postalCode, string localisation, string number)
+    public Stream GetExtractAsPdf()
     {
-        try
-        {
-            GetEGRIDReq req = new GetEGRIDReq();
-            QueryResult qr = req.GetEGRIDByLocalisation(postalCode, localisation, number);
-
-            if (qr.features.Length > 0)
-            {
-                return XmlHelper.GetXmlElement(req.GetEGRIDResponseTypeInfo(), req.GetGenericEGRIDRResponse(qr));
-            }
-            else
-            {
-                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-                return XmlHelper.GetXmlElement(new ErrorResponseType(204));
-            }
-        }
-        catch (Exception ex)
-        {
-            Helper.LogError(new WsUserException(ex));
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
-            return XmlHelper.GetXmlElement(new ErrorResponseType(500));
-        }
-    }
-
-    public Stream GetEGRIDByLocalisationAsJson(string postalCode, string localisation, string number)
-    {
-        WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
-
         JavaScriptSerializer serializer = new JavaScriptSerializer();
         serializer.MaxJsonLength = Int32.MaxValue;
 
-        try
-        {
-            string json = string.Empty;
-
-            GetEGRIDReq req = new GetEGRIDReq();
-            QueryResult qr = req.GetEGRIDByLocalisation(postalCode, localisation, number);
-
-            if (qr.features.Length > 0)
-            {
-                JsonExtract.JsonEGRID response = new JsonExtract.JsonEGRID();
-                response.Item = req.GetEGRIDResponse(qr);
-
-                json = serializer.Serialize(response);
-            }
-            else
-            {
-                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-                json = serializer.Serialize(new ErrorResponseType(204));
-            }
-
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-        catch (Exception ex)
-        {
-            Helper.LogError(new WsUserException(ex));
-
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
-            string json = serializer.Serialize(new ErrorResponseType(500));
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-    }
-
-    public XmlElement GetReducedExtractByEGRIDAsXml(string egrid)
-    {
-        return this.GetExtractByEGRIDAsXml("reduced", egrid, false);
-    }
-
-    public XmlElement GetEmbeddableExtractByEGRIDAsXml(string egrid)
-    {
-        return this.GetExtractByEGRIDAsXml("embeddable", egrid, false);
-    }
-
-    public XmlElement GetReducedExtractGeometryByEGRIDAsXml(string egrid)
-    {
-        return this.GetExtractByEGRIDAsXml("reduced", egrid, true);
-    }
-
-    public XmlElement GetEmbeddableExtractGeometryByEGRIDAsXml(string egrid)
-    {
-        return this.GetExtractByEGRIDAsXml("embeddable", egrid, true);
-    }
-
-    private XmlElement GetExtractByEGRIDAsXml(string flavour, string egrid, bool returnGeometry)
-    {
-        try
-        {
-            return this.GetExtractAsXml(flavour, egrid, null, null, returnGeometry);
-        }
-        catch (Exception ex)
-        {
-            Helper.LogError(new WsUserException(ex));
-            Helper.LogError(new WsUserException(ex));
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
-            return XmlHelper.GetXmlElement(new ErrorResponseType(500));
-        }
-    }
-
-    public XmlElement GetReducedExtractByIDAsXml(string identdn, string number)
-    {
-        return this.GetExtractByIDAsXml("reduced", identdn, number, false);
-    }
-
-    public XmlElement GetEmbeddableExtractByIDAsXml(string identdn, string number)
-    {
-        return this.GetExtractByIDAsXml("embeddable", identdn, number, false);
-    }
-
-    public XmlElement GetReducedExtractGeometryByIDAsXml(string identdn, string number)
-    {
-        return this.GetExtractByIDAsXml("reduced", identdn, number, true);
-    }
-
-    public XmlElement GetEmbeddableExtractGeometryByIDAsXml(string identdn, string number)
-    {
-        return this.GetExtractByIDAsXml("embeddable", identdn, number, true);
-    }
-
-    private XmlElement GetExtractByIDAsXml(string flavour, string identdn, string number, bool returnGeometry)
-    {
-        try
-        {
-            return this.GetExtractAsXml(flavour, null, identdn, number, returnGeometry);
-        }
-        catch (Exception ex)
-        {
-            Helper.LogError(new WsUserException(ex));
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
-            return XmlHelper.GetXmlElement(new ErrorResponseType(500));
-        }
-    }
-
-    public Stream GetReducedExtractByEGRIDAsJson(string egrid)
-    {
-        return this.GetExtractByEGRIDAsJson("reduced", egrid, false);
-    }
-
-    public Stream GetEmbeddableExtractByEGRIDAsJson(string egrid)
-    {
-        return this.GetExtractByEGRIDAsJson("embeddable", egrid, false);
-    }
-
-    public Stream GetReducedExtractGeometryByEGRIDAsJson(string egrid)
-    {
-        return this.GetExtractByEGRIDAsJson("reduced", egrid, true);
-    }
-
-    public Stream GetEmbeddableExtractGeometryByEGRIDAsJson(string egrid)
-    {
-        return this.GetExtractByEGRIDAsJson("embeddable", egrid, true);
-    }
-
-    private Stream GetExtractByEGRIDAsJson(string flavour, string egrid, bool returnGeometry)
-    {
-        WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
-
-        try
-        {
-            return this.GetExtractAsJson(flavour, egrid, null, null, returnGeometry);
-        }
-        catch (Exception ex)
-        {
-            Helper.LogError(new WsUserException(ex));
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
-            string json = serializer.Serialize(new ErrorResponseType(500));
-
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-    }
-
-    public Stream GetReducedExtractByIDAsJson(string identdn, string number)
-    {
-        return this.GetExtractByIDAsJson("reduced", identdn, number, false);
-    }
-
-    public Stream GetEmbeddableExtractByIDAsJson(string identdn, string number)
-    {
-        return this.GetExtractByIDAsJson("embeddable", identdn, number, false);
-    }
-
-    public Stream GetReducedExtractGeometryByIDAsJson(string identdn, string number)
-    {
-        return this.GetExtractByIDAsJson("reduced", identdn, number, true);
-    }
-
-    public Stream GetEmbeddableExtractGeometryByIDAsJson(string identdn, string number)
-    {
-        return this.GetExtractByIDAsJson("embeddable", identdn, number, true);
-    }
-
-    private Stream GetExtractByIDAsJson(string flavour, string identdn, string number, bool returnGeometry)
-    {
-        WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
-
-        try
-        {
-            return this.GetExtractAsJson(flavour, null, identdn, number, returnGeometry);
-        }
-        catch (Exception ex)
-        {
-            Helper.LogError(new WsUserException(ex));
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
-            string json = serializer.Serialize(new ErrorResponseType(500));
-
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-    }
-
-    public Stream GetReducedExtractByEGRIDAsPdf(string egrid)
-    {
-        return this.GetExtractByEGRIDAsPdf("reduced", egrid);
-    }
-
-    public Stream GetFullExtractByEGRIDAsPdf(string egrid)
-    {
-        return this.GetExtractByEGRIDAsPdf("full", egrid);
-    }
-
-    public Stream GetSignedExtractByEGRIDAsPdf(string egrid)
-    {
-        return this.GetExtractByEGRIDAsPdf("signed", egrid);
-    }
-
-    private Stream GetExtractByEGRIDAsPdf(string flavour, string egrid)
-    {
         try
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "application/pdf; charset=utf-8";
 
-            return this.GetExtractAsPdf(flavour, egrid, null, null);
+            GetExtractParamReq param = new GetExtractParamReq();
+            if (param.Parse(WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters))
+            {
+                GetReportReq reportRequest = new GetReportReq(param);
+
+                QueryResultFeature feature = null;
+                switch (param.method)
+                {
+                    case GetEGRIDParamReq.GetEGRIDMethod.EGRID:
+                        feature = reportRequest.ProcessEGRID(param.EGRID);
+                        break;
+                    case GetEGRIDParamReq.GetEGRIDMethod.Idents:
+                        feature = reportRequest.ProcessID(param.identDN, param.number);
+                        break;
+                }
+
+                if (feature == null)
+                {
+                    WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
+                    string json = serializer.Serialize(new ErrorResponseType(204));
+                    return new MemoryStream(Encoding.UTF8.GetBytes(json));
+                }
+
+                byte[] resp = reportRequest.GetResponseAsPdf(feature);
+                return new MemoryStream(resp);
+            }
+            else
+            {
+                throw new WsUserException(HttpStatusCode.BadRequest.ToString());
+            }
         }
         catch (Exception ex)
         {
@@ -407,7 +364,6 @@ public class RdppfSVC : IRdppfSVC
 
             Helper.LogError(new WsUserException(ex));
 
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
             WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
             string json = serializer.Serialize(new ErrorResponseType(500));
 
@@ -415,43 +371,6 @@ public class RdppfSVC : IRdppfSVC
         }
     }
 
-    public Stream GetReducedExtractByIDAsPdf(string identdn, string number)
-    {
-        return this.GetExtractByIDAsPdf("reduced", identdn, number);
-    }
-
-    public Stream GetFullExtractByIDAsPdf(string identdn, string number)
-    {
-        return this.GetExtractByIDAsPdf("full", identdn, number);
-    }
-
-    public Stream GetSignedExtractByIDAsPdf(string identdn, string number)
-    {
-        return this.GetExtractByIDAsPdf("signed", identdn, number);
-    }
-
-    private Stream GetExtractByIDAsPdf(string flavour, string identdn, string number)
-    {
-        try
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "application/pdf; charset=utf-8";
-
-            return this.GetExtractAsPdf(flavour, null, identdn, number);
-        }
-        catch (Exception ex)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "application/json; charset=utf-8";
-
-            Helper.LogError(new WsUserException(ex));
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.InternalServerError;
-            string json = serializer.Serialize(new ErrorResponseType(500));
-
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-    }
-    
     public XmlElement GetCapabilitiesAsXml()
     {
         try
@@ -530,141 +449,20 @@ public class RdppfSVC : IRdppfSVC
         }
     }
 
-    private GetExtractParamReq GetExtractParameters()
+    private void OutputBoundaryXml(XmlDocument doc, XmlElement root, BoundaryType boundary, string name)
     {
-        string langParam = WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters["lang"];
-        string topicsParam = WebOperationContext.Current.IncomingRequest.UriTemplateMatch.QueryParameters["topics"];
-        string query = WebOperationContext.Current.IncomingRequest.UriTemplateMatch.RequestUri.Query;
-        bool withImages = query.Contains("withimages");
+        XmlElement el = XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["geometry"].Key, name, SchemaHelper.Namespaces["geometry"].Value, string.Empty);
+        root.AppendChild(el);
+        XmlElement elPolyline = XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["geometry"].Key, "polyline", SchemaHelper.Namespaces["geometry"].Value, string.Empty);
+        el.AppendChild(elPolyline);
 
-        return GetExtractParamReq.GetExtractParam(langParam, topicsParam, withImages);
-    }
-
-    private XmlElement GetExtractAsXml(string flavour, string egrid, string identdn, string number, bool returnGeometry)
-    {
-        GetExtractParamReq paramRequest = this.GetExtractParameters();
-        GetExtractReq extractRequest = new GetExtractReq(paramRequest, flavour, returnGeometry);
-
-        QueryResultFeature feature = null;
-        if (string.IsNullOrEmpty(egrid))
+        foreach (CoordType ct in boundary.polyline.Items)
         {
-            feature = extractRequest.ProcessID(identdn, number);
+            XmlElement elCoord = XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["geometry"].Key, "coord", SchemaHelper.Namespaces["geometry"].Value, string.Empty);
+            elPolyline.AppendChild(elCoord);
+
+            elCoord.AppendChild(XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["geometry"].Key, "c1", SchemaHelper.Namespaces["geometry"].Value, ct.c1.ToString()));
+            elCoord.AppendChild(XmlHelper.GetXmlElement(doc, SchemaHelper.Namespaces["geometry"].Key, "c2", SchemaHelper.Namespaces["geometry"].Value, ct.c2.ToString()));
         }
-        else
-        {
-            feature = extractRequest.ProcessEGRID(egrid);
-        }
-
-        if (feature == null)
-        {
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-            return XmlHelper.GetXmlElement(new ErrorResponseType(204));
-        }
-
-        if (extractRequest.IsEmbeddable())
-        {
-            GetReportReq reportRequest = new GetReportReq(paramRequest, flavour);
-
-            return XmlHelper.GetXmlElement(extractRequest.GetEmbeddableResponseAsXml(reportRequest.GetResponseAsPdf(feature)));
-        }
-        else
-        {
-            return XmlHelper.GetXmlElement(extractRequest.GetResponseAsXml(feature));
-        }
-    }
-
-    private Stream GetExtractAsJson(string flavour, string egrid, string identdn, string number, bool returnGeometry)
-    {
-        JavaScriptSerializer serializer = new JavaScriptSerializer();
-        serializer.MaxJsonLength = Int32.MaxValue;
-
-        GetExtractParamReq paramRequest = this.GetExtractParameters();
-        GetExtractReq extractRequest = new GetExtractReq(paramRequest, flavour, returnGeometry);
-
-        QueryResultFeature feature = null;
-        if (string.IsNullOrEmpty(egrid))
-        {
-            feature = extractRequest.ProcessID(identdn, number);
-        }
-        else
-        {
-            feature = extractRequest.ProcessEGRID(egrid);
-        }
-
-        if (feature == null)
-        {
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-            string json = serializer.Serialize(new ErrorResponseType(204));
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-
-        if (extractRequest.IsEmbeddable())
-        {
-            GetReportReq reportRequest = new GetReportReq(paramRequest, flavour);
-
-            JsonExtract.JsonEmbeddableExtract extract =
-                extractRequest.GetEmbeddableResponseAsJson(reportRequest.GetResponseAsPdf(feature));
-
-            string json = serializer.Serialize(extract);
-
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-        else
-        {
-            JsonExtract.JsonExtract extract = extractRequest.GetResponseAsJson(feature);
-            string json = serializer.Serialize(extract);
-
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-    }
-
-    private Stream GetExtractAsPdf(string flavour, string egrid, string identdn, string number)
-    {
-        Stopwatch timer = Stopwatch.StartNew();
-        Stopwatch global = Stopwatch.StartNew();
-
-        Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** START ***", timer.ElapsedMilliseconds);
-
-        JavaScriptSerializer serializer = new JavaScriptSerializer();
-        serializer.MaxJsonLength = Int32.MaxValue;
-
-        GetExtractParamReq paramRequest = this.GetExtractParameters();
-        GetReportReq reportRequest = new GetReportReq(paramRequest, flavour);
-
-        Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** PARAMETRES ***", timer.ElapsedMilliseconds);
-        timer.Restart();
-
-        QueryResultFeature feature = null;
-        if (string.IsNullOrEmpty(egrid))
-        {
-            feature = reportRequest.ProcessID(identdn, number);
-
-            Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** PROCESS commune + parcelle ***", timer.ElapsedMilliseconds);
-            timer.Restart();
-        }
-        else
-        {
-            feature = reportRequest.ProcessEGRID(egrid);
-
-            Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** PROCESS EGRID ***", timer.ElapsedMilliseconds);
-            timer.Restart();
-        }
-
-        if (feature == null)
-        {
-            WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NoContent;
-            string json = serializer.Serialize(new ErrorResponseType(204));
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
-        }
-
-        byte[] buffer = reportRequest.GetResponseAsPdf(feature);
-
-        Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** ANALYSE + PDF ***", timer.ElapsedMilliseconds);
-        timer.Stop();
-
-        Helper.LogInfo(this.GetType().ToString(), "GetExtractAsPdf - *** END ***", global.ElapsedMilliseconds);
-        global.Stop();
-
-        return new MemoryStream(buffer);
     }
 }

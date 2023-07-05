@@ -1,51 +1,40 @@
-﻿/* $Rev: 22477 $ */
+﻿/* $Rev: 30309 $ */
+using ExtractDataModel_v20;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using Topomat.Web.Common;
-using System.Diagnostics;
-using System.Threading;
-using System.IO;
-using System.Drawing;
-using System;
-using System.Drawing.Imaging;
-using ExtractData_v103;
-using System.Drawing.Drawing2D;
 
 public class GetReportReq : CommonReq
 {
     private static int MAP_OUTLINE_WIDTH = 2;
-    private static int TITLE_MARGIN_BREAK = 55;
-    private static int TITLE_MARGIN_SINGLE = 14;
-    private static int TITLE_MARGIN_DOUBLE = 7;
 
     private string workPath;
     private string workUrl;
     private string extractId;
 
-    public GetReportReq(GetExtractParamReq param, string flavour)
+    public GetReportReq(GetExtractParamReq param)
     {
         param.withImages = true;
         param.allTopics = true;
-        base.Init(param, flavour, true);
+        base.Init(param, true);
         this.workPath = WebHelper.GetConfigValue("WorkingPath");
         this.workUrl = WebHelper.GetConfigValue("WorkingUrl");
     }
 
     public byte[] GetResponseAsPdf(QueryResultFeature feature)
     {
-        Stopwatch timer = Stopwatch.StartNew();
-
         ReportData reportData = this.GetReportData(feature);
 
-        Helper.LogInfo(this.GetType().ToString(), "GetResponseAsPdf - * DONNEES *", timer.ElapsedMilliseconds);
-        timer.Restart();
-
-        ExtractGenerator generator = new ExtractGenerator();
+        ExtractGenerator generator = new ExtractGenerator(this.oerebHelper);
         byte[] pdfData = generator.Generate(reportData);
-
-        Helper.LogInfo(this.GetType().ToString(), "GetResponseAsPdf - * RAPPORT *", timer.ElapsedMilliseconds);
-        timer.Stop();
 
         return pdfData;
     }
@@ -54,16 +43,13 @@ public class GetReportReq : CommonReq
     {
         Stopwatch timer = Stopwatch.StartNew();
 
-        IDictionary<Thread, MapPrintWorkerThread> dictMapPrintThreads = new Dictionary<Thread, MapPrintWorkerThread>();
-        IDictionary<Thread, SurfaceWorkerThread> dictSurfThreads = new Dictionary<Thread, SurfaceWorkerThread>();
-
-        // first get maps
+        IList<MapWorker> mapWorkers = new List<MapWorker>();
         Extent geomExtent = this.queryWorker.GetGeometryExtent(feature.geometry);
         this.printParams = new MapPrintParams(XmlHelper.GetMapPrintConfig(), geomExtent);
 
         RestrictionResult[] restrictionResults = this.restrWorker.RunAnalyse(feature, this.printParams.GetMapExtent());
 
-        Helper.LogInfo(this.GetType().ToString(), "GetReportData - analyse", timer.ElapsedMilliseconds);
+        Helper.LogInfo(this.GetType().ToString(), "Données du rapport, analyse", timer.ElapsedMilliseconds);
         timer.Restart();
 
         string marker = "markerMapLayer";
@@ -75,115 +61,83 @@ public class GetReportReq : CommonReq
         int[] ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "mainMapLayer" });
         int markerId = this.GetMapLayerIds(new string[] { marker })[0];
         string layerDefs = string.Format("{0}:OBJECTID={1}", markerId, feature.attributes["OBJECTID"]);
-
-        dictMapPrintThreads.Add(this.GetMapPrintWorkerThread(this.printParams, geomExtent, ids,
-            MapWorkerThread.TYPE_PAGE, -1, layerDefs));
+        mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.marker, string.Empty, ids, layerDefs));
 
         ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "restrictionMapLayer" });
-        foreach (RestrictionResult restriction in restrictionResults)
+        IList<int> addedLayerIds = new List<int>();
+        foreach (RestrictionResult restriction in restrictionResults.Where(rr => rr.isFirst))
         {
-            if (restriction.isFirst)
+            IList<int> idList = new List<int>(ids);
+
+            int id = restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerId(restriction.LayerId) : restriction.LayerId;
+            if (!addedLayerIds.Contains(id))
             {
-                IList<int> idList = new List<int>(ids);
-                idList.Add(restriction.LayerId);
+                idList.Add(id);
+                idList = idList.Concat(this.restrWorker.GetAdditionalLayerIds(id)).ToList();
+                idList = idList.Concat(this.restrWorker.GetAdditionalLegendIds(id)).ToList();
+                mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restriction, id.ToString(), idList.ToArray(), layerDefs));
 
-                XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", restriction.IdentResult.layerName);
-                string additionalLayers = XmlHelper.GetXmlAttribute(node, "additionalLayers", false);
-
-                if (!string.IsNullOrEmpty(additionalLayers))
-                {
-                    foreach (string additionalLayer in additionalLayers.Split(new char[] { ',' }))
-                    {
-                        idList.Add(this.mapLayerInfo.GetLayerInfo(additionalLayer).LayerID);
-                    }
-                }
-                dictMapPrintThreads.Add(this.GetMapPrintWorkerThread(this.printParams, geomExtent, idList.ToArray(),
-                    MapWorkerThread.TYPE_RESTRICTION, restriction.LayerId, layerDefs));
+                addedLayerIds.Add(id);
             }
         }
 
-        // compute surfaces
-        IEnumerable<IGrouping<int, RestrictionResult>> groups = restrictionResults.GroupBy(rr => rr.LayerId);
-        foreach (IList<RestrictionResult> restrList in groups)
+        // calcul des surfaces
+        Parallel.ForEach(restrictionResults.GroupBy(rr => rr.LayerId), restrList =>
         {
-            string layerName = restrList.First().IdentResult.layerName;
-            XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", layerName);
-
-            bool isComplete = bool.Parse(XmlHelper.GetXmlAttribute(node, "complete", true));
+            bool isComplete = false;
             bool isOverlap = false;
-            string overlapValue = XmlHelper.GetXmlAttribute(node, "overlap", false);
-            if (!string.IsNullOrEmpty(overlapValue))
+
+            if (!restrList.First().isAdditionalResult)
             {
-                bool.TryParse(overlapValue, out isOverlap);
+                XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", restrList.First().LayerName);
+
+                isComplete = bool.Parse(XmlHelper.GetXmlAttribute(node, "complete", true));
+                string overlapValue = XmlHelper.GetXmlAttribute(node, "overlap", false);
+                if (!string.IsNullOrEmpty(overlapValue))
+                {
+                    bool.TryParse(overlapValue, out isOverlap);
+                }
             }
 
-            SurfaceWorkerThread swThread = new SurfaceWorkerThread(new SurfaceWorker());
-            swThread.Init(feature, isComplete, isOverlap, restrList.ToArray());
+            SurfaceWorker worker = new SurfaceWorker();
+            worker.GetSurfaces(feature, isComplete, isOverlap, restrList.ToArray());
+        });
 
-            Thread thread = new Thread(new ThreadStart(swThread.Start));
-            thread.Start();
+        Helper.LogInfo(this.GetType().ToString(), "Données du rapport, calcul des surfaces", timer.ElapsedMilliseconds);
+        timer.Restart();
 
-            dictSurfThreads.Add(thread, swThread);
-        }
-
+        // récupération des cartes
         string mainMapUrl = string.Empty;
         IDictionary<int, string> dictRestrictionMapUrls = new Dictionary<int, string>();
 
         this.CreateWorkingDirectory(this.GetIdentifier(feature));
 
-        // wait for threads to finish
-        foreach (KeyValuePair<Thread, SurfaceWorkerThread> pair in dictSurfThreads)
+        Bitmap bmScaleBar = new ScaleBar(printParams).DrawBar(GetReportFontName());
+
+        Parallel.ForEach(mapWorkers, worker =>
         {
-            pair.Key.Join();
-            if (!pair.Value.IsSuccessfull())
+            byte[] imageData = worker.GetExtractMapAsImage(geomExtent);
+            switch (worker.GetWorkerType())
             {
-                throw new WsUserException(pair.Value.GetErrorMessage());
+                case MapWorker.MapWorkerTypes.marker:
+                    mainMapUrl = this.AddObjectsToMap("main", imageData, bmScaleBar);
+                    break;
+                default:
+                    int layerId = int.Parse(worker.GetEntityId());
+                    dictRestrictionMapUrls.Add(layerId, this.AddObjectsToMap(string.Format("restr_{0}", layerId), imageData, bmScaleBar));
+                    break;
             }
-        }
+        });
 
-        Helper.LogInfo(this.GetType().ToString(), "GetReportData - calcul des surfaces", timer.ElapsedMilliseconds);
-
-        ScaleBar scaleBar = new ScaleBar(printParams);
-        Bitmap bmScaleBar = scaleBar.DrawBar();
-        Bitmap bmNorthArrow = new Bitmap(Path.Combine(Path.Combine(WebHelper.GetConfigValue("ApplicationPath"), "images"),
-            "NorthArrow.png"));
-
-        foreach (KeyValuePair<Thread, MapPrintWorkerThread> pair in dictMapPrintThreads)
-        {
-            pair.Key.Join();
-
-            if (!pair.Value.IsSuccessfull())
-            {
-                throw new WsUserException(pair.Value.GetErrorMessage());
-            }
-
-            if (pair.Value.GetMapPrintType() == MapWorkerThread.TYPE_PAGE)
-            {
-                mainMapUrl = this.AddObjectsToMap("main", pair.Value.GetResult(), bmNorthArrow, bmScaleBar, scaleBar);
-            }
-            else
-            {
-                string name = string.Format("restr_{0}", pair.Value.GetLayerId());
-                dictRestrictionMapUrls.Add(pair.Value.GetLayerId(),
-                    this.AddObjectsToMap(name, pair.Value.GetResult(), bmNorthArrow, bmScaleBar, scaleBar));
-            }
-        }
-
-        Helper.LogInfo(this.GetType().ToString(), "GetReportData - récupération des cartes", timer.ElapsedMilliseconds);
+        Helper.LogInfo(this.GetType().ToString(), "Données du rapport, récupération des cartes", timer.ElapsedMilliseconds);
         timer.Restart();
 
-        data[] attributes = this.GetMainData(feature);
-
         // add concerned themes
-        IList<restriction> restrictions = new List<restriction>();
-        IEnumerable<IGrouping<int, RestrictionResult>> restrGroups = restrictionResults.GroupBy(rr => rr.LayerId);
+        IList<RestrictionTheme> themes = GetThemes();
+        IList<restriction> restrictions = GetRestrictionData(themes, restrictionResults, dictRestrictionMapUrls);
 
-        foreach (IList<RestrictionResult> restrResultList in restrGroups)
-        {
-            restrictions.Add(this.GetRestrictionData(restrResultList.OrderBy(_l => _l.Legend.Index).ToList(), dictRestrictionMapUrls));
-        }
         // add not concerned themes
-        foreach (string notConcernedTheme in this.GetNotConcernedTheme(restrictionResults))
+        foreach (string notConcernedTheme in this.GetNotConcernedTheme(themes, restrictionResults))
         {
             restrictions.Add(new restriction()
             {
@@ -191,64 +145,61 @@ public class GetReportReq : CommonReq
                 result = false
             });
         }
-        
+
+        RealEstateData re = GetMainData(feature);
         ReportData reportData = new ReportData(this.extractId);
 
-        reportData.section.type = this.flavour.ToUpper();
         reportData.section.mapUrl = mainMapUrl;
         reportData.section.dmoDate = this.GetFormattedDMODate();
-        reportData.section.datas = attributes;
+        reportData.section.realEstate = re;
         reportData.section.restrictions = restrictions.ToArray();
 
-        IList<string> themes = new List<string>();
+        IList<string> themeWithoutData = new List<string>();
         foreach (Theme t in this.GetThemeWithoutData())
         {
-            themes.Add(t.Text.Text);
+            themeWithoutData.Add(t.Text[0].Text);
         }
-        reportData.section.noDataThemes = themes.ToArray();
+        reportData.section.noDataThemes = themeWithoutData.ToArray();
 
         IList<string> infos = new List<string>();
-        foreach (LocalisedMText t in this.GetLocalisedMText(this.infoConfig, "GeneralInformation"))
+        foreach (LocalisedMText t in this.GetLocalisedMText(this.infoConfig, "Information"))
         {
             infos.Add(t.Text);
         }
-        reportData.section.generalInfos = infos.ToArray();
+        reportData.section.generalInfos = GetInformationConfig("Information").First();
 
-        IList<string> data = new List<string>();
-        foreach (LocalisedMText t in this.GetBaseData())
+        InformationText baseData = GetInformationConfig("BaseData").First();
+        IList<string> contents = new List<string>();
+        foreach (string value in baseData.Contents)
         {
-            data.Add(t.Text);
+            string content = value.Contains("###DMODATE###") ? value.Replace("###DMODATE###", this.GetFormattedDMODate()) : value;
+            contents.Add(content);
         }
-        reportData.section.baseData = data.ToArray();
-        
+        reportData.section.baseData = new InformationText
+        {
+            Title = baseData.Title,
+            Contents = contents.ToArray()
+        };
         reportData.section.dmoDate = this.GetFormattedDMODate();
 
-        IList<glossary> glossaries = new List<glossary>();
-        foreach (Glossary g in this.GetGlossary())
-        {
-            glossaries.Add(new glossary { title = g.Title[0].Text, content = g.Content[0].Text });
-        }
-        reportData.glossaries = glossaries.ToArray();
+        reportData.section.disclaimers = GetInformationConfig("Disclaimer").Where(d => d.UseInStaticExtract).ToArray();
 
-        Helper.LogInfo(this.GetType().ToString(), "GetReportData - données du rapport", timer.ElapsedMilliseconds);
+        reportData.glossaries = GetInformationConfig("Glossary").ToArray();
+
+        Helper.LogInfo(this.GetType().ToString(), "Données du rapport, informations", timer.ElapsedMilliseconds);
         timer.Stop();
 
         return reportData;
     }
 
-    private KeyValuePair<Thread, MapPrintWorkerThread> GetMapPrintWorkerThread(MapPrintParams printParams, Extent extent,
-        int[] layerIds, int type, int id, string layerDefs)
+    private MapWorker InitMapWorker(MapPrintParams printParams, MapWorker.MapWorkerTypes type, string id, int[] layerIds, string layerDefs)
     {
-        MapPrintWorkerThread mapPrintThread = new MapPrintWorkerThread(new MapWorker(printParams), type, id);
-        mapPrintThread.Init(extent, layerIds, layerDefs);
-
-        Thread thread = new Thread(new ThreadStart(mapPrintThread.Start));
-        thread.Start();
-
-        return new KeyValuePair<Thread, MapPrintWorkerThread>(thread, mapPrintThread);
+        MapWorker worker = new MapWorker(printParams);
+        worker.Init(type, id, layerIds, layerDefs);
+        return worker;
     }
 
-    private data[] GetMainData(QueryResultFeature feature)
+    private RealEstateData GetMainData(QueryResultFeature feature)
     {
         XmlNode requestConfig = XmlHelper.GetConfig("request.xml", "RequestConfig");
 
@@ -259,100 +210,83 @@ public class GetReportReq : CommonReq
         }
         XmlNode reNode = this.requestConfig.SelectSingleNode(xpath);
 
-        field[] parcFields = new field[]
+        RealEstateTypeCode code = GetRealEstateTypeCode(feature.type, XmlHelper.GetAttributeFromNode(feature, reNode, "Type"));
+
+        return new RealEstateData
         {
-            new field() { name = "NO_PARCELLE", value = XmlHelper.GetAttributeFromNode(feature, reNode, "Number") },
-            new field() { name = "EGRID", value = XmlHelper.GetAttributeFromNode(feature, reNode, "EGRID") },
-            new field() { name = "NOMFECO", value = XmlHelper.GetAttributeFromNode(feature, reNode, "Municipality") },
-            new field() { name = "NUFECO", value = XmlHelper.GetAttributeFromNode(feature, reNode, "FosNr") },
-            new field() { name = "SURFACE", value = XmlHelper.GetAttributeFromNode(feature, reNode, "LandRegistryArea") }
+            number = XmlHelper.GetAttributeFromNode(feature, reNode, "Number"),
+            type = oerebHelper.GetRealEstateTypeText(code, "fr"),
+            egrid = XmlHelper.GetAttributeFromNode(feature, reNode, "EGRID"),
+            municipalityName = XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityName"),
+            municipalityCode = XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityCode"),
+            area = XmlHelper.GetAttributeFromNode(feature, reNode, "LandRegistryArea"),
+            state = GetFormattedDMODate()
         };
 
-        dataLayer parcDataLayer = new dataLayer
-        {
-            layer = "CAD_PARCELLE_MENSU",
-            fields = parcFields
-        };
 
-        section parcSection = new section
-        {
-            id = "parcelle",
-            dataLayers = new dataLayer[] { parcDataLayer }
-        };
-
-        data attrData = new data
-        {
-            id = "attributs",
-            sections = new section[] { parcSection }
-        };
-
-        return new data[] { attrData };
     }
 
-    private string[] GetNotConcernedTheme(RestrictionResult[] restrictions)
+    private IList<restriction> GetRestrictionData(IList<RestrictionTheme> themes, RestrictionResult[] results, IDictionary<int, string> dictRestrictionMapUrls)
     {
-        IList<string> list = new List<string>();
-        IList<RestrictionResult> restrictionList = new List<RestrictionResult>(restrictions);
-        foreach (XmlNode node in this.requestConfig.SelectNodes("RestrictionOnLandownership"))
-        {
-            string layerName = XmlHelper.GetXmlAttribute(node, "layer", true);
-            int id = this.mapLayerInfo.GetLayerInfo(layerName).LayerID;
+        IList<restriction> restrictions = new List<restriction>();
 
-            int count = restrictionList.Count<RestrictionResult>(rr => rr.IdentResult.layerId == id);
-            if (count == 0)
+        IDictionary<int, IList<RestrictionResult>> resultsByLayerId = new Dictionary<int, IList<RestrictionResult>>();
+        foreach (RestrictionResult rr in results.OrderBy(r => r.LayerId))
+        {
+            int id = rr.isAdditionalResult ? this.restrWorker.GetOriginalLayerId(rr.LayerId) : rr.LayerId;
+            if (!resultsByLayerId.ContainsKey(id))
             {
-                list.Add(XmlHelper.GetXmlElementValue(node, "Theme/Text"));
+                resultsByLayerId.Add(id, new List<RestrictionResult>());
+
             }
+            resultsByLayerId[id].Add(rr);
         }
-        return list.ToArray();
-    }
 
-    private restriction GetRestrictionData(IList<RestrictionResult> restrResultList,
-        IDictionary<int, string> dictRestrictionMapUrls)
-    {
-        RestrictionResult firstResult = restrResultList.First();
-
-        XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig,
-                "RestrictionOnLandownership", "layer", firstResult.IdentResult.layerName);
-
-        string legendAtWeb = string.Format("{0}/{1}.htm", WebHelper.GetConfigValue("LegendUrl"),
-            firstResult.IdentResult.layerName.ToLower());
-
-        // legends
-        IDictionary<string, legend> dictLegends = new Dictionary<string, legend>();
-        foreach (RestrictionResult result in restrResultList)
+        foreach (int layerId in resultsByLayerId.Keys)
         {
-            if (dictLegends.Keys.Contains(result.Legend.TypeCode))
+            IList<RestrictionResult> subResults = resultsByLayerId[layerId].OrderBy(r => r.Legend.Index).ToList();
+
+            RestrictionResult first = subResults.First(r => r.isFirst);
+            string name = first.isAdditionalResult ? this.mapLayerInfo.GetLayerInfoAsJson(layerId).name : first.LayerName;
+            XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", name);
+
+            // legends
+            IDictionary<string, legend> dictLegends = new Dictionary<string, legend>();
+            foreach (RestrictionResult result in subResults)
             {
-                legend leg = dictLegends[result.Legend.TypeCode];
-                leg.length += result.Length;
-                leg.surface += result.Area;
-                leg.surfPercent += result.PartInPercent;
-            }
-            else
-            {
-                string fileName = string.Format("leg_{0}", result.Legend.TypeCode.Replace(":", "_"));
-                dictLegends.Add(result.Legend.TypeCode, new legend()
+                if (dictLegends.Keys.Contains(result.Legend.TypeCode))
                 {
-                    imageUrl = this.GetSymbolUrl(fileName, result.Legend.Symbol),
-                    label = result.Legend.Text,
-                    length = result.Length,
-                    surface = result.Area,
-                    surfPercent = result.PartInPercent
-                });
+                    legend leg = dictLegends[result.Legend.TypeCode];
+                    leg.length += result.Length;
+                    leg.surface += result.Area;
+                    leg.surfPercent += result.PartInPercent;
+                    leg.points += result.PointNumber;
+                }
+                else
+                {
+                    string fileName = string.Format("leg_{0}", result.Legend.TypeCode.Replace(":", "_"));
+                    dictLegends.Add(result.Legend.TypeCode, new legend()
+                    {
+                        imageUrl = this.GetSymbolUrl(fileName, result.Legend.Symbol),
+                        label = result.Legend.Text,
+                        geometryType = result.Legend.GeometryType,
+                        geometryOrder = result.Legend.Order,
+                        length = result.Length,
+                        surface = result.Area,
+                        surfPercent = result.PartInPercent,
+                        points = result.PointNumber
+                    });
+                }
             }
-        }
-        foreach (string key in dictLegends.Keys)
-        {
-            dictLegends[key].surfPercent = Math.Round(dictLegends[key].surfPercent, 1);
-            dictLegends[key].surfPercentFormatted = string.Format("{0:0.0}", dictLegends[key].surfPercent);
-        }
+            foreach (string key in dictLegends.Keys)
+            {
+                dictLegends[key].surfPercent = Math.Round(dictLegends[key].surfPercent, 1);
+                dictLegends[key].surfPercentFormatted = string.Format("{0:0.0}", dictLegends[key].surfPercent);
+            }
 
-        // other legends
-        IDictionary<string, legend> dictOtherLegends = new Dictionary<string, legend>();
-        foreach (RestrictionResult result in restrResultList)
-        {
-            foreach (RestrictionLegend otherLegend in result.OtherLegends)
+            // other legends
+            IDictionary<string, legend> dictOtherLegends = new Dictionary<string, legend>();
+            foreach (RestrictionLegend otherLegend in first.AllLegends)
             {
                 if (!dictLegends.Keys.Contains(otherLegend.TypeCode) && !dictOtherLegends.Keys.Contains(otherLegend.TypeCode))
                 {
@@ -361,159 +295,203 @@ public class GetReportReq : CommonReq
                     {
                         imageUrl = this.GetSymbolUrl(fileName, otherLegend.Symbol),
                         label = otherLegend.Text,
+                        geometryOrder = otherLegend.Order
                     });
                 }
 
             }
-        }
 
-        // additionnal legends
-        IDictionary<string, legend> dictAdditionalLegends = new Dictionary<string, legend>();
-        foreach (RestrictionResult result in restrResultList)
-        {
-            foreach (RestrictionLegend additionalLegend in result.AdditionalLegends)
+            // additional legends
+            IDictionary<string, legend> dictAdditionalLegends = new Dictionary<string, legend>();
+            foreach (RestrictionLegend addLegend in first.AdditionalLegends)
             {
-                if (!dictAdditionalLegends.Keys.Contains(additionalLegend.TypeCode))
+                if (!dictAdditionalLegends.ContainsKey(addLegend.TypeCode))
                 {
-                    string fileName = string.Format("leg_{0}", additionalLegend.TypeCode.Replace(":", "_"));
-                    dictAdditionalLegends.Add(additionalLegend.TypeCode, new legend()
+                    string fileName = string.Format("leg_{0}", addLegend.TypeCode.Replace(":", "_"));
+                    dictAdditionalLegends.Add(addLegend.TypeCode, new legend()
                     {
-                        imageUrl = this.GetSymbolUrl(fileName, additionalLegend.Symbol),
-                        label = additionalLegend.Text,
+                        imageUrl = this.GetSymbolUrl(fileName, addLegend.Symbol),
+                        label = addLegend.Text,
+                        geometryOrder = addLegend.Order
                     });
                 }
             }
-        }
 
-        // regulations
-        IDictionary<string, List<string>> dictRegulation = new Dictionary<string, List<string>>();
-        foreach (XmlNode idNode in node.SelectNodes("regulationId"))
-        {
-            if (!string.IsNullOrEmpty(idNode.InnerText))
+            // LegalProvisions
+            IDictionary<string, List<string>> dictLegalProvision = new Dictionary<string, List<string>>();
+            foreach (XmlNode idNode in node.SelectNodes("LegalProvisionId"))
             {
-                XmlNode regNode = XmlHelper.GetNodeByAttribute(this.legalConfig.SelectSingleNode("Regulations"),
-                    "LegalProvisions", "id", idNode.InnerText);
-                string title = XmlHelper.GetXmlElementValue(regNode, "Title");
-
-                foreach (RestrictionResult result in restrResultList)
+                if (!string.IsNullOrEmpty(idNode.InnerText))
                 {
-                    string value = XmlHelper.GetAttributeFromAttribute(result.IdentResult.attributes, regNode, "field");
-                    if (!string.IsNullOrEmpty(value))
+                    XmlNode lpNode = XmlHelper.GetNodeByAttribute(this.docConfig, "LegalProvision", "id", idNode.InnerText);
+
+                    string lpTitle = XmlHelper.GetXmlElementValue(lpNode, "Title");
+
+                    foreach (RestrictionResult result in subResults)
                     {
-                        if (dictRegulation.ContainsKey(title))
+                        string value = XmlHelper.GetAttributeFromAttribute(result.IdentResult.attributes, lpNode, "field");
+                        if (!string.IsNullOrEmpty(value))
                         {
-                            if (!dictRegulation[title].Contains(value))
+                            string date = XmlHelper.GetAttributeFromAttribute(result.IdentResult.attributes, idNode, "dateField");
+                            if (string.IsNullOrEmpty(date))
                             {
-                                dictRegulation[title].Add(value);
+                                date = XmlHelper.GetAttributeFromAttribute(result.IdentResult.attributes, lpNode, "dateField");
                             }
-                        }
-                        else
-                        {
-                            dictRegulation.Add(title, new List<string>(new string[] { value }));
+                            string fullTitle = string.IsNullOrEmpty(date) ? lpTitle : lpTitle + " (" + date + ")";
+
+                            if (dictLegalProvision.ContainsKey(fullTitle))
+                            {
+                                if (!dictLegalProvision[fullTitle].Contains(value))
+                                {
+                                    dictLegalProvision[fullTitle].Add(value);
+                                }
+                            }
+                            else
+                            {
+                                dictLegalProvision.Add(fullTitle, new List<string>(new string[] { value }));
+                            }
                         }
                     }
                 }
             }
-        }
-        IList<regulation> regList = new List<regulation>();
-        foreach (string key in dictRegulation.Keys)
-        {
-            regList.Add(new regulation
+            IList<legalProvision> lpList = new List<legalProvision>();
+            foreach (string key in dictLegalProvision.Keys)
             {
-                label = key,
-                values = dictRegulation[key].ToArray()
-            });
-        }
-
-        // laws
-        IList<law> lawList = new List<law>();
-        foreach (XmlNode idNode in node.SelectNodes("lawId"))
-        {
-            if (!string.IsNullOrEmpty(idNode.InnerText))
-            {
-                XmlNode lawNode = XmlHelper.GetNodeByAttribute(this.legalConfig.SelectSingleNode("Laws"),
-                    "LegalProvisions", "id", idNode.InnerText);
-
-                lawList.Add(new law
+                lpList.Add(new legalProvision
                 {
-                    title = XmlHelper.GetXmlElementValue(lawNode, "Title"),
-                    link = XmlHelper.GetXmlElementValue(lawNode, "TextAtWeb")
+                    label = key,
+                    values = dictLegalProvision[key].ToArray()
                 });
             }
-        }
 
-        // informations
-        IDictionary<string, List<string>> dictInformation = new Dictionary<string, List<string>>();
-        foreach (XmlNode idNode in node.SelectNodes("informationId"))
-        {
-            if (!string.IsNullOrEmpty(idNode.InnerText))
+            // Laws
+            IList<law> lawList = new List<law>();
+            foreach (XmlNode idNode in node.SelectNodes("LawId"))
             {
-                XmlNode infoNode = XmlHelper.GetNodeByAttribute(this.legalConfig.SelectSingleNode("Informations"),
-                    "LegalProvisions", "id", idNode.InnerText);
-                string title = XmlHelper.GetXmlElementValue(infoNode, "Title");
-
-                foreach (RestrictionResult result in restrResultList)
+                if (!string.IsNullOrEmpty(idNode.InnerText))
                 {
-                    string value = XmlHelper.GetAttributeFromAttribute(result.IdentResult.attributes, infoNode, "field");
-                    if (!string.IsNullOrEmpty(value))
+                    XmlNode lawNode = XmlHelper.GetNodeByAttribute(this.docConfig, "Law", "id", idNode.InnerText);
+                    string id = XmlHelper.GetXmlElementValue(lawNode, "TID");
+
+                    if (string.IsNullOrEmpty(id))
                     {
-                        //value = value.Replace("&", "%26");
-                        if (dictInformation.ContainsKey(title))
+                        string lawTitle = string.Format("{0} ({1}), {2}", XmlHelper.GetXmlElementValue(lawNode, "Title"),
+                            XmlHelper.GetXmlElementValue(lawNode, "Abbreviation"), XmlHelper.GetXmlElementValue(lawNode, "OfficialNumber"));
+                        lawList.Add(new law
                         {
-                            if (!dictInformation[title].Contains(value))
+                            index = XmlHelper.GetXmlElementValue(lawNode, "Index"),
+                            title = lawTitle,
+                            link = XmlHelper.GetXmlElementValue(lawNode, "TextAtWeb")
+                        });
+                    }
+                    else
+                    {
+                        Document law = oerebHelper.GetLaw(id, "fr");
+                        string lawTitle = string.Format("{0} ({1}), {2}", law.Title[0].Text, law.Abbreviation[0].Text, law.OfficialNumber[0].Text);
+                        lawList.Add(new law
+                        {
+                            index = law.Index,
+                            title = lawTitle,
+                            link = law.TextAtWeb[0].Text
+                        });
+                    }
+                }
+            }
+            lawList.OrderBy(l => l.index);
+
+            // Hints
+            IDictionary<string, List<string>> dictHint = new Dictionary<string, List<string>>();
+            foreach (XmlNode idNode in node.SelectNodes("HintId"))
+            {
+                if (!string.IsNullOrEmpty(idNode.InnerText))
+                {
+                    XmlNode hintNode = XmlHelper.GetNodeByAttribute(this.docConfig, "Hint", "id", idNode.InnerText);
+                    string hintTitle = XmlHelper.GetXmlElementValue(hintNode, "Title");
+
+                    foreach (RestrictionResult result in subResults)
+                    {
+                        string value = XmlHelper.GetAttributeFromAttribute(result.IdentResult.attributes, hintNode, "field");
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            //value = value.Replace("&", "%26");
+                            if (dictHint.ContainsKey(hintTitle))
                             {
-                                dictInformation[title].Add(value);
+                                if (!dictHint[hintTitle].Contains(value))
+                                {
+                                    dictHint[hintTitle].Add(value);
+                                }
                             }
-                        }
-                        else
-                        {
-                            dictInformation.Add(title, new List<string>(new string[] { value }));
+                            else
+                            {
+                                dictHint.Add(hintTitle, new List<string>(new string[] { value }));
+                            }
                         }
                     }
                 }
             }
-        }
-        IList<information> infoList = new List<information>();
-        foreach (string key in dictInformation.Keys)
-        {
-            infoList.Add(new information
+            IList<hint> hintList = new List<hint>();
+            foreach (string key in dictHint.Keys)
             {
-                label = key,
-                values = dictInformation[key].ToArray()
+                hintList.Add(new hint
+                {
+                    label = key,
+                    values = dictHint[key].ToArray()
+                });
+            }
+
+            string code = XmlHelper.GetXmlElementValue(node, "Theme/Code");
+            int index = int.Parse(XmlHelper.GetXmlElementValue(node, "Theme/Index"));
+            RestrictionTheme theme = themes.First(t => string.Compare(t.Code, code) == 0 && t.Index == index);
+
+            restrictions.Add(new restriction()
+            {
+                id = theme.IsSubTheme ? theme.SubCode : theme.Code,
+                title = theme.IsSubTheme ? string.Format("{0}: {1}", theme.Text, theme.SubText) : theme.Text,
+                order = theme.Index,
+                result = true,
+                lawStatus = oerebHelper.GetLawStatusText(LawstatusCode.inForce, this.param.lang),
+                legalProvisions = lpList.ToArray(),
+                laws = lawList.ToArray(),
+                hints = hintList.ToArray(),
+                service = new service()
+                {
+                    name = XmlHelper.GetXmlElementValue(node, "ResponsibleOffice/Name"),
+                    link = XmlHelper.GetXmlElementValue(node, "ResponsibleOffice/OfficeAtWeb")
+                },
+                mapUrl = dictRestrictionMapUrls[layerId],
+                legends = dictLegends.Values.OrderBy(l => l.geometryOrder).ToArray(),
+                otherLegends = dictOtherLegends.Values.OrderBy(l => l.geometryOrder).ToArray(),
+                additionalLegends = dictAdditionalLegends.Values.OrderBy(l => l.geometryOrder).ToArray(),
             });
         }
 
-        string restrTitle = XmlHelper.GetXmlElementValue(node, "Theme/Text");
-        string titleMarginStyle = string.Format("height:{0}mm", TITLE_MARGIN_SINGLE);
-        if (restrTitle.Length > TITLE_MARGIN_BREAK)
-        {
-            titleMarginStyle = string.Format("height:{0}mm", TITLE_MARGIN_DOUBLE);
-        }
-        // return object
-        return new restriction()
-        {
-            id = XmlHelper.GetXmlElementValue(node, "SubTheme"),
-            title = XmlHelper.GetXmlElementValue(node, "Theme/Text"),
-            result = true,
-            regulations = regList.ToArray(),
-            laws = lawList.ToArray(),
-            informations = infoList.ToArray(),
-            service = new service()
-            {
-                name = XmlHelper.GetXmlElementValue(node, "ResponsibleOffice/Name"),
-                link = XmlHelper.GetXmlElementValue(node, "ResponsibleOffice/OfficeAtWeb")
-            },
-            titleMarginStyle = titleMarginStyle,
-            mapUrl = dictRestrictionMapUrls[firstResult.LayerId],
-            geometryType = firstResult.IdentResult.geometryType,
-            legendLink = legendAtWeb,
-            legends = dictLegends.Values.ToArray(),
-            otherLegends = dictOtherLegends.Values.ToArray(),
-            additionnalLegends = dictAdditionalLegends.Values.ToArray()
-        };
+        return restrictions;
     }
 
-    private string AddObjectsToMap(string name, byte[] data, Bitmap bmNorthArrow, Bitmap bmScaleBar, ScaleBar scaleBar)
+    private string[] GetNotConcernedTheme(IList<RestrictionTheme> themes, RestrictionResult[] restrictions)
+    {
+        IList<string> list = new List<string>();
+        foreach (RestrictionTheme theme in themes)
+        {
+            int id = mapLayerInfo.GetLayerInfo(theme.Layer, true).LayerID;
+            int count = restrictions.Count(rr => rr.LayerId == id);
+            foreach(int addId in this.restrWorker.GetAdditionalLayerIds(id))
+            {
+                count += restrictions.Count(rr => rr.LayerId == addId);
+            }
+            if (count == 0)
+            {
+                string title = theme.IsSubTheme ? string.Format("{0}: {1}", theme.Text, theme.SubText) : theme.Text;
+                if (!list.Contains(title))
+                {
+                    list.Add(title);
+                }
+            }
+        }
+        return list.ToArray();
+    }
+
+    private string AddObjectsToMap(string name, byte[] data, Bitmap bmScaleBar)
     {
         string fileName = name + ".png";
         using (MemoryStream ms = new MemoryStream(data))
@@ -521,8 +499,11 @@ public class GetReportReq : CommonReq
             using (Bitmap bmData = new Bitmap(ms))
             using (Bitmap bm = bmData.Clone(new Rectangle(0, 0, bmData.Width, bmData.Height), PixelFormat.Format32bppArgb))
             {
+                Bitmap bmNorthArrow = new Bitmap(Path.Combine(Path.Combine(WebHelper.GetConfigValue("ApplicationPath"), "images"), "NorthArrow.png"));
+                Bitmap scClone = (Bitmap)bmScaleBar.Clone();
+
                 bmNorthArrow.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
-                bmScaleBar.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
+                scClone.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
 
                 Rectangle rect = this.printParams.GetScaleBarDrawRectangle();
                 Point pt = this.printParams.GetNorthArrowDrawPoint();
@@ -533,7 +514,7 @@ public class GetReportReq : CommonReq
                 }
                 else if (this.printParams.GetNorthArrowAlignment() == "V")
                 {
-                    pt.X = rect.X + (bmScaleBar.Width / 2);
+                    pt.X = rect.X + (scClone.Width / 2);
                 }
 
                 Graphics compose = Graphics.FromImage(bm);
@@ -546,7 +527,7 @@ public class GetReportReq : CommonReq
                     (int)(bmNorthArrow.Width * this.printParams.GetNorthArrowScale()),
                     (int)(bmNorthArrow.Height * this.printParams.GetNorthArrowScale()));
                 // scale bar
-                compose.DrawImage(bmScaleBar, rect.X, rect.Y);
+                compose.DrawImage(scClone, rect.X, rect.Y);
                 // map outline
                 compose.DrawRectangle(new Pen(Color.Black, GetReportReq.MAP_OUTLINE_WIDTH),
                     1, 1, bm.Width - GetReportReq.MAP_OUTLINE_WIDTH, bm.Height - GetReportReq.MAP_OUTLINE_WIDTH);
@@ -568,6 +549,13 @@ public class GetReportReq : CommonReq
 
             return string.Format("{0}/{1}", this.workUrl, fileName);
         }
+    }
+
+    private string GetReportFontName()
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(Helper.GetReportConfigFilePath("ReportTemplate.xml"));
+        return doc.SelectSingleNode("/Template/Font").InnerText;
     }
 
     private void CreateWorkingDirectory(string id)

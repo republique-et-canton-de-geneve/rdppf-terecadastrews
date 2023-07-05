@@ -1,12 +1,13 @@
-﻿/* $Rev: 20981 $ */
-using System.IO;
+﻿/* $Rev: 30107 $ */
+using log4net;
 using System;
+using System.IO;
 using System.Text;
 using Topomat.Web.Common;
 
 public class Helper
 {
-    private static log4net.ILog traceLogger = null;
+    private static ILog traceLogger = null;
 
     #region Public methods
 
@@ -15,10 +16,10 @@ public class Helper
         Helper.GetLogger().Error(ex.ToString());
     }
 
-    public static void LogInfo(string className, string message)
+    public static void LogDebug(string className, string message)
     {
         string info = string.Format("({0}) {1}", className, message);
-        Helper.GetLogger().Info(info);
+        Helper.GetLogger().Debug(info);
     }
 
     public static void LogInfo(string className, string message, long ms)
@@ -93,6 +94,46 @@ public class Helper
         return sb.ToString();
     }
 
+    public static string GetSymbolUrl(string code)
+    {
+        return string.Format("{0}/{1}.png", WebHelper.GetConfigValue("SymbolUrl"), code);
+    }
+
+    public static string GetSymbolPath(string code)
+    {
+        return System.IO.Path.Combine(WebHelper.GetConfigValue("SymbolPath"), string.Format("{0}.png", code));
+    }
+
+    public static string GetNormalizedString(string input, int length)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return string.Empty;
+        }
+        else
+        {
+            return input.Length > length ? input.Substring(0, length) : input;
+        }
+    }
+
+    public static string ReduceString(string input, int length)
+    {
+        if (input.Length <= length)
+        {
+            return input;
+        }
+        else
+        {
+            double factor = Math.Ceiling(((double)(input.Length - 4) / (double)length));
+            StringBuilder sb = new StringBuilder(input.Substring(0, 4));
+            for (int i = 4; i < (input.Length - 4); i += (int)factor)
+            {
+                sb.Append(input[i]);
+            }
+            return sb.ToString();
+        }
+    }
+
     public static double dotsToMM(int dots, int dpi)
     {
         return (dots / (double)dpi) * 25.4;
@@ -105,12 +146,12 @@ public class Helper
 
     #endregion
 
-    private static log4net.ILog GetLogger()
+    private static ILog GetLogger()
     {
         if (traceLogger == null)
         {
             log4net.Config.XmlConfigurator.Configure();
-            Helper.traceLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            Helper.traceLogger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         }
         return Helper.traceLogger;
     }

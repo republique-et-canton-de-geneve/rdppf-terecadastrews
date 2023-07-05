@@ -1,12 +1,12 @@
-﻿/* $Rev: 19084 $ */
+﻿/* $Rev: 29811 $ */
+using ESRI.ArcGIS.SOAP;
 using System;
-using System.Web.Script.Serialization;
-using System.Net;
-using System.Text;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using ESRI.ArcGIS.SOAP;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Web.Script.Serialization;
 using Topomat.Web.Common;
 
 public class LayerInfo
@@ -45,7 +45,7 @@ public class LayerInfo
         }
     }
 
-    public MapLayerInfo GetLayerInfo(string name)
+    public MapLayerInfo GetLayerInfo(string name, bool required)
     {
         MapLayerInfo info = null;
         if (this.layerInfos.TryGetValue(name, out info))
@@ -54,7 +54,14 @@ public class LayerInfo
         }
         else
         {
-            throw new WsUserException(string.Format(Resources.Resource.LAYER_NOT_FOUND, name));
+            if (required)
+            {
+                throw new WsUserException(string.Format(Resources.Resource.LAYER_NOT_FOUND, name));
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 

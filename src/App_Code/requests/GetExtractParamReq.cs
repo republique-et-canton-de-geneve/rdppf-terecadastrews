@@ -1,72 +1,77 @@
-﻿/* $Rev: 21379 $ */
-using System;
+﻿/* $Rev: 30309 $ */
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Web;
 
-public class GetExtractParamReq
+public class GetExtractParamReq : ParamReq
 {
-    private static string[] federalTopics = { "MotorwaysProjectPlaningZones", "MotorwaysBuildingLines", "RailwaysProjectPlanningZones", "RailwaysBuildingLines", "AirportsProjectPlanningZones", "AirportsBuildingLines", "AirportsSecurityZonePlans", "ContaminatedMilitarySites", "ContaminatedCivilAviationSites", "ContaminatedPublicTransportSites" };
+    private static string[] federalTopics = { "ch.ProjektierungszonenNationalstrassen", "ch.BaulinienNationalstrassen", 
+        "ch.ProjektierungszonenEisenbahnanlagen", "ch.BaulinienEisenbahnanlagen", 
+        "ch.ProjektierungszonenFlughafenanlagen", "ch.BaulinienFlughafenanlagen", "ch.Sicherheitszonenplan", 
+        "ch.BelasteteStandorteMilitaer", "ch.BelasteteStandorteZivileFlugplaetze", "ch.BelasteteStandorteOeffentlicherVerkehr", 
+        "ch.ProjektierungszonenStarkstromanlagen", "ch.BaulinienStarkstromanlagen" };
+
+    public string EGRID;
+    public string identDN;
+    public string number;
+
+    public bool returnGeometry;
     public string lang;
     public bool allTopics;
-    public IList<string> topics;
+    public IList<string> partialTopics;
     public bool withImages;
-    public ErrorResponseType error;
 
     public GetExtractParamReq()
     {
-        this.allTopics = false;
-        this.topics = new List<string>();
-        this.withImages = false;
-        this.error = null;
+        lang = "fr";
+        allTopics = true;
     }
 
-    public static GetExtractParamReq GetExtractParam(string lang, string topics, bool withImages)
+    public bool Parse(NameValueCollection parameters)
     {
-        GetExtractParamReq param = new GetExtractParamReq();
-
-        if(string.IsNullOrEmpty(lang))
+        EGRID = GetParameterValue(parameters, "EGRID");
+        if (!string.IsNullOrEmpty(EGRID))
         {
-            lang = "fr";    
-        }
-        if (!CapabilityReq.languages.Contains(lang))
-        {
-            param.error = new ErrorResponseType(401);
-        }
-        else
-        {
-            param.lang = lang;
+            method = GetEGRIDMethod.EGRID;
         }
 
-        if (string.IsNullOrEmpty(topics))
+        identDN = GetParameterValue(parameters, "IDENTDN");
+        number = GetParameterValue(parameters, "NUMBER");
+        if (!string.IsNullOrEmpty(identDN) && !string.IsNullOrEmpty(number))
         {
-            param.allTopics = true;
+            method = GetEGRIDMethod.Idents;
         }
-        else
+
+        bool.TryParse(GetParameterValue(parameters, "GEOMETRY"), out returnGeometry);
+        bool.TryParse(GetParameterValue(parameters, "WITHIMAGES"), out withImages);
+
+        string language = GetParameterValue(parameters, "LANG");
+        if (!string.IsNullOrEmpty(language))
         {
-            string[] topicArray = topics.Split(new char[] { ',' });
-            if(topicArray.Contains("ALL"))
+            if (!CapabilityReq.languages.Contains(language.ToLower()))
             {
-                param.allTopics = true;
+                return false;
             }
-            else 
+            else
             {
-                if (topicArray.Contains("ALL_FEDERAL"))
-                {
-                    param.topics = GetExtractParamReq.federalTopics.ToList();
-                }
-                foreach(string topic in topicArray)
-                {
-                    if (string.Compare(topic, "ALL_FEDERAL") != 0)
-                    {
-                        param.topics.Add(topic);
-                    }
-                }
+                lang = language.ToLower();
             }
         }
 
-        param.withImages = withImages;
+        string topics = GetParameterValue(parameters, "TOPICS");
+        if (!string.IsNullOrEmpty(topics) && string.Compare(topics, "ALL") != 0)
+        {
+            if (string.Compare(topics, "ALL_FEDERAL") == 0)
+            {
+                allTopics = false;
+                partialTopics = GetExtractParamReq.federalTopics.ToList();
+            }
+            else
+            {
+                partialTopics = topics.Split(new char[] { ',' }).ToList();
+            }
+        }
 
-        return param;
+        return method == GetEGRIDMethod.Undefined ? false : true;
     }
 }
