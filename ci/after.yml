@@ -28,11 +28,3 @@
     dest: "{{ sources_folder }}\\_config\\{{ item }}"
   with_items:
     - "{{ app_templates_list.stdout.splitlines() }}"
-
-- name: Generation des legendes
-  win_uri:
-    #url: https://{{ stages[stage].hosts }}.ge-admin.ad.etat-ge.ch/terecadastrews/utilities/BuildLegends.ashx
-    url: http://{{ stages[stage].hosts }}.ge-admin.ad.etat-ge.ch/terecadastrews/utilities/BuildLegends.ashx
-    return_content: yes
-  register: reponse
-  failed_when: "'Finished.' not in reponse.content"
