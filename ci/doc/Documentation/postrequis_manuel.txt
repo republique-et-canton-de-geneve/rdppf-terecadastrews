@@ -1,1 +1,3 @@
 Ouvrir dans un navigateur la page {#EnvironmentUrl#}/terecadastrews/utilities/BuildLegends.ashx
+
+plus besoin de cette commande au 1er demarrage dicxit D. Sauge le VE 07/07/23
