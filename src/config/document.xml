@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- $Rev: 29787 $ -->
+<DocumentConfig>
+  <LegalProvision id="DATE_FIN_VALID" field="Date de fin de validité de la zone réservée">
+    <Lawstatus>1</Lawstatus>
+    <Title>Date de fin de validité de la zone réservée</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_PLAN" field="Lien WEB vers le plan" dateField="Date d'adoption">
+    <Lawstatus>1</Lawstatus>
+    <Title>Plan</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_PLAN_GRAND_CONSEIL" field="Lien WEB vers le plan" dateField="Date d'adoption par le Grand-Conseil">
+    <Lawstatus>1</Lawstatus>
+    <Title>Plan</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_PLAN_CONSEIL_ETAT" field="Lien WEB vers le plan" dateField="Date d'adoption par le Conseil d'Etat">
+    <Lawstatus>1</Lawstatus>
+    <Title>Plan</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_LOI" field="Lien WEB vers la loi" dateField="Date d'adoption par le Grand-Conseil">
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_LOI_GRAND_CONSEIL" field="Lien WEB vers la loi adoptée par le Grand Conseil">
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_REGLEMENT" field="Lien WEB vers le règlement">
+    <Lawstatus>1</Lawstatus>
+    <Title>Règlement</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_ARRETE_CONSEIL_ETAT" field="Lien WEB vers l'arrêté du Conseil d'Etat" dateField="Date d'adoption par le Conseil d'Etat">
+    <Lawstatus>1</Lawstatus>
+    <Title>Arrêté du Conseil d'Etat</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_ARRETE_PUBLI_CONSEIL_ETAT" field="Lien WEB vers l'arrêté de publication du Conseil d'Etat" dateField="Date de l'arrêté de publication du Conseil d'Etat">
+    <Lawstatus>1</Lawstatus>
+    <Title>Arrêté de publication du Conseil d'Etat</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_ARRETE_PROMULG_CONSEIL_ETAT" field="Lien WEB vers l'arrêté de promulgation du Conseil d'Etat" dateField="Date de l'arrêté de promulgation du Conseil d'Etat">
+    <Lawstatus>1</Lawstatus>
+    <Title>Arrêté de promulgation du Conseil d'Etat</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_DISPO_JURIDIQUE" field="Lien WEB vers les dispositions juridiques">
+    <Lawstatus>1</Lawstatus>
+    <Title>Dispositions juridiques</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_DISPO_JURID_COMPL" field="Lien WEB vers une disposition juridique complémentaire" dateField="Date de la disposition juridique complémentaire">
+    <Lawstatus>1</Lawstatus>
+    <Title>Disposition juridique complémentaire</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_CONSTAT_NATURE_FOREST" field="Lien WEB vers le constat de nature forestière" dateField="Date d'entrée en vigueur">
+    <Lawstatus>1</Lawstatus>
+    <Title>Constat de nature forestière</Title>
+  </LegalProvision>
+  <LegalProvision id="LIEN_INFOS_COMPL" field="Lien WEB vers des informations complémentaires" dateField="Date d'entrée en vigueur">
+    <Lawstatus>1</Lawstatus>
+    <Title>Disposition juridique</Title>
+  </LegalProvision>
+  <Hint id="LIEN_INFOS_COMPL" field="Lien WEB vers des informations complémentaires">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
+  <Hint id="LIENS_INFOS_COMPL" field="Liens WEB vers des informations complémentaires">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
+  <Hint id="LIEN_CONCEPT_ENERG_TER" field="Lien WEB vers le concept énergétique territorial">
+    <Lawstatus>1</Lawstatus>
+    <Title>Concept énergétique territorial</Title>
+  </Hint>
+  <Hint id="LIEN_RAPPORT_IMPACT_ENVIRON" field="Lien WEB vers le rapport d'impact sur l'environnement">
+    <Lawstatus>1</Lawstatus>
+    <Title>Rapport d'impact sur l'environnement</Title>
+  </Hint>
+  <Hint id="LIEN_PLAN_MESURE_PAYSAGERE" field="Lien WEB vers le plan de mesure paysagère">
+    <Lawstatus>1</Lawstatus>
+    <Title>Plan de mesure paysagère</Title>
+  </Hint>
+  <Hint id="LIEN_RAPPORT_EXPLICATIF" field="Lien WEB vers le rapport explicatif">
+    <Lawstatus>1</Lawstatus>
+    <Title>Rapport explicatif</Title>
+  </Hint>
+  <Hint id="LIEN_DOSSIER_SAD_CONSULT" field="Lien vers le dossier sur SAD Consultation">
+    <Lawstatus>1</Lawstatus>
+    <Title>Lien vers le dossier sur SAD Consultation</Title>
+  </Hint>
+  <Hint id="LIEN_PREAVIS_REIE" field="Lien WEB vers le préavis sur le REIE">
+    <Lawstatus>1</Lawstatus>
+    <Title>Préavis sur le REIE</Title>
+  </Hint>
+  <Law id="LAT">
+    <TID>ch.admin.bk.sr.700</TID>
+  </Law>
+  <Law id="OAT">
+    <TextAtWeb>http://www.admin.ch/opc/fr/classified-compilation/20000959/index.html</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Ordonnance sur l'aménagement du territoire</Title>
+    <Abbreviation>OAT</Abbreviation>
+    <OfficialNumber>RS 700.1</OfficialNumber>
+    <Index>20</Index>
+  </Law>
+  <Law id="LALAT">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_30.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi d'application de la loi fédérale sur l'aménagement du territoire</Title>
+    <Abbreviation>LALAT</Abbreviation>
+    <OfficialNumber>RSG L 1 30</OfficialNumber>
+    <Index>30</Index>
+  </Law>
+  <Law id="LGZD">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_35.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi générale sur les zones de développement</Title>
+    <Abbreviation>LGZD</Abbreviation>
+    <OfficialNumber>RSG L 1 35</OfficialNumber>
+    <Index>40</Index>
+  </Law>
+  <Law id="LZIAM">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_45.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi générale sur les zones de développement industriel ou d’activités mixtes</Title>
+    <Abbreviation>LZIAM</Abbreviation>
+    <OfficialNumber>RSG L 1 45</OfficialNumber>
+    <Index>42</Index>
+  </Law>
+  <Law id="LCI">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l5_05.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur les constructions et les installations diverses</Title>
+    <Abbreviation>LCI</Abbreviation>
+    <OfficialNumber>RSG L 5 05</OfficialNumber>
+    <Index>50</Index>
+  </Law>
+  <Law id="Lext">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_40.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur l'extension des voies de communication et l'aménagement des quartiers ou localités</Title>
+    <Abbreviation>Lext</Abbreviation>
+    <OfficialNumber>RSG L 1 40</OfficialNumber>
+    <Index>52</Index>
+  </Law>
+  <Law id="LPMNS">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_05.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur la protection des monuments, de la nature et des sites</Title>
+    <Abbreviation>LPMNS</Abbreviation>
+    <OfficialNumber>RSG 4 05</OfficialNumber>
+    <Index>54</Index>
+  </Law>
+  <Law id="LPRLac">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_10.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur la protection générale des rives du lac</Title>
+    <Abbreviation>LPRLac</Abbreviation>
+    <OfficialNumber>RSG L 4 10</OfficialNumber>
+    <Index>56</Index>
+  </Law>
+  <Law id="LPRRhône">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_13.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur la protection générale des rives du Rhône</Title>
+    <Abbreviation>LPRRhône</Abbreviation>
+    <OfficialNumber>RSG L 4 13</OfficialNumber>
+    <Index>58</Index>
+  </Law>
+  <Law id="LPRArve">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_16.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur la protection générale et l’aménagement des rives de l’Arve</Title>
+    <Abbreviation>LPRArve</Abbreviation>
+    <OfficialNumber>RSG L 4 16</OfficialNumber>
+    <Index>60</Index>
+  </Law>
+  <Law id="LPRVers">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l4_19.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur la protection générale et l’aménagement des rives de la Versoix</Title>
+    <Abbreviation>LPRVers</Abbreviation>
+    <OfficialNumber>>RSG L 4 19</OfficialNumber>
+    <Index>62</Index>
+  </Law>
+  <Law id="LGEA">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l3_10.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur les gravières et exploitations assimilées</Title>
+    <Abbreviation>LGEA</Abbreviation>
+    <OfficialNumber>RSG L 3 10</OfficialNumber>
+    <Index>64</Index>
+  </Law>  
+  <Law id="RAZIDI">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_45P05.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Règlement sur les activités admissibles en zone industrielle ou de développement industriel; respectivement en zone de développement d’activités mixtes</Title>
+    <Abbreviation>RAZIDI</Abbreviation>
+    <OfficialNumber>RSG 45.05</OfficialNumber>
+    <Index>80</Index>
+  </Law>
+  <Law id="RGEA">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l3_10P03.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Règlement d’application de la loi sur les gravières et exploitations assimilées</Title>
+    <Abbreviation>RGEA</Abbreviation>
+    <OfficialNumber>RSG L 3 10.03</OfficialNumber>
+    <Index>82</Index>
+  </Law>
+  <Law id="RaLAT">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_30P01.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Règlement d’application de la loi d’application de la loi fédérale sur l’aménagement du territoire</Title>
+    <Abbreviation>RaLAT</Abbreviation>
+    <OfficialNumber>RSG L 1 30.01</OfficialNumber>
+    <Index>84</Index>
+  </Law>
+  <Law id="LCPR">
+    <TextAtWeb>https://www.admin.ch/ch/f/sr/c704.html</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi fédérale sur les chemins pour piétons et les chemins de randonnée pédestre</Title>
+    <Abbreviation>LCPR</Abbreviation>
+    <OfficialNumber>RS 704</OfficialNumber>
+    <Index>90</Index>
+  </Law>
+  <Law id="LaLCPR">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_60.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur l’application de la loi fédérale sur les chemins pour piétons et les chemins de randonnée pédestre</Title>
+    <Abbreviation>LaLCPR</Abbreviation>
+    <OfficialNumber>RSG L 1 60</OfficialNumber>
+    <Index>92</Index>
+  </Law>
+  <Law id="LRN">
+    <TID>ch.admin.bk.sr.725.11</TID>
+  </Law>
+  <Law id="ONR">
+    <TID>ch.admin.bk.sr.725.111</TID>
+  </Law>
+  <Law id="LCdF">
+    <TID>ch.admin.bk.sr.742.101</TID>
+  </Law>
+  <Law id="LA">
+    <TID>ch.admin.bk.sr.748.0</TID>
+  </Law>
+  <Law id="OSIA">
+    <TID>ch.admin.bk.sr.748.131.1</TID>
+  </Law>
+  <Law id="LPE">
+    <TID>ch.admin.bk.sr.814.01</TID>
+  </Law>
+  <Law id="Osites">
+    <TextAtWeb>http://www.admin.ch/opc/fr/classified-compilation/19983151/index.html</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Ordonnance sur l'assainissement des sites pollués (Ordonnance sur les sites contaminés)</Title>
+    <Abbreviation>Osites</Abbreviation>
+    <OfficialNumber>RS 814.680</OfficialNumber>
+    <Index>430</Index>
+  </Law>
+  <Law id="LaLSC">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_k1_71.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi d'application de la législation fédérale sur les sites contaminés</Title>
+    <Abbreviation>LaLSC</Abbreviation>
+    <OfficialNumber>RSG K 1 71</OfficialNumber>
+    <Index>440</Index>
+  </Law>
+  <Law id="LEaux">
+    <TID>ch.admin.bk.sr.814.20</TID>
+  </Law>
+  <Law id="OEaux">
+    <TID>ch.admin.bk.sr.814.201</TID>
+  </Law>
+  <Law id="LEaux-GE">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l2_05.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur les eaux</Title>
+    <Abbreviation>LEaux-GE</Abbreviation>
+    <OfficialNumber>RSG L 2 05</OfficialNumber>
+    <Index>530</Index>
+  </Law>
+  <Law id="REaux-GE">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l2_05p01.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Règlement d’exécution de la loi sur les eaux</Title>
+    <Abbreviation>REaux-GE</Abbreviation>
+    <OfficialNumber>RSG L 2 05.01</OfficialNumber>
+    <Index>540</Index>
+  </Law>
+  <Law id="OPB">
+    <TID>ch.admin.bk.sr.814.41</TID>
+  </Law>
+  <Law id="LALPE">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_k1_70.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi d'application de la loi fédérale sur la protection de l'environnement</Title>
+    <Abbreviation>LALPE</Abbreviation>
+    <OfficialNumber>RSG K 1 70</OfficialNumber>
+    <Index>630</Index>
+  </Law>
+  <Law id="RPBV">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_k1_70p10.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Règlement sur la protection contre le bruit et les vibrations</Title>
+    <Abbreviation>RPBV</Abbreviation>
+    <OfficialNumber>RSG K 1 70.10</OfficialNumber>
+    <Index>640</Index>
+  </Law>
+  <Law id="LFo">
+    <TID>ch.admin.bk.sr.921.0</TID>
+  </Law>
+  <Law id="OFo">
+    <TID>ch.admin.bk.sr.921.01</TID>
+  </Law>
+  <Law id="LForêt">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_m5_10.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi cantonale sur les forêts</Title>
+    <Abbreviation>LForêt</Abbreviation>
+    <OfficialNumber>RSG M 6 10</OfficialNumber>
+    <Index>730</Index>
+  </Law>
+  <Law id="RForêt">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_M5_10P01.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Règlement d'application de la Loi cantonale sur les forêts</Title>
+    <Abbreviation>RForêt</Abbreviation>
+    <OfficialNumber>RSG M 5 10.01</OfficialNumber>
+    <Index>740</Index>
+  </Law>
+</DocumentConfig>

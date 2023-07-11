@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!-- $Rev: 30310 $ -->
+<!--
+  For more information on how to configure your ASP.NET application, please visit
+  http://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+<configuration>
+  <configSections>
+    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net"/>
+  </configSections>
+  <system.web>
+    <compilation debug="false" targetFramework="4.6.1"/>
+    <customErrors mode="Off"/>
+  </system.web>
+  <appSettings>
+    <!-- log interne de log4j, mettre à true uniquement si aucune log n'est produite -->
+    <add key="log4net.Internal.Debug" value="false"/>
+    <!-- Paramètre d'environnement -->
+    <add key="EnvironmentUrl" value="https://dev.etat-ge.ch"/>
+    <!-- Paramètres globaux -->
+    <add key="ReverseProxyAGS" value="{#EnvironmentUrl#}/terags"/>
+    <add key="ApplicationPath" value="D:\exploitation\9888"/>
+    <add key="WebServiceUrl" value="{#EnvironmentUrl#}/terecadastrews"/>
+    <!-- Paramètres des fichiers et répertoires -->
+    <add key="ConfigPath" value="{#ApplicationPath#}\config"/>
+    <add key="LogoPath" value="{#ApplicationPath#}\logos"/>
+    <add key="LogoUrl" value="{#WebServiceUrl#}/logos"/>
+    <add key="WorkingPath" value="{#ApplicationPath#}\working"/>
+    <add key="WorkingUrl" value="{#WebServiceUrl#}/working"/>
+    <add key="SymbolPath" value="{#ApplicationPath#}\symbols"/>
+    <add key="SymbolUrl" value="{#WebServiceUrl#}/symbols"/>
+    <!--Parametres pour accéder au service cartographique -->
+    <add key="MapServiceUrl" value="{#ReverseProxyAGS#}/rest/services/ECADASTRE_rdppf_map/MapServer"/>
+    <add key="GeometryServiceUrl" value="{#ReverseProxyAGS#}/rest/services/Utilities/Geometry/GeometryServer"/>
+    <add key="TokenServerUrl" value="{#ReverseProxyAGS#}/tokens/generateToken"/>
+    <add key="TokenExpiration" value="10"/>
+    <!-- Laisser les valeurs à vide si le service carto n'est pas sécurisé. -->
+    <add key="TokenServerUser" value=""/>
+    <add key="TokenServerPwd" value=""/>
+    <!-- Noms des couches et champs -->
+    <add key="ParcelleLayerName" value="CAD_PARCELLE_MENSU"/>
+    <add key="ParcelleEGRIDFieldName" value="EGRID"/>
+    <add key="ParcelleNoFieldName" value="NO_PARCELLE"/>
+    <add key="ParcelleNoCommFieldName" value="NO_COMM"/>
+    <add key="ParcelleTypeFieldName" value="TYPE_PROPRI"/>
+    <add key="ParcelleAreaFieldName" value="SHAPE.AREA"/>
+    <add key="ParcelleSurfaceFieldName" value="SURFACE"/>
+    <add key="DDPLayerName" value="CAD_DDP"/>
+    <add key="DDPEGRIDFieldName" value="EGRID"/>
+    <add key="DDPNoFieldName" value="NO_DDP"/>
+    <add key="DDPNoCommFieldName" value="NO_COMM"/>
+    <add key="DDPTypeFieldName" value="GENRE"/>
+    <add key="DDPAreaFieldName" value="SHAPE.AREA"/>
+    <add key="DDPSurfaceFieldName" value="SURFACE_TECHNIQUE"/>
+    <add key="AdresseLayerName" value="CAD_ADRESSE"/>
+    <add key="AdresseNPAFieldName" value="NO_POSTAL"/>
+    <add key="AdresseVoieFieldName" value="NOMVOI"/>
+    <add key="AdresseNumFieldName" value="NO_ADRESSE"/>
+    <add key="AdresseEGIDFieldName" value="EGID"/>
+    <add key="BatimentHSLayerName" value="CAD_BATIMENT_HORSOL"/>
+    <add key="BatimentHSEGIDFieldName" value="EGID"/>
+    <add key="BatimentSSLayerName" value="CAD_BATIMENT_SOUS_SOL"/>
+    <add key="BatimentSSEGIDFieldName" value="EGID"/>
+    <add key="DateDmoLayerName" value="CAD_COMMUNE"/>
+    <add key="DateDmoFieldName" value="DATE_DMO"/>
+    <!-- OeREB: URL des fichiers XML (http://models.geo.admin.ch/V_D/OeREB) -->
+    <add key="OerebDataTextsFileUrl" value="{#WebServiceUrl#}/config/OeREB/OeREBKRM_V2_0_Texte.xml"/>
+    <add key="OerebDataLogosFileUrl" value="{#WebServiceUrl#}/config/OeREB/OeREBKRM_V2_0_Logos.xml"/>
+    <add key="OerebDataLawsFileUrl" value="{#WebServiceUrl#}/config/OeREB/OeREBKRM_V2_0_Gesetze.xml"/>
+    <add key="OerebDataThemesFileUrl" value="{#WebServiceUrl#}/config/OeREB/OeREBKRM_V2_0_Themen.xml"/>
+  </appSettings>
+  <log4net>
+    <root>
+      <level value="DEBUG" />
+      <appender-ref ref="rdppfLogger" />
+    </root>
+    <appender name="rdppfLogger" type="log4net.Appender.RollingFileAppender">
+      <file value="D:\logs\9888\rdppfws.log" />
+      <appendToFile value="true" />
+      <rollingStyle value="Size" />
+      <maxSizeRollBackups value="10" />
+      <maximumFileSize value="1MB" />
+      <staticLogFileName value="true" />
+      <layout type="log4net.Layout.PatternLayout">
+        <conversionPattern value="%date [%thread] %level - %message%newline" />
+      </layout>
+    </appender>
+  </log4net>
+    <system.serviceModel>
+        <services>
+            <service name="RdppfSVC">
+                <endpoint address=""
+                          binding="webHttpBinding"
+                          bindingConfiguration="secureHttpBinding"
+                          behaviorConfiguration="restfulBehavior"
+                          contract="IRdppfSVC"/>
+            </service>
+        </services>
+        <bindings>
+            <webHttpBinding>
+                <binding name="secureHttpBinding">
+                    <security mode="Transport">
+                        <transport clientCredentialType="None"/>
+                    </security>
+                </binding>
+            </webHttpBinding>
+        </bindings>
+        <behaviors>
+            <endpointBehaviors>
+                <behavior name="restfulBehavior">
+                    <webHttp />
+                </behavior>
+            </endpointBehaviors>
+            <serviceBehaviors>
+                <behavior>
+                    <!-- To avoid disclosing metadata information, set the value below to false and remove the metadata endpoint above before deployment -->
+                    <serviceMetadata httpsGetEnabled="true"/>
+                    <!-- To receive exception details in faults for debugging purposes, set the value below to true.  Set to false before deployment to avoid disclosing exception information -->
+                    <serviceDebug includeExceptionDetailInFaults="false"/>
+                </behavior>
+            </serviceBehaviors>
+        </behaviors>
+        <serviceHostingEnvironment multipleSiteBindingsEnabled="true" />
+    </system.serviceModel>
+    <system.webServer>
+        <modules runAllManagedModulesForAllRequests="true"/>
+    </system.webServer>	
+  <system.diagnostics>
+    <trace autoflush="true">
+      <listeners>
+        <add
+            name="textWriterTraceListener"
+            type="System.Diagnostics.TextWriterTraceListener"
+            initializeData="D:\logs\9888\log4net.log" />
+      </listeners>
+    </trace>
+    <!--<sources>
+            <source name="System.ServiceModel"
+                    switchValue="Information, ActivityTracing"
+                    propagateActivity="true">
+                <listeners>
+                    <add name="traceListener"
+                        type="System.Diagnostics.XmlWriterTraceListener"
+                        initializeData= "D:\Develop\9444-DGSI-RDPPF-ServiceXML\Source\ws\Traces.svclog" />
+                </listeners>
+            </source>
+        </sources>-->
+  </system.diagnostics>
+  <system.net>
+    <defaultProxy>
+	  <proxy proxyaddress="http://proxygeadm.etat-ge.ch:3128" bypassonlocal="true" />
+        <bypasslist>
+            <add address="dev.etat-ge.ch" />
+        </bypasslist>
+	</defaultProxy>
+  </system.net>
+</configuration>
