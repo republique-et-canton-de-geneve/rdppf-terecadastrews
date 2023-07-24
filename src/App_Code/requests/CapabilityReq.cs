@@ -1,4 +1,4 @@
-﻿/* $Rev: 29893 $ */
+﻿/* $Rev: 30386 $ */
 using ExtractDataModel_v20;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,7 @@ public class CapabilityReq : CommonReq
     public CapabilityReq()
     {
         this.communeCfg = XmlHelper.GetCommuneConfig();
-        //this.Init(new GetExtractParamReq(), false);
+        this.Init(new GetExtractParamReq(), false);
     }
 
     public XmlElement GetCapabilitiesAsXml()
