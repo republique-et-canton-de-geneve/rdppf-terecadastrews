@@ -29,7 +29,7 @@ public class TokenManager
         if (HttpRuntime.Cache.Get(cacheId) == null)
         {
             ServicePointManager.ServerCertificateValidationCallback = (obj, certificate, chain, errors) => true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
 
             NameValueCollection data = new NameValueCollection();
             data["username"] = user;
