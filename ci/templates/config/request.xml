@@ -707,7 +707,7 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-   <RestrictionOnLandownership layer="RDPPF_RESERVES_FORESTIERES" complete="false"
+   <RestrictionOnLandownership layer="RDPPF_RESERVES_FORESTIERES" complete="false">
     <Theme>
       <Code>ch.Waldreservate</Code>
       <Index>730</Index>
