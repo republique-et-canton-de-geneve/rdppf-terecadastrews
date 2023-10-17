@@ -707,4 +707,23 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
+   <RestrictionOnLandownership layer="RDPPF_RESERVES_FORESTIERES" complete="false"
+    <Theme>
+      <Code>ch.Waldreservate</Code>
+      <Index>730</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JURIDIQUE" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LFo</LawId>
+    <LawId>OFo</LawId>
+    <LawId>LForêt</LawId>
+    <LawId>RForêt</LawId>
+    <ResponsibleOffice>
+      <Name>Direction générale de l'agriculture et de la nature</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
 </RequestConfig>
