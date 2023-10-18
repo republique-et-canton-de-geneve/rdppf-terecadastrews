@@ -163,8 +163,8 @@
     </Theme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
-    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
-    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId dateField="Date d'adoption (instance selon type de plan)">LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId dateField="Date d'adoption (instance selon type de plan)">LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
     <LegalProvisionId>LIEN_REGLEMENT</LegalProvisionId>
     <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
     <LawId>LAT</LawId>
@@ -712,7 +712,7 @@
       <Code>ch.Waldreservate</Code>
       <Index>730</Index>
     </Theme>
-    <Lawstatus field="STATUT_JURIDIQUE" />
+    <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
     <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
