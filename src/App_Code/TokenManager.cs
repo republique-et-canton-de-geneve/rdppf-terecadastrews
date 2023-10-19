@@ -1,4 +1,4 @@
-﻿/* $Rev: 29811 $ */
+/* $Rev: 29811 $ */
 using System;
 using System.Collections.Specialized;
 using System.Net;
@@ -29,7 +29,6 @@ public class TokenManager
         if (HttpRuntime.Cache.Get(cacheId) == null)
         {
             ServicePointManager.ServerCertificateValidationCallback = (obj, certificate, chain, errors) => true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
 
             NameValueCollection data = new NameValueCollection();
             data["username"] = user;
