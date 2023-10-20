@@ -1,4 +1,4 @@
-/* $Rev: 29811 $ */
+﻿/* $Rev: 29811 $ */
 using ESRI.ArcGIS.SOAP;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,8 @@ public class LayerInfo
 
     public LayerInfo(string token, string mapServiceUrl)
     {
-    
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
+
         MapServerProxy mapService = new MapServerProxy();
         if (string.IsNullOrEmpty(token))
         {
