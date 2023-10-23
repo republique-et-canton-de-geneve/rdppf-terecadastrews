@@ -1,4 +1,45 @@
+V3.0.1
 - Ajout de la transparence sur les symboles des légendes des extraits statiques.
 - Correction de l'appel getEGRID. Recherche sur adresse sans numéro fonctionnel.
   Schémas des données en sortie respecte les instructions de la confédération.
   Ex. d'appel: https://dev.etat-ge.ch/terecadastrews/RdppfSVC.svc/getegrid/xml/1213/bandol
+V3.1
+De : Damien Sauge <dsauge@topomat.ch> 
+Envoyé : vendredi 20 octobre 2023 11:47
+À : Felicissimo Mauro (DIN) <mauro.felicissimo@etat.ge.ch>; Stussi Andreas (DT) <andreas.stussi@etat.ge.ch>; Cornette Geoffrey (DT) <geoffrey.cornette@etat.ge.ch>
+Objet : Cadastre RDPPF - mise à jour
+
+PRUDENCE. Ce message provient d'un expéditeur externe à l'Etat. Ne cliquez sur les liens ou n'ouvrez les pièces jointes que si vous faites entière confiance à cet expéditeur. 
+
+Bonjour à tous,
+J’ai fini les développements suivants sur le Cadastre RDPPF :
+-	Gestion d’un appel « URL », ex. …/RdppfSVC.svc/extract/url/?EGRID=CH588265639774
+-	Gestion des statuts juridiques, ex. de bien-fonds : CH616361658102 (En vigueur), CH908263636554 (En vigueur + En modification avec effet anticipé), CH486165638310 (En modification avec effet anticipé)
+
+Andréas, je suis tombé sur des valeurs du statut juridique en base erronées, par exemple couche RDPPF_DISTANCES_FORET_S, « STATUT_JURIDIQUE: En_vigueur »
+Mauro, le plus simple serait que je puisse mettre à jour le repository github, si tu es d’accord merci de me rajouter (utilisateur « Damien Sauge » ou « damien-sauge »)
+
+Il faudra tester l’accès aux services cartographique en DEV, j’ai eu des erreurs de validation de certificat, que j’ai contourné par code (je ne livre pas ce contournement).
+J’ai également supprimer toute notion de TLS1.x
+
+Bonne journée.
+
+De : Damien Sauge <dsauge@topomat.ch> 
+Envoyé : lundi 23 octobre 2023 09:30
+À : Felicissimo Mauro (DIN) <mauro.felicissimo@etat.ge.ch>
+Cc : Cornette Geoffrey (DT) <geoffrey.cornette@etat.ge.ch>; Stussi Andreas (DT) <andreas.stussi@etat.ge.ch>
+Objet : Cadastre RDPPF: Livraison v.3.1
+
+PRUDENCE. Ce message provient d'un expéditeur externe à l'Etat. Ne cliquez sur les liens ou n'ouvrez les pièces jointes que si vous faites entière confiance à cet expéditeur. 
+
+Bonjour Mauro,
+Merci de trouver la version 3.1 de l’application à l’adresse suivante :
+https://www.topomat.ch/transit/OCSIN/9888_TOPOMAT_A_C_3.1.zip
+
+Remarques concernant les templates (ci/templates) :
+Dans web.config, j’ai rajouté la ligne suivante : <add key="SITGExtractUrl" value="https://map.sitg.ch/app/?locparcelle=&apos;{0}&apos;&amp;mapresources=RDPPF"/>
+A voir si cela doit être mis en template pour les différents environnements.
+Request.xml, ce fichier devrait être identique pour les différent environnements, à mon avis il peut être enlevé des templates.
+
+Bonne journée.
+

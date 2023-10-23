@@ -1,4 +1,4 @@
-﻿/* $Rev: 30309 $ */
+﻿/* $Rev: 30620 $ */
 using iText.IO.Font;
 using iText.IO.Image;
 using iText.Kernel.Colors;
@@ -66,7 +66,7 @@ public class ExtractGenerator
         // build restriction pages
         Stopwatch timer = Stopwatch.StartNew();
 
-        SortedList<int, RestrictionExtract> extracts = new SortedList<int, RestrictionExtract>();
+        SortedList<double, RestrictionExtract> extracts = new SortedList<double, RestrictionExtract>();
         Parallel.ForEach(reportData.section.restrictions, restr =>
         {
             if (restr.result == true)
@@ -75,7 +75,7 @@ public class ExtractGenerator
                 int numPages = GetRestrictionExtract(intent, restr, path);
                 extracts.Add(restr.order, new RestrictionExtract
                 {
-                    Title = restr.title,
+                    Title = restr.tocTitle,
                     Pages = numPages,
                     Path = path
                 });

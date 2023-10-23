@@ -1,4 +1,4 @@
-﻿/* $Rev: 30309 $ */
+﻿/* $Rev: 30620 $ */
 using ESRI.ArcGIS.SOAP;
 using ExtractDataModel_v20;
 using System;
@@ -11,6 +11,8 @@ using Topomat.Web.Common;
 
 public class CommonReq
 {
+    private OerebLawStatus[] oerebLawStatus;
+
     protected OeREBKRMHelper oerebHelper;
     protected LayerInfo mapLayerInfo;
     protected LegendInfo mapLegendInfo;
@@ -74,6 +76,8 @@ public class CommonReq
         string token = TokenManager.GetToken();
 
         this.oerebHelper = new OeREBKRMHelper(new DataManager());
+        oerebLawStatus = oerebHelper.GetOerebLawStatuses(param.lang);
+
         this.mapLayerInfo = new LayerInfo(token, WebHelper.GetConfigValue("MapServiceUrl"));
         this.queryWorker = new QueryWorker(token);
 
@@ -275,6 +279,16 @@ public class CommonReq
             SubCode = theme.IsSubTheme ? theme.SubCode : null,
             Text = GetLocalisedText(text)
         };
+    }
+
+    protected OerebLawStatus GetOerebLawStatus(string text)
+    {
+        return oerebLawStatus.FirstOrDefault(ls => string.Compare(ls.Text, text) == 0);
+    }
+
+    protected OerebLawStatus GetOerebLawStatus(LawstatusCode code)
+    {
+        return oerebLawStatus.FirstOrDefault(ls => ls.Code == code);
     }
 
     protected RealEstateType GetRealEstateType(ParcelleType type, string value)

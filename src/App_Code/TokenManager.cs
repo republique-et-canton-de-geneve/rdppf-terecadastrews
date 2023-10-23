@@ -1,4 +1,4 @@
-﻿/* $Rev: 29811 $ */
+﻿/* $Rev: 30620 $ */
 using System;
 using System.Collections.Specialized;
 using System.Net;
@@ -30,7 +30,7 @@ public class TokenManager
         {
             ServicePointManager.ServerCertificateValidationCallback = (obj, certificate, chain, errors) => true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
-
+            
             NameValueCollection data = new NameValueCollection();
             data["username"] = user;
             data["password"] = WebHelper.GetConfigValue("TokenServerPwd");

@@ -1,4 +1,4 @@
-﻿/* $Rev: 30309 $ */
+﻿/* $Rev: 30620 $ */
 using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
@@ -38,18 +38,18 @@ public class GetExtractReq : CommonReq
 
     public string GetResponseAsUrl(QueryResultFeature feature)
     {
-        //TODO: Voir si on a un équivalent à Genève, SITG ? consultation du RDPPF ?
-        string egrid;
+        XmlNode node;
         if (feature.type == ParcelleType.BienFonds)
         {
-            egrid = XmlHelper.GetAttributeFromNode(feature, this.requestConfig.SelectSingleNode("RealEstate/Parcelle"), "EGRID");
+            node = this.requestConfig.SelectSingleNode("RealEstate/Parcelle");
         }
         else
         {
-            egrid = XmlHelper.GetAttributeFromNode(feature, this.requestConfig.SelectSingleNode("RealEstate/DDP"), "EGRID");
+            node = this.requestConfig.SelectSingleNode("RealEstate/DDP");
         }
+        string ideddp = string.Format("{0}:{1}", XmlHelper.GetAttributeFromNode(feature, node, "IdentDN"), XmlHelper.GetAttributeFromNode(feature, node, "Number"));
 
-        return string.Format("{0}?egrid={1}", WebHelper.GetConfigValue("WebSiteUrl"), egrid);
+        return string.Format(WebHelper.GetConfigValue("SITGExtractUrl"), ideddp);
     }
 
     public JsonExtract.JsonExtract GetResponseAsJson(QueryResultFeature feature)
@@ -80,12 +80,12 @@ public class GetExtractReq : CommonReq
 
         ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "mainMapLayer" });
         int markerId = this.GetMapLayerIds(new string[] { marker })[0];
-        string layerDefs = string.Format("{0}:OBJECTID={1}", markerId, feature.attributes["OBJECTID"]);
+        string layerDefs = string.Format("\"{0}\":\"OBJECTID={1}\"", markerId, feature.attributes["OBJECTID"]);
         mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.marker, string.Empty, ids, layerDefs));
 
         foreach (RestrictionResult restriction in restrictions)
         {
-            layerDefs = string.Format("{0}:{1}={2}", restriction.IdentResult.layerId, restriction.OIDFieldName, restriction.OID);
+            layerDefs = string.Format("\"{0}\":\"{1}={2}\"", restriction.IdentResult.layerId, restriction.OIDFieldName, restriction.OID);
             mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restriction, restriction.UniqueId, new int[] { restriction.IdentResult.layerId }, layerDefs));
         }
 
@@ -204,7 +204,7 @@ public class GetExtractReq : CommonReq
     private MapWorker InitMapWorker(MapPrintParams printParams, MapWorker.MapWorkerTypes type, string id, int[] layerIds, string layerDefs)
     {
         MapWorker worker = new MapWorker(printParams);
-        worker.Init(type, id, layerIds, layerDefs);
+        worker.Init(type, id, layerIds, new string[] { layerDefs });
         return worker;
     }
 

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<!-- $Rev: 30309 $ -->
+<!-- $Rev: 30620 $ -->
 <RequestConfig>
   <markerMapLayer>marker</markerMapLayer>
   <markerDDPMapLayer>marker_DDP</markerDDPMapLayer>
@@ -503,7 +503,7 @@
       <Name>Office fédérale des transports</Name>
       <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
-  </RestrictionOnLandownership>  
+  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_AEROPORT" complete="false">
     <Theme>
       <Code>ch.BaulinienFlughafenanlagen</Code>
@@ -707,12 +707,12 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-   <RestrictionOnLandownership layer="RDPPF_RESERVES_FORESTIERES" complete="false">
+  <RestrictionOnLandownership layer="RDPPF_RESERVES_FORESTIERES" complete="false">
     <Theme>
       <Code>ch.Waldreservate</Code>
       <Index>730</Index>
     </Theme>
-    <Lawstatus field="STATUT_JUR" />
+    <Lawstatus field="STATUT_JURIDIQUE" />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
     <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>

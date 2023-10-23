@@ -1,4 +1,4 @@
-﻿/* $Rev: 30309 $ */
+﻿/* $Rev: 30620 $ */
 using System;
 
 public class ReportData
@@ -50,10 +50,12 @@ public class RealEstateData
 public class restriction
 {
     public string id;
+    public string tocTitle;
     public string title;
-	public int order;
+    public double order;
     public bool result;
     public string lawStatus;
+    public string lawStatusId;
     public legalProvision[] legalProvisions;
     public law[] laws;
     public hint[] hints;

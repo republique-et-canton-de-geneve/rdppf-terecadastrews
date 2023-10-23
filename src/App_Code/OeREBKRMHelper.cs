@@ -27,6 +27,8 @@ public class OeREBKRMHelper
         { LawstatusCode.changeWithoutPreEffect, "AenderungOhneVorwirkung" }
     };
 
+    private Dictionary<string, LawstatusCode> invLawStatusDict;
+
     private Dictionary<DocumentTypeCode, string> documentTypeDict = new Dictionary<DocumentTypeCode, string>()
     {
         { DocumentTypeCode.LegalProvision, "Rechtsvorschrift" },
@@ -81,6 +83,12 @@ public class OeREBKRMHelper
             this.dataManager.GetOerebTexts().DATASECTION.OeREBKRMkvs_V2_0Konfiguration.OeREBKRMkvs_V2_0KonfigurationHaftungshinweis);
         informations = new List<TRANSFERDATASECTIONOeREBKRMkvs_V2_0KonfigurationOeREBKRMkvs_V2_0KonfigurationInformation>(
             this.dataManager.GetOerebTexts().DATASECTION.OeREBKRMkvs_V2_0Konfiguration.OeREBKRMkvs_V2_0KonfigurationInformation);
+
+        invLawStatusDict = new Dictionary<string, LawstatusCode>();
+        foreach(LawstatusCode key in lawStatusDict.Keys)
+        {
+            invLawStatusDict.Add(lawStatusDict[key], key);
+        }
     }
 
     public Dokument[] GetLaws(string theme)
@@ -181,6 +189,21 @@ public class OeREBKRMHelper
         return GetText(this.lawStatus.First(t => string.Compare(t.Code, this.lawStatusDict[code]) == 0).Titel.LocalisationCH_V1MultilingualText.LocalisedText, lang);
     }
 
+    public OerebLawStatus[] GetOerebLawStatuses(string lang)
+    {
+        IList<OerebLawStatus> list = new List<OerebLawStatus>();
+        foreach(var status in lawStatus)
+        {
+            list.Add(new OerebLawStatus
+            {
+                Id = status.TID,
+                Code = invLawStatusDict[status.Code],
+                Text = GetText(status.Titel.LocalisationCH_V1MultilingualText.LocalisedText, lang)
+            });
+        }
+        return list.ToArray();
+    }
+
     public string GetDocumentTypeText(DocumentTypeCode code, string lang)
     {
         return GetText(this.documentTypes.First(t => string.Compare(t.Code, this.documentTypeDict[code]) == 0).Titel.LocalisationCH_V1MultilingualText.LocalisedText, lang);
@@ -279,4 +302,11 @@ public class OeREBKRMHelper
             }
         };
     }
+}
+
+public class OerebLawStatus
+{
+    public string Id { get; set; }
+    public LawstatusCode Code { get; set; }
+    public string Text { get; set; }
 }

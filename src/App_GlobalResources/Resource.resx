@@ -126,6 +126,9 @@
   <data name="ERROR_INFORMATIONS" xml:space="preserve">
     <value>Erreur lors de la récupération du champ de l'information complémentaire ({0}) sur la couche '{1}'.</value>
   </data>
+  <data name="ERROR_LAWSTATUS" xml:space="preserve">
+    <value>Erreur sur la valeur du status ({0}) sur la couche id={1}.</value>
+  </data>
   <data name="ERROR_LEGALPROVISION" xml:space="preserve">
     <value>Erreur lors de la récupération du champ de la disposition juridique ({0}) sur la couche {1}.</value>
   </data>
