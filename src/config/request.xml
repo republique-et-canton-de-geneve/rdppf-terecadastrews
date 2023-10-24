@@ -712,7 +712,7 @@
       <Code>ch.Waldreservate</Code>
       <Index>730</Index>
     </Theme>
-    <Lawstatus field="STATUT_JURIDIQUE" />
+    <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
     <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
