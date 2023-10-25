@@ -30,7 +30,7 @@ stages:
   dev:
     hosts: "w09635apdev04"
     ClientEnvironmentUrl: "https://appdev2.ge.ch"
-    ClientRP:"https://dev.etat-ge.ch"
+    ClientRP: "https://dev.etat-ge.ch"
 
   rec:
     hosts: "w09635aprec04"
