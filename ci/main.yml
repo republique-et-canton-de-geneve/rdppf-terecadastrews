@@ -32,7 +32,6 @@ stages:
     hosts: "w09635apdev04"
     ClientEnvironmentUrl: "https://appdev2.ge.ch"
     
-
   rec:
     hosts: "w09635aprec04"
     ClientEnvironmentUrl: "https://demo.ge.ch"
