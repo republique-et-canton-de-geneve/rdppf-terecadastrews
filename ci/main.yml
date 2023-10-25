@@ -22,8 +22,6 @@ sources_folder: "D:\\_sources\\{{ app }}\\Livraisons\\{{ timestamp }}_{{ app }}_
 win_iis_webapppool_name: "{{ app }}_{{ app_name }}"
 win_iis_webapplication_name: 'terecadastrews'
 win_iis_webapplication_site: "{{ stage|upper }}"
-ClientRP: "https://dev.etat-ge.ch"
-
 
 app_templates_dynamic: true
 
@@ -31,10 +29,12 @@ stages:
   dev:
     hosts: "w09635apdev04"
     ClientEnvironmentUrl: "https://appdev2.ge.ch"
+    ApplicationUrl: "https://dev.etat-ge.ch"
     
   rec:
     hosts: "w09635aprec04"
-    ClientEnvironmentUrl: "https://demo.ge.ch"
+    ClientEnvironmentUrl: "https://rec.etat-ge.ch"
+    ApplicationUrl: "https://demo.ge.ch"
 
   prod:
     hosts: "w09635apprd04"
