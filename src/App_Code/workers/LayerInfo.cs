@@ -16,6 +16,7 @@ public class LayerInfo
 
     public LayerInfo(string token, string mapServiceUrl)
     {
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         MapServerProxy mapService = new MapServerProxy();
         if (string.IsNullOrEmpty(token))
         {
