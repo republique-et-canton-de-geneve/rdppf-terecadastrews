@@ -29,12 +29,12 @@ stages:
   dev:
     hosts: "w09635apdev04"
     ClientEnvironmentUrl: "https://appdev2.ge.ch"
-    ApplicationUrl: "https://dev.etat-ge.ch"
+    RPApplicationUrl: "https://dev.etat-ge.ch"
     
   rec:
     hosts: "w09635aprec04"
     ClientEnvironmentUrl: "https://rec.etat-ge.ch"
-    ApplicationUrl: "https://demo.ge.ch"
+    RPApplicationUrl: "https://demo.ge.ch"
 
   prod:
     hosts: "w09635apprd04"
