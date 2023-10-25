@@ -23,12 +23,14 @@ win_iis_webapppool_name: "{{ app }}_{{ app_name }}"
 win_iis_webapplication_name: 'terecadastrews'
 win_iis_webapplication_site: "{{ stage|upper }}"
 
+
 app_templates_dynamic: true
 
 stages:
   dev:
     hosts: "w09635apdev04"
-    ClientEnvironmentUrl: "https://dev.etat-ge.ch"
+    ClientEnvironmentUrl: "https://appdev2.ge.ch"
+    ClientRP:"https://dev.etat-ge.ch"
 
   rec:
     hosts: "w09635aprec04"
