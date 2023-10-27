@@ -28,13 +28,13 @@ app_templates_dynamic: true
 stages:
   dev:
     hosts: "w09635apdev04"
-    ClientEnvironmentUrl: "https://appdev2.ge.ch"
+    ClientEnvironmentUrl: "https://demo.ge.ch"
     RPApplicationUrl: "https://dev.etat-ge.ch"
     
   rec:
     hosts: "w09635aprec04"
     ClientEnvironmentUrl: "https://demo.ge.ch"
-    RPApplicationUrl: "https://demo.ge.ch"
+    RPApplicationUrl: "https://rec.etat-ge.ch"
 
   prod:
     hosts: "w09635apprd04"
