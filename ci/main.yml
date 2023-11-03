@@ -28,7 +28,7 @@ app_templates_dynamic: true
 stages:
   dev:
     hosts: "w09635apdev04"
-    ClientEnvironmentUrl: "https://demo.ge.ch"
+    ClientEnvironmentUrl: "https://appdev2.ge.ch"
     RPApplicationUrl: "https://appdev2.ge.ch"
     
   rec:
