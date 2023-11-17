@@ -1,10 +1,11 @@
-﻿/* $Rev: 30620 $ */
+﻿/* $Rev: 30652 $ */
 using ESRI.ArcGIS.SOAP;
 using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Topomat.Web.Common;
@@ -71,8 +72,10 @@ public class CommonReq
 
     protected void Init(GetExtractParamReq param, bool forReport)
     {
-        Stopwatch timer = Stopwatch.StartNew();
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
+        Stopwatch timer = Stopwatch.StartNew();
+        
         string token = TokenManager.GetToken();
 
         this.oerebHelper = new OeREBKRMHelper(new DataManager());
