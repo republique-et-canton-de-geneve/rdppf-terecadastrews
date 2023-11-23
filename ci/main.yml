@@ -34,7 +34,7 @@ stages:
   rec:
     hosts: "w09635aprec04"
     ClientEnvironmentUrl: "https://demo.ge.ch"
-    RPApplicationUrl: "https://rec.etat-ge.ch"
+    RPApplicationUrl: "https://demo.ge.ch"
 
   prod:
     hosts: "w09635apprd04"
