@@ -39,4 +39,5 @@ stages:
   prod:
     hosts: "w09635apprd04"
     ClientEnvironmentUrl: "https://ge.ch"
+    RPApplicationUrl: "https://ge.ch"
 
