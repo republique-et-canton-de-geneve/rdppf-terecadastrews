@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!-- $Rev: 30620 $ -->
 <RequestConfig>
   <markerMapLayer>marker</markerMapLayer>
@@ -695,7 +695,7 @@
       <Code>ch.Waldabstandslinien</Code>
       <Index>720</Index>
     </Theme>
-    <Lawstatus field="STATUT_JURIDIQUE" />
+    <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_CONSTAT_NATURE_FOREST</LegalProvisionId>
     <LawId>LFo</LawId>
