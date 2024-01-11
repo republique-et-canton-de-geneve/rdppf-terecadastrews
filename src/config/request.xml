@@ -695,7 +695,7 @@
       <Code>ch.Waldabstandslinien</Code>
       <Index>720</Index>
     </Theme>
-    <Lawstatus field="STATUT_JUR" />
+    <Lawstatus field="STATUT_JURIDIQUE" />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_CONSTAT_NATURE_FOREST</LegalProvisionId>
     <LawId>LFo</LawId>
