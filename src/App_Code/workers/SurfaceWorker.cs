@@ -1,4 +1,4 @@
-﻿/* $Rev: 30023 $ */
+﻿/* $Rev: 31152 $ */
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -113,16 +113,18 @@ public class SurfaceWorker
                 SG = double.Parse(feature.attributes[WebHelper.GetConfigValue("DDPAreaFieldName")]);
                 ST = double.Parse(feature.attributes[WebHelper.GetConfigValue("DDPSurfaceFieldName")]);
                 errorId = feature.attributes[WebHelper.GetConfigValue("DDPEGRIDFieldName")];
-            }            
+            }
 
             ComputeSurface cs = new ComputeSurface();
             if (cs.Process(isComplete, SG, ST, areaResults.ToArray()) == ComputeSurface.RESULT_FINISHED)
             {
+                int[] surfaces = cs.GetSurfaces();
+                double[] parts = cs.GetPercents();
                 for (int i = 0; i < restrictions.Length; i++)
                 {
                     restrictions[i].Length = 0;
-                    restrictions[i].Area = cs.GetSurfaces()[i];
-                    restrictions[i].PartInPercent = Math.Round(cs.GetPercents()[i], 2);
+                    restrictions[i].Area = surfaces[i] == -1 ? 0 : surfaces[i];
+                    restrictions[i].PartInPercent = parts[i] == -1 ? 0.0 : Math.Round(parts[i], 2);
                     restrictions[i].PointNumber = 0;
                 }
             }
