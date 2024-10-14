@@ -22,9 +22,9 @@
     </Content>
   </Information>
   <BaseData>
-    <Title>Données de base</Title>
+    <Title>Restrictions de propriété dans le registre foncier</Title>
     <Content>
-      Données de la mensuration officielle. Etat de la mensuration officielle: [###DMODATE###]
+      Il est possible que des restrictions de propriété fassent l'objet d'une mention au registre foncier, en plus des indications figurant sur cet extrait.
     </Content>
   </BaseData>
   <Disclaimer useInStaticExtract="false">
@@ -40,86 +40,96 @@
     </Content>
   </Disclaimer>
   <Glossary>
-    <TID>100</TID><!--Cadastre RDPPF-->
+    <TID>106</TID><!--Alignements des installations aéroportuaires-->
+  </Glossary>
+  <Glossary>
+    <TID>105</TID><!--Alignements des installations ferroviaires-->
+  </Glossary>
+  <Glossary>
+    <TID>108</TID><!--Alignements des installations électriques à courant fort-->
+  </Glossary>
+  <Glossary>
+    <TID>107</TID><!--Alignements des routes nationales-->
+  </Glossary>
+  <Glossary>
+    <TID>109</TID><!--Base légale-->
   </Glossary>
   <Glossary>
     <TID>115</TID><!--CSP-->
   </Glossary>
   <Glossary>
+    <TID>100</TID><!--Cadastre RDPPF-->
+  </Glossary>
+  <Glossary>
+    <TID>113</TID><!--Cadastre des sites pollués-->
+  </Glossary>
+  <Glossary>
+    <TID>116</TID><!--Degrés de sensibilité au bruit-->
+  </Glossary>
+  <Glossary>
+    <TID>123</TID><!--Disposition juridique-->
+  </Glossary>
+  <Glossary>
+    <TID>126</TID><!--Distances par rapport à la forêt-->
+  </Glossary>
+  <Glossary>
     <TID>103</TID><!--E-GRID-->
   </Glossary>
   <Glossary>
-    <Title>LA</Title>
-    <Content>Loi fédérale sur l’aviation (RS 748.0)</Content>
+    <TID>129</TID><!--Effet anticipé-->
   </Glossary>
   <Glossary>
-    <Title>LAT</Title>
-    <Content>Loi fédérale sur l’aménagement du territoire (Loi sur l’aménagement du territoire) (RS 700)</Content>
+    <TID>110</TID><!--Espace réservé aux eaux-->
   </Glossary>
   <Glossary>
-    <Title>LCdF</Title>
-    <Content>Loi fédérale sur les chemins de fer (RS 742.101)</Content>
+    <TID>125</TID><!--Limites forestières statiques-->
   </Glossary>
   <Glossary>
-    <Title>LEaux</Title>
-    <Content>Loi fédérale sur la protection des eaux (RS 814.20)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>LFo</Title>
-    <Content>Loi fédérale sur les forêts (Loi sur les forêts) (RS 921.0)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>LGéo</Title>
-    <Content>Loi fédérale sur la géoinformation (Loi sur la géoinformation) (RS 510.62)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>LPE</Title>
-    <Content>Loi fédérale sur la protection de l’environnement (Loi sur la protection de l’environnement) (RS 814.01)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>LRN</Title>
-    <Content>Loi fédérale sur les routes nationales (RS 725.11)</Content>
+    <TID>130</TID><!--Modifications-->
   </Glossary>
   <Glossary>
     <TID>104</TID><!--N° OFS-->
   </Glossary>
   <Glossary>
-    <Title>OAT</Title>
-    <Content>Ordonnance sur l’aménagement du territoire (RS 700.1)</Content>
+    <TID>114</TID><!--Organisme responsable du cadastre-->
   </Glossary>
   <Glossary>
-    <Title>OCRDP</Title>
-    <Content>Ordonnance sur le cadastre des restrictions de droit public à la propriété foncière (RS 510.622.4)</Content>
+    <TID>124</TID><!--Plan de la zone de sécurité-->
   </Glossary>
   <Glossary>
-    <Title>OEaux</Title>
-    <Content>Ordonnance sur la protection des eaux (RS 814.201)</Content>
+    <TID>122</TID><!--Plans d'affectation-->
   </Glossary>
   <Glossary>
-    <Title>OGéo</Title>
-    <Content>Ordonnance sur la géoinformation (RS 510.620)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>OPB</Title>
-    <Content>Ordonnance sur la protection contre le bruit (RS 814.41)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>ORN</Title>
-    <Content>Ordonnance fédérale sur les routes nationales (RS 725.111)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>OSIA</Title>
-    <Content>Ordonnance sur l’infrastructure aéronautique (RS 748.131.1)</Content>
-  </Glossary>
-  <Glossary>
-    <Title>OSites</Title>
-    <Content>Ordonnance sur l’assainissement des sites pollués (Ordonnance sur les sites contaminés) (RS 814.680)</Content>
+    <TID>111</TID><!--Périmètres de protection des eaux souterraines-->
   </Glossary>
   <Glossary>
     <TID>101</TID><!--RDPPF-->
   </Glossary>
   <Glossary>
-    <Title>RF</Title>
-    <Content>Registre foncier</Content>
-  </Glossary>  
+    <TID>102</TID><!--Restriction de la propriété-->
+  </Glossary>
+  <Glossary>
+    <TID>127</TID><!--Réserves forestières-->
+  </Glossary>
+  <Glossary>
+    <TID>128</TID><!--Service compétent-->
+  </Glossary>
+  <Glossary>
+    <TID>112</TID><!--Zones de protection des eaux souterraines-->
+  </Glossary>
+  <Glossary>
+    <TID>117</TID><!--Zones réservées-->
+  </Glossary>
+  <Glossary>
+    <TID>119</TID><!--Zones réservées des installations aéroportuaires-->
+  </Glossary>
+  <Glossary>
+    <TID>118</TID><!--Zones réservées des installations ferroviaires-->
+  </Glossary>
+  <Glossary>
+    <TID>120</TID><!--Zones réservées des lignes d'une tension nominale égale ou supérieure à 220 kV-->
+  </Glossary>
+  <Glossary>
+    <TID>121</TID><!--Zones réservées des routes nationales-->
+  </Glossary> 
 </InformationConfig>

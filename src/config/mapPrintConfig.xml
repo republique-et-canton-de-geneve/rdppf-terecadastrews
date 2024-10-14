@@ -5,7 +5,7 @@
     <Factor>1.5</Factor><!-- Facteur d'agrandissement du plan par rapport à l'étendue de la parcelle -->
     <Width>174.0</Width><!-- Largeur des plans (mm) -->
     <Height>99.0</Height><!-- Hauteur des plans (mm) -->
-    <Scales>500,1000,1500,2000,2500,3000,3500,4000,4500,5000,7500,10000,12500,15000</Scales><!-- Liste des échelles à utiliser pour définir l'étendue d'un plan -->
+    <Scales>500,1000,1500,2000,2500,3000,3500,4000,4500,5000,7500,10000,12500,15000,25000,50000,100000,250000</Scales><!-- Liste des échelles à utiliser pour définir l'étendue d'un plan -->
     <Dpi>300</Dpi><!-- dpi utilisé pour imprimer le plan (PDF) -->
     <!-- Paramètres de la barre d'échelle -->
     <ScaleBar>

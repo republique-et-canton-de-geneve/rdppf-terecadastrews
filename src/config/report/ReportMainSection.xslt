@@ -166,6 +166,9 @@
               <div style="padding: 0.4mm 0mm">
                 1205 Genève
               </div>
+              <div style="padding: 0.4mm 0mm">
+                <a href="https://www.ge.ch/organisation/direction-information-du-territoire-dit">https://www.ge.ch/organisation/direction-information-du-territoire-dit</a>
+              </div>			  
             </td>
           </tr>
         </table>

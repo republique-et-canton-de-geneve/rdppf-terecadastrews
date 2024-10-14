@@ -66,6 +66,25 @@
       </MetadataOfGeographicalBaseData>
     </DDP>
   </RealEstate>
+  <RestrictionOnLandownership layer="RDPPF_ZR" complete="false">
+    <Theme>
+      <Code>ch.Planungszonen</Code>
+      <Index>19</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId>DATE_FIN_VALID</LegalProvisionId>
+    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
+    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LawId>LAT</LawId>
+    <LawId>RaLAT</LawId>
+    <HintId>LIEN_INFOS_COMPL</HintId>
+    <ResponsibleOffice>
+      <Name>Office de l'urbanisme</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>  
   <RestrictionOnLandownership layer="RDPPF_ZONES_SYNT" complete="true" additionalLegends="RDPPF_ZONES_SYNT_DEV">
     <Theme>
       <Code>ch.Nutzungsplanung</Code>
@@ -348,7 +367,7 @@
     <LawId>LEaux-GE</LawId>
     <LawId>REaux-GE</LawId>
     <ResponsibleOffice>
-      <Name>Direction générale de l'eau</Name>
+      <Name>Office cantonal de l'eau</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/oceau-service-planification-eau</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
@@ -423,25 +442,6 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
-  <RestrictionOnLandownership layer="RDPPF_ZR" complete="false">
-    <Theme>
-      <Code>ch.Planungszonen</Code>
-      <Index>80</Index>
-    </Theme>
-    <Lawstatus field="STATUT_JUR" />
-    <MetadataOfGeographicalBaseData />
-    <LegalProvisionId>DATE_FIN_VALID</LegalProvisionId>
-    <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
-    <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
-    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
-    <LawId>LAT</LawId>
-    <LawId>RaLAT</LawId>
-    <HintId>LIEN_INFOS_COMPL</HintId>
-    <ResponsibleOffice>
-      <Name>Office de l'urbanisme</Name>
-      <OfficeAtWeb>https://www.ge.ch/organisation/office-urbanisme</OfficeAtWeb>
-    </ResponsibleOffice>
-  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_ROUTES_NAT" complete="false">
     <Theme>
       <Code>ch.ProjektierungszonenNationalstrassen</Code>
@@ -507,7 +507,7 @@
   <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_AEROPORT" complete="false">
     <Theme>
       <Code>ch.BaulinienFlughafenanlagen</Code>
-      <Index>310</Index>
+      <Index>320</Index>
     </Theme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
@@ -523,7 +523,7 @@
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_AERO" complete="false">
     <Theme>
       <Code>ch.ProjektierungszonenFlughafenanlagen</Code>
-      <Index>320</Index>
+      <Index>310</Index>
     </Theme>
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
@@ -609,7 +609,6 @@
     <LegalProvisionId>LIEN_INFOS_COMPL</LegalProvisionId>
     <LawId>LPE</LawId>
     <LawId>Osites</LawId>
-    <HintId>LIEN_INFOS_COMPL</HintId>
     <ResponsibleOffice>
       <Name>Office fédéral des transports</Name>
       <OfficeAtWeb>https://www.bav.admin.ch/bav/fr/home/allgemeine-themen/umwelt/altlasten.html</OfficeAtWeb>
@@ -703,7 +702,7 @@
     <LawId>LForêt</LawId>
     <LawId>RForêt</LawId>
     <ResponsibleOffice>
-      <Name>Direction générale de l'agriculture et de la nature</Name>
+      <Name>Office cantonal de l'agriculture et de la nature</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
