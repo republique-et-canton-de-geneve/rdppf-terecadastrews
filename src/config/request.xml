@@ -360,6 +360,7 @@
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
+	<HintId>LIEN_INFOS_COMPL</HintId>
     <LawId>LAT</LawId>
     <LawId>LALAT</LawId>
     <LawId>LZIAM</LawId>
@@ -368,7 +369,7 @@
     <LawId>REaux-GE</LawId>
     <ResponsibleOffice>
       <Name>Office cantonal de l'eau</Name>
-      <OfficeAtWeb>https://www.ge.ch/organisation/oceau-service-planification-eau</OfficeAtWeb>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-eau-oceau</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_PNP" complete="false">
@@ -724,5 +725,4 @@
       <Name>Office cantonal de l'agriculture et de la nature</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
     </ResponsibleOffice>
-  </RestrictionOnLandownership>
 </RequestConfig>
