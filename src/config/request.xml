@@ -726,4 +726,34 @@
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_LIGNES_220_PLUS" complete="false">
+    <Theme>
+      <Code>ch.ProjektierungszonenStarkstromanlagen</Code>
+      <Index>810</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId></LegalProvisionId>
+    <LawId></LawId>
+    <HintId></HintId>
+    <ResponsibleOffice>
+      <Name>Office fédéral de l’énergie</Name>
+      <OfficeAtWeb>https://www.bfe.admin.ch/bfe/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="RDPPF_CH_ALIGNEMENT_INST_COURANT_FORT" complete="false">
+    <Theme>
+      <Code>ch.BaulinienStarkstromanlagen</Code>
+      <Index>820</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId></LegalProvisionId>
+    <LawId>LIE</LawId>
+    <HintId></HintId>
+    <ResponsibleOffice>
+      <Name>Office fédéral de l’énergie</Name>
+      <OfficeAtWeb>https://www.bfe.admin.ch/bfe/fr/home.html</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>  
 </RequestConfig>
