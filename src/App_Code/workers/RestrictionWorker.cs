@@ -193,11 +193,11 @@ public class RestrictionWorker
             int id = ir.layerId; string name = ir.layerName;
             MapLayerInfo layInfo = this.layerInfo.GetLayerInfo(ir.layerName, true);
 
-            string lawstatus = string.Empty;
+            string lawstatus = "En vigueur";
             if (!isAdditionalLegend)
             {
                 XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", isAdditionalLayer ? GetOriginalLayerName(ir.layerId) : ir.layerName);
-                string lawstatusFieldName = XmlHelper.GetXmlAttribute(node.SelectSingleNode("Lawstatus"), "field", true);
+                string lawstatusFieldName = XmlHelper.GetXmlAttribute(node.SelectSingleNode("Lawstatus"), "field", false);
 
                 if(!string.IsNullOrEmpty(lawstatusFieldName))
                 {
@@ -277,7 +277,7 @@ public class RestrictionWorker
             }
         }
 
-        LegendInfoJson.Legend jsonLegendInfo = this.legendInfo.GetLegendInfoAsJson(layerInfo.LayerID).First(jli => string.Compare(jli.label, label) == 0);
+        LegendInfoJson.Legend jsonLegendInfo = this.legendInfo.GetLegendInfoAsJson(layerInfo.LayerID).FirstOrDefault(jli => string.Compare(jli.label, label) == 0);
         if (jsonLegendInfo == null)
         {
             throw new WsUserException(string.Format(Resources.Resource.LEGEND_NOT_FOUND, label, layerInfo.Name));

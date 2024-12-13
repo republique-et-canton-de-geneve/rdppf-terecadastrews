@@ -137,11 +137,22 @@ public class XmlHelper
         string xmlAttribute = XmlHelper.GetXmlAttribute(node, attribute, false);
         if (!string.IsNullOrEmpty(xmlAttribute))
         {
-            string value = attributes[xmlAttribute];
-            if (!(string.IsNullOrEmpty(value) || string.Compare(value, "Null") == 0))
+            if(attributes.ContainsKey(xmlAttribute))
             {
-                result = value;
+                string value = attributes[xmlAttribute];
+                if (!(string.IsNullOrEmpty(value) || string.Compare(value, "Null") == 0))
+                {
+                    result = value;
+                }
             }
+            else
+            {
+                foreach(string key in attributes.Keys)
+                {
+                    Helper.LogDebug("XmlHelper.GetAttributeFromAttribute()", string.Format("attributes[{0}]={1}", key, attributes[key]));
+                }
+                throw new WsUserException(string.Format("GetAttributeFromAttribute - Erreur: attribute={0}, xmlAttribute={1}", attribute, xmlAttribute));
+            }            
         }
 
         return result;

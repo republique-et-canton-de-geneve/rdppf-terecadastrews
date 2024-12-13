@@ -116,6 +116,16 @@
               <xsl:text>)</xsl:text>
             </td>
           </tr>
+          <xsl:if test="string-length(realEstate/section)>0">
+            <tr>
+              <td class="label">
+                Section
+              </td>
+              <td class="value">
+                <xsl:value-of select="realEstate/section"/>
+              </td>
+            </tr>
+          </xsl:if>
           <tr>
             <td class="label">
               Surface
@@ -168,11 +178,11 @@
               </div>
               <div style="padding: 0.4mm 0mm">
                 <a href="https://www.ge.ch/organisation/direction-information-du-territoire-dit">https://www.ge.ch/organisation/direction-information-du-territoire-dit</a>
-              </div>			  
+              </div>
             </td>
           </tr>
         </table>
-        <div style="height:26mm;"></div>
+        <div style="height:12mm;"></div>
         <div class="textzone">
           L'extrait est authentifié par son numéro d'enregistrement (identifiant ci-dessus) géré par la direction de l'information du territoire.
         </div>
@@ -253,21 +263,15 @@
         <table>
           <tr>
             <td class="simple" style="width:82mm;vertical-align:top">
-              <div class="textzone" style="font-weight:bold">
-                <xsl:value-of select="generalInfos/Title"/>
-              </div>
-              <xsl:for-each select="generalInfos/Contents">
-                <div class="textzone">
-                  <xsl:value-of select="."/>
+              <xsl:for-each select="generalInfos/InformationText">
+                <div class="textzone" style="font-weight:bold">
+                  <xsl:value-of select="Title"/>
                 </div>
-              </xsl:for-each>
-              <div class="textzone" style="font-weight:bold;padding-top:2mm">
-                <xsl:value-of select="baseData/Title"/>
-              </div>
-              <xsl:for-each select="baseData/Contents">
-                <div class="textzone">
-                  <xsl:value-of select="."/>
-                </div>
+                <xsl:for-each select="Contents">
+                  <div class="textzone" style="padding-bottom:2mm">
+                    <xsl:value-of select="string"/>
+                  </div>
+                </xsl:for-each>
               </xsl:for-each>
             </td>
             <td class="simple" style="width:6mm">

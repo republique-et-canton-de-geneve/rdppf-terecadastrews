@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
 using Topomat.Web.Common;
@@ -157,6 +158,7 @@ public class GetExtractReq : CommonReq
         }
 
         IList<RestrictionTheme> cfgThemes = GetThemes();
+        string munLogoUrl = GetMunicipalityLogoUrl(feature);
 
         Extract extract = new Extract();
 
@@ -171,19 +173,30 @@ public class GetExtractReq : CommonReq
             extract.Item = Convert.FromBase64String(oerebHelper.GetLogo("ch.plr", this.param.lang));
             extract.Item1 = Convert.FromBase64String(oerebHelper.GetLogo("ch", this.param.lang));
             extract.Item2 = File.ReadAllBytes(Path.Combine(WebHelper.GetConfigValue("LogoPath"), "LOGORCGE_rvb300dpi_FRU.jpg"));
-            extract.Item3 = File.ReadAllBytes(Path.Combine(WebHelper.GetConfigValue("LogoPath"), "blank.gif"));
+            using (WebClient client = new WebClient())
+            {
+                extract.Item3 = client.DownloadData(munLogoUrl);
+            }
         }
         else
         {
             extract.Item = string.Format("{0}/ch.plr.{1}.png", WebHelper.GetConfigValue("LogoUrl"), this.param.lang);
             extract.Item1 = string.Format("{0}/ch.{1}.png", WebHelper.GetConfigValue("LogoUrl"), this.param.lang);
             extract.Item2 = string.Format("{0}/LOGORCGE_rvb300dpi_FRU.jpg", WebHelper.GetConfigValue("LogoUrl"));
-            extract.Item3 = string.Format("{0}/blank.gif", WebHelper.GetConfigValue("LogoUrl"));
+            extract.Item3 = munLogoUrl;
         }
         extract.ExtractIdentifier = Helper.GetNormalizedString(this.GetIdentifier(feature), 50);
         extract.Item4 = string.Empty; // TODO, QRCode
 
-        extract.GeneralInformation = this.GetLocalisedMText(GetInformationConfig("Information").First().Contents.ToArray());
+        IList<string> infos = new List<string>();
+        foreach (InformationText it in GetInformationConfig("Information"))
+        {
+            foreach (string content in it.Contents)
+            {
+                infos.Add(content);
+            }
+        }
+        extract.GeneralInformation = this.GetLocalisedMText(infos.ToArray());
         extract.Glossary = this.GetGlossary();
 
         if (this.param.withImages)
@@ -279,7 +292,15 @@ public class GetExtractReq : CommonReq
         re.IdentDN = Helper.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "IdentDN"), 12);
         re.LandRegistryArea = XmlHelper.GetAttributeFromNode(feature, reNode, "LandRegistryArea");
         re.MetadataOfGeographicalBaseData = XmlHelper.GetXmlElementValue(reNode, "MetadataOfGeographicalBaseData");
-        re.MunicipalityName = Helper.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityName"), 60);
+
+        MunicipalityInfo munInfo = GetMunicipalityInfo(XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityName"));
+        re.MunicipalityName = Helper.GetNormalizedString(munInfo.Name, 60);
+        if (!string.IsNullOrEmpty(munInfo.Section))
+        {
+            re.SubunitOfLandRegister = munInfo.Section;
+            re.SubunitOfLandRegisterDesignation = "Section";
+        }
+
         re.MunicipalityCode = XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityCode");
         re.Number = Helper.GetNormalizedString(XmlHelper.GetAttributeFromNode(feature, reNode, "Number"), 12);
         re.Type = GetRealEstateType(feature.type, XmlHelper.GetAttributeFromNode(feature, reNode, "Type"));

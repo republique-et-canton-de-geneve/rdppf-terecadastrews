@@ -80,8 +80,7 @@ public class GetReportReq : CommonReq
 
                 XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer",
                     restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerName(restriction.LayerId) : restriction.LayerName);
-                string statusFieldName = XmlHelper.GetXmlAttribute(node.SelectSingleNode("Lawstatus"), "field", true);
-
+                string statusFieldName = XmlHelper.GetXmlAttribute(node.SelectSingleNode("Lawstatus"), "field", false);
 
                 if (!string.IsNullOrEmpty(statusFieldName))
                 {
@@ -182,20 +181,8 @@ public class GetReportReq : CommonReq
         {
             infos.Add(t.Text);
         }
-        reportData.section.generalInfos = GetInformationConfig("Information").First();
+        reportData.section.generalInfos = GetInformationConfig("Information").ToArray();
 
-        InformationText baseData = GetInformationConfig("BaseData").First();
-        IList<string> contents = new List<string>();
-        foreach (string value in baseData.Contents)
-        {
-            string content = value.Contains("###DMODATE###") ? value.Replace("###DMODATE###", this.GetFormattedDMODate()) : value;
-            contents.Add(content);
-        }
-        reportData.section.baseData = new InformationText
-        {
-            Title = baseData.Title,
-            Contents = contents.ToArray()
-        };
         reportData.section.dmoDate = this.GetFormattedDMODate();
 
         reportData.section.disclaimers = GetInformationConfig("Disclaimer").Where(d => d.UseInStaticExtract).ToArray();
@@ -244,19 +231,21 @@ public class GetReportReq : CommonReq
         XmlNode reNode = this.requestConfig.SelectSingleNode(xpath);
 
         RealEstateTypeCode code = GetRealEstateTypeCode(feature.type, XmlHelper.GetAttributeFromNode(feature, reNode, "Type"));
+        MunicipalityInfo munInfo = GetMunicipalityInfo(XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityName"));
+        string munLogoUrl = GetMunicipalityLogoUrl(feature);
 
         return new RealEstateData
         {
             number = XmlHelper.GetAttributeFromNode(feature, reNode, "Number"),
             type = oerebHelper.GetRealEstateTypeText(code, "fr"),
             egrid = XmlHelper.GetAttributeFromNode(feature, reNode, "EGRID"),
-            municipalityName = XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityName"),
+            municipalityName = munInfo.Name,
+            section = munInfo.Section,
             municipalityCode = XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityCode"),
+            municipalityEcussonUrl = munLogoUrl,
             area = XmlHelper.GetAttributeFromNode(feature, reNode, "LandRegistryArea"),
             state = GetFormattedDMODate()
         };
-
-
     }
 
     private IList<restriction> GetRestrictionData(IList<RestrictionTheme> themes, RestrictionResult[] results, IDictionary<string, string> dictRestrictionMapUrls)

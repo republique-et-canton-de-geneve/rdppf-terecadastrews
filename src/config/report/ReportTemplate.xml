@@ -31,4 +31,9 @@
 		<Alignement>right</Alignement>
 		<Position>192,285</Position>
 	</PageNumber>
+  <Municipality>
+    <FontSize>6</FontSize>
+    <Alignement>center</Alignement>
+    <Position>130,25</Position>
+  </Municipality>
 </Template>

@@ -360,7 +360,7 @@
     <Lawstatus field="STATUT_JUR" />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
-	<HintId>LIEN_INFOS_COMPL</HintId>
+	  <HintId>LIEN_INFOS_COMPL</HintId>
     <LawId>LAT</LawId>
     <LawId>LALAT</LawId>
     <LawId>LZIAM</LawId>
@@ -721,6 +721,21 @@
     <LawId>OFo</LawId>
     <LawId>LForêt</LawId>
     <LawId>RForêt</LawId>
+    <ResponsibleOffice>
+      <Name>Office cantonal de l'agriculture et de la nature</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
+  <RestrictionOnLandownership layer="FFP_CADASTRE_FORET" complete="false">
+    <Theme>
+      <Code>ch.GE.CadastreForestier</Code>
+      <Text>Cadastre forestier (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Index>740</Index>
+    </Theme>
+    <Lawstatus />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId />
+    <LawId />
     <ResponsibleOffice>
       <Name>Office cantonal de l'agriculture et de la nature</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>

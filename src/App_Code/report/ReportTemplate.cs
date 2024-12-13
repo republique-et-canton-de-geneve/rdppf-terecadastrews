@@ -14,6 +14,7 @@ public class ReportTemplate
     public string BoldFontFile;
     public ReportTemplateText Reference;
     public ReportTemplateText PageNumber;
+    public ReportTemplateText Municipality;
 
     public float[] Dimensions = { 210.0f, 297.0f };
 

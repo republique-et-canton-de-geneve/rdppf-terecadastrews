@@ -21,12 +21,12 @@
       Le contenu du cadastre RDPPF est supposé connu. Le canton de Genève n'engage pas sa responsabilité sur l'exactitude ou la fiabilité des documents législatifs dans leur version électronique. L'extrait a un caractère informatif et ne crée aucun droit ou obligation. Les documents juridiquement contraignants sont ceux qui ont été légalement adoptés ou publiés. La certification d'un extrait confirme la concordance de cet extrait avec le cadastre RDPPF à la date d'établissement dudit extrait.
     </Content>
   </Information>
-  <BaseData>
+  <Information>
     <Title>Restrictions de propriété dans le registre foncier</Title>
     <Content>
       Il est possible que des restrictions de propriété fassent l'objet d'une mention au registre foncier, en plus des indications figurant sur cet extrait.
     </Content>
-  </BaseData>
+  </Information>
   <Disclaimer useInStaticExtract="false">
     <Title>Clause de non-responsabilité du cadastre des sites pollués (CSP)</Title>
     <Content>

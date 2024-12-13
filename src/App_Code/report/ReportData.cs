@@ -28,8 +28,7 @@ public class mainSection
     public toc[] tocs;
     public restriction[] restrictions;
     public string[] noDataThemes;
-    public InformationText generalInfos;
-    public InformationText baseData;
+    public InformationText[] generalInfos;
     public InformationText[] disclaimers;
     public office office;
     public string marginStyle = "height:10mm";
@@ -42,7 +41,9 @@ public class RealEstateData
     public string type;
     public string egrid;
     public string municipalityName;
+    public string section;
     public string municipalityCode;
+    public string municipalityEcussonUrl;
     public string area;
     public string state;
 }

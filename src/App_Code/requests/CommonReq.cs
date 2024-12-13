@@ -25,6 +25,8 @@ public class CommonReq
     protected XmlNode docConfig;
     protected MapPrintParams printParams;
 
+    private readonly string COMMUNE_GENEVE_DBNAME = "Genève-";
+
     public CommonReq()
     {
     }
@@ -75,7 +77,7 @@ public class CommonReq
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
         Stopwatch timer = Stopwatch.StartNew();
-        
+
         string token = TokenManager.GetToken();
 
         this.oerebHelper = new OeREBKRMHelper(new DataManager());
@@ -233,6 +235,10 @@ public class CommonReq
             foreach (RestrictionTheme theme in group)
             {
                 theme.Text = this.oerebHelper.GetThemeText(theme.Code, "fr");
+                if (string.IsNullOrEmpty(theme.Text))
+                {
+                    theme.Text = theme.SubText;
+                }
                 theme.SubCode = string.Empty;
                 theme.IsSubTheme = false;
                 if (group.Count > 1)
@@ -359,7 +365,7 @@ public class CommonReq
                 Text = text
             });
         }
-            
+
 
         return list.ToArray();
     }
@@ -467,9 +473,30 @@ public class CommonReq
                     Title = XmlHelper.GetXmlElementValue(node, "Title"),
                     Contents = contents.ToArray()
                 });
-            }            
+            }
         }
         return infos;
+    }
+
+    protected MunicipalityInfo GetMunicipalityInfo(string value)
+    {
+        return new MunicipalityInfo()
+        {
+            Name = value.StartsWith(COMMUNE_GENEVE_DBNAME) ? value.Substring(0, COMMUNE_GENEVE_DBNAME.Length - 1) : value,
+            Section = value.StartsWith(COMMUNE_GENEVE_DBNAME) ? value.Substring(COMMUNE_GENEVE_DBNAME.Length) : string.Empty
+        };
+    }
+
+    protected string GetMunicipalityLogoUrl(QueryResultFeature feature)
+    {
+        string xpath = "RealEstate/Parcelle";
+        if (feature.type == ParcelleType.DDP)
+        {
+            xpath = "RealEstate/DDP";
+        }
+        XmlNode reNode = this.requestConfig.SelectSingleNode(xpath);
+
+        return string.Format("{0}/{1}.jpg", WebHelper.GetConfigValue("EcussonUrl"), XmlHelper.GetAttributeFromNode(feature, reNode, "IdentDN"));
     }
 }
 
@@ -489,4 +516,10 @@ public class InformationText
     public bool UseInStaticExtract { get; set; }
     public string Title { get; set; }
     public string[] Contents { get; set; }
+}
+
+public class MunicipalityInfo
+{
+    public string Name { get; set; }
+    public string Section { get; set; }
 }

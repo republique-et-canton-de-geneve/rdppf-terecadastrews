@@ -269,9 +269,9 @@ public class ExtractGenerator
             PositionCenteredLogo(cantLogo, page, template.Format, 74, 10, 30, 13);
             doc.Add(cantLogo);
 
-            //Image munLogo = new Image(ImageDataFactory.Create(data.municipalityLogoURL));
-            //PositionCenteredLogo(munLogo, page, template.Format, 115, 9, 30, 13);
-            //doc.Add(munLogo);
+            Image munLogo = new Image(ImageDataFactory.Create(data.section.realEstate.municipalityEcussonUrl));
+            PositionCenteredLogo(munLogo, page, template.Format, 115, 9, 30, 13);
+            doc.Add(munLogo);
 
             Image plrLogo = new Image(GetLogoData("ch.plr"));
             PositionLogo(plrLogo, page, template.Format, 157, 10, 35, 10);
@@ -288,6 +288,8 @@ public class ExtractGenerator
                 template.Format, template.Reference.X + dateWidth + timeWidth + 2 * template.Reference.Spacing, template.Reference.Y);
             AddText(doc, page, font, string.Format(template.PageNumber.Format, page, pages), template.PageNumber.FontSize,
                 template.PageNumber.Alignment, template.Format, template.PageNumber.X, template.PageNumber.Y);
+            AddText(doc, page, font, data.section.realEstate.municipalityName, template.Municipality.FontSize,
+                template.Municipality.Alignment, template.Format, template.Municipality.X, template.Municipality.Y);
         }
 
         doc.Close();
@@ -383,6 +385,7 @@ public class ExtractGenerator
         template.Reference.SetSpacing(doc.SelectSingleNode("/Template/Reference/Spacing").InnerText);
         template.PageNumber = GetTemplateText(doc.SelectSingleNode("/Template/PageNumber"));
         template.PageNumber.Format = doc.SelectSingleNode("/Template/PageNumber/Format").InnerText;
+        template.Municipality = GetTemplateText(doc.SelectSingleNode("/Template/Municipality"));
 
         return template;
     }
