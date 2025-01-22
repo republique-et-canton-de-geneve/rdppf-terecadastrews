@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!-- $Rev: 29950 $ -->
+<!-- $Rev: 31340 $ -->
 <InformationConfig>
   <!--<ThemeWithoutData>
     <Code></Code>
@@ -40,9 +40,14 @@
     </Content>
   </Disclaimer>
   <ThemeWithoutData>
+    <Code>ch.GE.AlignementRouteCantonale</Code>
+    <Text>Alignement des routes cantonales</Text>
+    <Index>130</Index>
+  </ThemeWithoutData>
+  <ThemeWithoutData>
       <Code>ch.Gewaesserraum</Code>
       <Index>530</Index>
-  </ThemeWithoutData>
+  </ThemeWithoutData>  
   <Glossary>
     <TID>106</TID><!--Alignements des installations aéroportuaires-->
   </Glossary>

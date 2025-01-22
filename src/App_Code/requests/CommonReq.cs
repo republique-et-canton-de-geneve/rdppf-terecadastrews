@@ -1,4 +1,4 @@
-﻿/* $Rev: 30652 $ */
+﻿/* $Rev: 31340 $ */
 using ESRI.ArcGIS.SOAP;
 using ExtractDataModel_v20;
 using System;
@@ -263,10 +263,15 @@ public class CommonReq
         foreach (XmlNode node in infoConfig.SelectNodes("ThemeWithoutData"))
         {
             string code = XmlHelper.GetXmlElementValue(node, "Code");
+            string text = oerebHelper.GetThemeText(code, "fr");
+            if (string.IsNullOrEmpty(text))
+            {
+                text = XmlHelper.GetXmlElementValue(node, "Text");
+            }
             themes.Add(new RestrictionTheme
             {
                 Code = code,
-                Text = oerebHelper.GetThemeText(code, "fr"),
+                Text = text,
                 Index = int.Parse(XmlHelper.GetXmlElementValue(node, "Index"))
             });
         }
@@ -496,7 +501,7 @@ public class CommonReq
         }
         XmlNode reNode = this.requestConfig.SelectSingleNode(xpath);
 
-        return string.Format("{0}/{1}.jpg", WebHelper.GetConfigValue("EcussonUrl"), XmlHelper.GetAttributeFromNode(feature, reNode, "IdentDN"));
+        return string.Format("{0}/{1}.jpg", WebHelper.GetConfigValue("EcussonUrl"), XmlHelper.GetAttributeFromNode(feature, reNode, "MunicipalityCode"));
     }
 }
 
