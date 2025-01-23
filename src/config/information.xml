@@ -91,6 +91,14 @@
     <TID>110</TID><!--Espace réservé aux eaux-->
   </Glossary>
   <Glossary>
+    <Title>Information supplémentaire</Title>
+    <Content>Selon l’article 8b OCRDP, les informations supplémentaires sont des informations non
+contraignantes (modifications apportées à des RDPPF, autres géodonnées de base, renvois) qui ne font pas partie du
+contenu juridiquement en vigueur du cadastre RDPPF. Elles peuvent constituer des restrictions de propriété directes et
+indirectes, donc potentielles, pouvant être prises en compte dans les procédures correspondantes des autorités et
+pouvant entraîner des restrictions de propriété en conséquence.</Content>
+  </Glossary>
+  <Glossary>
     <TID>125</TID><!--Limites forestières statiques-->
   </Glossary>
   <Glossary>
