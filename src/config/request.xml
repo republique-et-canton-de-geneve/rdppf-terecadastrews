@@ -735,7 +735,10 @@
     <Lawstatus />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId />
-    <LawId />
+    <LawId>LFo</LawId>
+    <LawId>OFo</LawId>
+    <LawId>LForêt</LawId>
+    <LawId>RForêt</LawId>
     <ResponsibleOffice>
       <Name>Office cantonal de l'agriculture et de la nature</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
