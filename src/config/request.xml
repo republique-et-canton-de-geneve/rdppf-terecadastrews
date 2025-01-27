@@ -624,12 +624,12 @@
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
     <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
-    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LegalProvisionId>LIEN_DJ_COMP</LegalProvisionId>
     <LawId>LEaux</LawId>
     <LawId>OEaux</LawId>
     <LawId>LEaux-GE</LawId>
     <LawId>REaux-GE</LawId>
-    <HintId>LIEN_INFOS_COMPL</HintId>
+    <HintId>LIEN_INFO_COMP</HintId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>

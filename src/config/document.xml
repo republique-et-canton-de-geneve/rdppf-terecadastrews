@@ -49,6 +49,10 @@
     <Lawstatus>1</Lawstatus>
     <Title>Disposition juridique complémentaire</Title>
   </LegalProvision>
+  <LegalProvision id="LIEN_DJ_COMP" field="Lien WEB vers une disposition juridique complémentaire">
+    <Lawstatus>1</Lawstatus>
+    <Title>Disposition juridique complémentaire</Title>
+  </LegalProvision>
   <LegalProvision id="LIEN_CONSTAT_NATURE_FOREST" field="Lien WEB vers le constat de nature forestière" dateField="Date d'entrée en vigueur">
     <Lawstatus>1</Lawstatus>
     <Title>Constat de nature forestière</Title>
@@ -58,6 +62,10 @@
     <Title>Disposition juridique</Title>
   </LegalProvision>
   <Hint id="LIEN_INFOS_COMPL" field="Lien WEB vers des informations complémentaires">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
+  <Hint id="LIEN_INFO_COMP" field="Lien WEB vers des informations complémentaires">
     <Lawstatus>1</Lawstatus>
     <Title>Informations complémentaires</Title>
   </Hint>
