@@ -18,8 +18,7 @@
   <Information>
     <Title>Informations générales</Title>
     <Content>
-      Le contenu du cadastre RDPPF est supposé connu. Le canton de Genève n'engage pas sa responsabilité sur l'exactitude ou la fiabilité des documents législatifs dans leur version électronique. L'extrait a un caractère informatif et ne crée aucun droit ou obligation. Les documents juridiquement contraignants sont ceux qui ont été légalement adoptés ou publiés. La certification d'un extrait confirme la concordance de cet extrait avec le cadastre RDPPF à la date d'établissement dudit extrait.
-    </Content>
+      Le contenu du cadastre RDPPF est supposé connu. Le canton de Genève n'engage pas sa responsabilité sur l'exactitude ou la fiabilité des documents législatifs dans leur version électronique. L'extrait a un caractère informatif et ne crée aucun droit ou obligation. La primauté va aux documents qui ont été légalement adoptés ou publiés. Vous trouverez d'autres informations sur le cadastre RDPPF sous : https://www.cadastre.ch
   </Information>
   <Information>
     <Title>Restrictions de propriété dans le registre foncier</Title>
@@ -30,7 +29,7 @@
   <Disclaimer useInStaticExtract="false">
     <Title>Clause de non-responsabilité du cadastre des sites pollués (CSP)</Title>
     <Content>
-      Le cadastre des sites pollués (CSP) est établi d'après les critères émis par l'Office fédéral de l'environnement OFEV. Il est mis à jour continuellement sur la base des nouvelles connaissances (investigations). Les surfaces des sites indiqués dans le cadastre des sites pollués peuvent ne pas correspondre à la surface effectivement polluée. Cela ne signifie pas que tout terrain non inscrit au cadastre ne soit pas pollué et qu'il soit libre de tout déchet et pollution. Les zones utilisées à des fins de transports publics, militaire et aéronautique sont de la responsabilité de la Confédération. Pour de plus amples informations veuillez vous adresser au service spécialisé cantonal des déchets: http://ge.ch/geologie/sous-sol/sites-pollues / email: gesdec@etat.ge.ch
+      Le cadastre des sites pollués (CSP) est établi d'après les critères émis par l'Office fédéral de l'environnement OFEV. Il est mis à jour continuellement sur la base des nouvelles connaissances (investigations). Les surfaces des sites indiqués dans le cadastre des sites pollués peuvent ne pas correspondre à la surface effectivement polluée. Cela ne signifie pas que tout terrain non inscrit au cadastre ne soit pas pollué et qu'il soit libre de tout déchet et pollution. Les zones utilisées à des fins de transports publics, militaire et aéronautique sont de la responsabilité de la Confédération. Pour de plus amples informations veuillez vous adresser au service spécialisé cantonal des déchets: https://ge.ch/geologie/sous-sol/sites-pollues / email: gesdec@etat.ge.ch
     </Content>
   </Disclaimer>
   <Disclaimer>
@@ -41,7 +40,7 @@
   </Disclaimer>
   <ThemeWithoutData>
     <Code>ch.GE.AlignementRouteCantonale</Code>
-    <Text>Alignements des routes cantonales (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+    <Text>Alignements des routes cantonales et communales (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
     <Index>130</Index>
   </ThemeWithoutData>
   <ThemeWithoutData>
