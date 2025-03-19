@@ -73,6 +73,18 @@
     <Lawstatus>1</Lawstatus>
     <Title>Informations complémentaires</Title>
   </Hint>
+  <Hint id="FICHEINFORMATIVE" field="FICHEINFORMATIVE">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
+  <Hint id="LIEN_PRESENTATION" field="LIEN_PRESENTATION">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
+  <Hint id="LIEN_PLAN" field="LIEN_PLAN">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>  
   <Hint id="LIEN_CONCEPT_ENERG_TER" field="Lien WEB vers le concept énergétique territorial">
     <Lawstatus>1</Lawstatus>
     <Title>Concept énergétique territorial</Title>

@@ -774,4 +774,22 @@
       <OfficeAtWeb>https://www.bfe.admin.ch/bfe/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>  
+  <RestrictionOnLandownership layer="DPS_OUVRAGES_PROTEGES_LPMNS" complete="false" additionalLegends="DPS_OUVRAGES_PROT_ZONE_RISQUE">
+    <Theme>
+      <Code>ch.GE.OuvragesSouterrains</Code>
+      <Text>Ouvrages souterains - LPMNS Art. 41 a-j (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Index>910</Index>
+    </Theme>
+    <Lawstatus />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId />
+    <LawId>LPMNS</LawId>
+    <HintId>FICHEINFORMATIVE</HintId>
+    <HintId>LIEN_PRESENTATION</HintId>
+    <HintId>LIEN_PLAN</HintId>
+    <ResponsibleOffice>
+      <Name>Office du patrimoine et des sites</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
 </RequestConfig>
