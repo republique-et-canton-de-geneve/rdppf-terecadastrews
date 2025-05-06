@@ -1,4 +1,4 @@
-﻿/* $Rev: 30620 $ */
+﻿/* $Rev: 31340 $ */
 using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
@@ -93,23 +93,26 @@ public class GetExtractReq : CommonReq
         // calcul des surfaces
         Parallel.ForEach(restrictions.GroupBy(rr => rr.IdentResult.layerId), restrList =>
         {
-            bool isComplete = false;
-            bool isOverlap = false;
-
-            if (!restrList.First().isAdditionalResult)
+            if (!restrList.First().isAdditionalLegend)
             {
-                XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", restrList.First().IdentResult.layerName);
+                bool isComplete = false;
+                bool isOverlap = false;
 
-                isComplete = bool.Parse(XmlHelper.GetXmlAttribute(node, "complete", true));
-                string overlapValue = XmlHelper.GetXmlAttribute(node, "overlap", false);
-                if (!string.IsNullOrEmpty(overlapValue))
+                if (!restrList.First().isAdditionalResult)
                 {
-                    bool.TryParse(overlapValue, out isOverlap);
-                }
-            }
+                    XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", restrList.First().IdentResult.layerName);
 
-            SurfaceWorker worker = new SurfaceWorker();
-            worker.GetSurfaces(feature, isComplete, isOverlap, restrList.ToArray());
+                    isComplete = bool.Parse(XmlHelper.GetXmlAttribute(node, "complete", true));
+                    string overlapValue = XmlHelper.GetXmlAttribute(node, "overlap", false);
+                    if (!string.IsNullOrEmpty(overlapValue))
+                    {
+                        bool.TryParse(overlapValue, out isOverlap);
+                    }
+                }
+
+                SurfaceWorker worker = new SurfaceWorker();
+                worker.GetSurfaces(feature, isComplete, isOverlap, restrList.ToArray());
+            }
         });
 
         // récupération des cartes

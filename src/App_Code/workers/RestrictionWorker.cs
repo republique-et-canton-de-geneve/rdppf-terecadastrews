@@ -1,4 +1,4 @@
-﻿/* $Rev: 30621 $ */
+﻿/* $Rev: 31340 $ */
 using ESRI.ArcGIS.SOAP;
 using System.Collections.Generic;
 using System.IO;
@@ -51,7 +51,21 @@ public class RestrictionWorker
             irs = this.queryWorker.IdentifyRequestFromExtent(string.Join(",", intersectLayerIds), mapExtent, false);
             IList<RestrictionResult> mapList = this.AddInfos(irs);
 
-            this.MergeResults(intersectList, mapList, intersectLayerIds);
+            // request intersected entities for additional legends
+            IList<int> addList = new List<int>();
+            foreach (AdditionalLayer al in this.additionalLegends)
+            {
+                if (!addList.Contains(al.AdditionalInfo.LayerID))
+                {
+                    addList.Add(al.AdditionalInfo.LayerID);
+                }
+            }
+            string addIds = string.Join(",", addList.OrderBy(n => n));
+
+            IdentifyResult[] addResults = this.queryWorker.IdentifyRequestFromPolygon(addIds, jsonGeometry, false);
+            IList<RestrictionResult> additionalLegendList = this.AddInfos(addResults);
+
+            this.MergeResults(intersectList, mapList, additionalLegendList, intersectLayerIds);
         }
         this.StoreLegendSymbols(intersectList);
 
@@ -68,14 +82,16 @@ public class RestrictionWorker
         return ids;
     }
 
-    public int GetOriginalLayerId(int id)
+    public int GetOriginalLayerId(int id, bool forLayer)
     {
-        return this.additionalLayers.First(l => l.AdditionalInfo.LayerID == id).LayerInfo.LayerID;
+        return forLayer ? this.additionalLayers.First(l => l.AdditionalInfo.LayerID == id).LayerInfo.LayerID :
+            this.additionalLegends.First(leg => leg.AdditionalInfo.LayerID == id).LayerInfo.LayerID;
     }
 
-    public string GetOriginalLayerName(int id)
+    public string GetOriginalLayerName(int id, bool forLayer)
     {
-        return this.additionalLayers.First(l => l.AdditionalInfo.LayerID == id).LayerInfo.Name;
+        return forLayer ? this.additionalLayers.First(l => l.AdditionalInfo.LayerID == id).LayerInfo.Name :
+             this.additionalLegends.First(leg => leg.AdditionalInfo.LayerID == id).LayerInfo.Name;
     }
 
     public IList<int> GetAdditionalLegendIds(int id)
@@ -196,17 +212,17 @@ public class RestrictionWorker
             string lawstatus = "En vigueur";
             if (!isAdditionalLegend)
             {
-                XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", isAdditionalLayer ? GetOriginalLayerName(ir.layerId) : ir.layerName);
+                XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer", isAdditionalLayer ? GetOriginalLayerName(ir.layerId, true) : ir.layerName);
                 string lawstatusFieldName = XmlHelper.GetXmlAttribute(node.SelectSingleNode("Lawstatus"), "field", false);
 
-                if(!string.IsNullOrEmpty(lawstatusFieldName))
+                if (!string.IsNullOrEmpty(lawstatusFieldName))
                 {
                     string alias = layerInfo.GetFieldInfo(layInfo, lawstatusFieldName).AliasName;
                     if (ir.attributes.ContainsKey(alias))
                     {
                         lawstatus = ir.attributes[alias];
                     }
-                }                
+                }
             }
 
             result.LayerId = ir.layerId;
@@ -305,10 +321,10 @@ public class RestrictionWorker
         return legend;
     }
 
-    private void MergeResults(IList<RestrictionResult> intersectResults, IList<RestrictionResult> mapResults, IList<int> ids)
+    private void MergeResults(IList<RestrictionResult> intersectResults, IList<RestrictionResult> mapResults, IList<RestrictionResult> addLegendResults, IList<int> ids)
     {
         foreach (int id in ids)
-        {            
+        {
             foreach (IList<RestrictionResult> restrByStatus in intersectResults.Where(ir => ir.LayerId == id).GroupBy(ir => ir.Lawstatus))
             {
                 bool first = true;
@@ -317,7 +333,7 @@ public class RestrictionWorker
                     intersect.isFirst = first;
                     if (first)
                     {
-                        int originId = intersect.isAdditionalResult ? GetOriginalLayerId(id) : id;
+                        int originId = intersect.isAdditionalResult ? GetOriginalLayerId(id, true) : id;
 
                         IList<RestrictionLegend> allLegends = new List<RestrictionLegend>();
                         foreach (RestrictionResult other in mapResults.Where(or => or.LayerId == originId))
@@ -341,17 +357,27 @@ public class RestrictionWorker
                         intersect.AllLegends = allLegends.OrderBy(_l => _l.Index).ToArray();
 
                         IList<RestrictionLegend> addLegends = new List<RestrictionLegend>();
+                        IList<RestrictionLegend> addLegendsOnMap = new List<RestrictionLegend>();
                         foreach (AdditionalLayer al in this.additionalLegends.Where(l => l.LayerInfo.LayerID == originId))
                         {
-                            foreach (RestrictionResult other in mapResults.Where(or => or.LayerId == al.AdditionalInfo.LayerID))
+                            foreach (RestrictionResult other in addLegendResults.Where(or => or.LayerId == al.AdditionalInfo.LayerID))
                             {
                                 if (addLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0)
                                 {
                                     addLegends.Add(other.Legend);
                                 }
                             }
+                            foreach (RestrictionResult other in mapResults.Where(or => or.LayerId == al.AdditionalInfo.LayerID))
+                            {
+                                if (addLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0 &&
+                                    addLegendsOnMap.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0)
+                                {
+                                    addLegendsOnMap.Add(other.Legend);
+                                }
+                            }
                         }
                         intersect.AdditionalLegends = addLegends.OrderBy(_l => _l.Index).ToArray();
+                        intersect.AdditionalLegendsOnMap = addLegendsOnMap.OrderBy(_l => _l.Index).ToArray();
 
                         first = false;
                     }
@@ -359,8 +385,9 @@ public class RestrictionWorker
                     {
                         intersect.AllLegends = new RestrictionLegend[] { };
                         intersect.AdditionalLegends = new RestrictionLegend[] { };
+                        intersect.AdditionalLegendsOnMap = new RestrictionLegend[] { };
                     }
-                }                
+                }
             }
         }
     }
@@ -370,7 +397,7 @@ public class RestrictionWorker
         Dictionary<string, byte[]> symbols = new Dictionary<string, byte[]>();
         foreach (RestrictionResult result in results)
         {
-            RestrictionLegend[] allLegends = result.AllLegends.Concat(result.AdditionalLegends).ToArray();
+            RestrictionLegend[] allLegends = result.AllLegends.Concat(result.AdditionalLegends.Concat(result.AdditionalLegendsOnMap)).ToArray();
             foreach (RestrictionLegend legend in allLegends)
             {
                 string _code = legend.TypeCode.Replace(":", "_");
@@ -449,6 +476,7 @@ public class RestrictionResult
     public RestrictionLegend Legend { get; set; }
     public RestrictionLegend[] AllLegends { get; set; }
     public RestrictionLegend[] AdditionalLegends { get; set; }
+    public RestrictionLegend[] AdditionalLegendsOnMap { get; set; }
     public bool isAdditionalResult { get; set; }
     public bool isAdditionalLegend { get; set; }
 

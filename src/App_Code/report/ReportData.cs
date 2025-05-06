@@ -1,4 +1,4 @@
-﻿/* $Rev: 30620 $ */
+﻿/* $Rev: 31340 $ */
 using System;
 
 public class ReportData
@@ -65,6 +65,7 @@ public class restriction
     public legend[] legends;
     public legend[] otherLegends = null;
     public legend[] additionalLegends = null;
+    public legend[] additionalLegendsOnMap = null;
 }
 
 public class legalProvision

@@ -1,4 +1,4 @@
-﻿/* $Rev: 30621 $ */
+﻿/* $Rev: 31340 $ */
 using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ public class GetReportReq : CommonReq
         {
             IList<int> idList = new List<int>(ids);
 
-            int id = restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerId(restriction.LayerId) : restriction.LayerId;
+            int id = restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerId(restriction.LayerId, true) : restriction.LayerId;
             string uniqueId = GetMapWorkerId(id, restriction.Lawstatus);
 
             if (!addedLayerIds.Contains(uniqueId))
@@ -79,7 +79,7 @@ public class GetReportReq : CommonReq
                 idList = idList.Concat(this.restrWorker.GetAdditionalLegendIds(id)).ToList();
 
                 XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer",
-                    restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerName(restriction.LayerId) : restriction.LayerName);
+                    restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerName(restriction.LayerId, true) : restriction.LayerName);
                 string statusFieldName = XmlHelper.GetXmlAttribute(node.SelectSingleNode("Lawstatus"), "field", false);
 
                 if (!string.IsNullOrEmpty(statusFieldName))
@@ -255,7 +255,7 @@ public class GetReportReq : CommonReq
         IDictionary<int, IList<RestrictionResult>> resultsByLayerId = new Dictionary<int, IList<RestrictionResult>>();
         foreach (RestrictionResult rr in results.OrderBy(r => r.LayerId))
         {
-            int id = rr.isAdditionalResult ? this.restrWorker.GetOriginalLayerId(rr.LayerId) : rr.LayerId;
+            int id = rr.isAdditionalResult ? this.restrWorker.GetOriginalLayerId(rr.LayerId, true) : rr.LayerId;
             if (!resultsByLayerId.ContainsKey(id))
             {
                 resultsByLayerId.Add(id, new List<RestrictionResult>());
@@ -339,6 +339,22 @@ public class GetReportReq : CommonReq
                     {
                         string fileName = string.Format("leg_{0}", addLegend.TypeCode.Replace(":", "_"));
                         dictAdditionalLegends.Add(addLegend.TypeCode, new legend()
+                        {
+                            imageUrl = this.GetSymbolUrl(fileName, addLegend.Symbol),
+                            label = addLegend.Text,
+                            geometryOrder = addLegend.Order
+                        });
+                    }
+                }
+
+                // additional legends on map
+                IDictionary<string, legend> dictAdditionalLegendsOnMap = new Dictionary<string, legend>();
+                foreach (RestrictionLegend addLegend in first.AdditionalLegendsOnMap)
+                {
+                    if (!dictAdditionalLegendsOnMap.ContainsKey(addLegend.TypeCode))
+                    {
+                        string fileName = string.Format("leg_{0}", addLegend.TypeCode.Replace(":", "_"));
+                        dictAdditionalLegendsOnMap.Add(addLegend.TypeCode, new legend()
                         {
                             imageUrl = this.GetSymbolUrl(fileName, addLegend.Symbol),
                             label = addLegend.Text,
@@ -495,6 +511,7 @@ public class GetReportReq : CommonReq
                     legends = dictLegends.Values.OrderBy(l => l.geometryOrder).ToArray(),
                     otherLegends = dictOtherLegends.Values.OrderBy(l => l.geometryOrder).ToArray(),
                     additionalLegends = dictAdditionalLegends.Values.OrderBy(l => l.geometryOrder).ToArray(),
+                    additionalLegendsOnMap = dictAdditionalLegendsOnMap.Values.OrderBy(l => l.geometryOrder).ToArray()
                 });
             }
         }
