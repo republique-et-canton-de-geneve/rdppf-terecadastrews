@@ -170,6 +170,22 @@
                     </xsl:choose>
                   </tr>
                 </xsl:for-each>
+                <xsl:for-each select="additionalLegends/legend">
+                  <tr>
+                    <td class="symbol">
+                      <img src="{imageUrl}" />
+                    </td>
+                    <td class="label">
+                      <xsl:value-of select="label"/>
+                    </td>
+                    <td class="surface">
+                      <xsl:text></xsl:text>
+                    </td>
+                    <td class="percent">
+                      <xsl:text></xsl:text>
+                    </td>
+                  </tr>
+                </xsl:for-each>
               </table>
             </td>
           </tr>
@@ -179,9 +195,19 @@
             </td>
             <td class="content">
               <xsl:choose>
-                <xsl:when test="count(otherLegends/legend)>0">
+                <xsl:when test="count(otherLegends/legend)>0 or count(additionalLegendsOnMap/legend)>0">
                   <table>
                     <xsl:for-each select="otherLegends/legend">
+                      <tr>
+                        <td class="symbol">
+                          <img src="{imageUrl}" />
+                        </td>
+                        <td class="label" style="width:96mm">
+                          <xsl:value-of select="label"/>
+                        </td>
+                      </tr>
+                    </xsl:for-each>
+                    <xsl:for-each select="additionalLegendsOnMap/legend">
                       <tr>
                         <td class="symbol">
                           <img src="{imageUrl}" />
@@ -199,27 +225,6 @@
               </xsl:choose>
             </td>
           </tr>
-          <xsl:if test="count(additionalLegends/legend)>0">
-            <tr>
-              <td class="title">
-                <div>Légende complémentaire (Couches complémentaires visibles dans le cadre du plan)</div>
-              </td>
-              <td class="content">
-                <table>
-                  <xsl:for-each select="additionalLegends/legend">
-                    <tr>
-                      <td class="symbol">
-                        <img src="{imageUrl}" />
-                      </td>
-                      <td class="label" style="width:96mm">
-                        <xsl:value-of select="label"/>
-                      </td>
-                    </tr>
-                  </xsl:for-each>
-                </table>
-              </td>
-            </tr>
-          </xsl:if>
         </table>
         <table>
           <tr>
