@@ -475,6 +475,21 @@
       <OfficeAtWeb>https://www.astra.admin.ch/astra/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
+    <RestrictionOnLandownership layer="OTC_LIM_CONST_LROUTES_S" complete="false" additionalLayers="OTC_LIM_CONST_LROUTES_L" additionalLegends="OTC_LIM_CONST_LROUTES_AXES">
+    <Theme>
+      <Code>ch.GE.LimitesRoutesCantComm</Code>
+      <Text>Limite des constructions des routes cantonales et communale - LRoutes Art. 11 (information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Index>130</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId></LegalProvisionId>
+    <LawId>LRoutes</LawId>
+    <ResponsibleOffice>
+      <Name>Office cantonal des transports</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-transports-oct</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_FER" complete="false">
     <Theme>
       <Code>ch.ProjektierungszonenEisenbahnanlagen</Code>

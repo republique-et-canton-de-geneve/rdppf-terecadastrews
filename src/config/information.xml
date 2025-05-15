@@ -39,11 +39,11 @@
       La distance par rapport à la forêt est fixée sur la base de constatations de nature forestière établies en vertu de l'article 4 de la loi cantonale sur les forêts (LForêts, M 5 10). Ces décisions ponctuelles permettent de compléter et mettre à jour le cadastre forestier, mais elles ne revêtent pas de caractère systématique, ni exhaustif. L'existence de la forêt étant dynamique et reliée uniquement à un état de fait, indépendamment de l'origine et du mode d'exploitation des boisés, cela implique qu'un boisé n'ayant pas fait l'objet d'un constat de nature forestière peut être de la forêt au sens de la législation sur les forêts, même si son contour géométrique n'a pas été déterminé précisément. Dès lors, il convient de prendre en compte que l'absence d'inscription d'une restriction de droit public relative à la distance par rapport à la forêt, portée sur un bien-fonds, ne signifie pas que ce bien-fonds ne soit pas concerné par cette restriction. Pour de plus amples informations, veuillez consulter le service cantonal des forêts et vous référer, à titre indicatif, au cadastre forestier
     </Content>
   </Disclaimer>
-  <ThemeWithoutData>
+ <!-- <ThemeWithoutData>
     <Code>ch.GE.AlignementRouteCantonale</Code>
     <Text>Alignements des routes cantonales et communales (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
     <Index>130</Index>
-  </ThemeWithoutData>
+  </ThemeWithoutData> -->
   <ThemeWithoutData>
       <Code>ch.Gewaesserraum</Code>
       <Index>530</Index>
