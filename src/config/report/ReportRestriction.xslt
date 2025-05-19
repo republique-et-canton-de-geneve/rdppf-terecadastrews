@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!-- $Rev: 30309 $ -->
+<!-- $Rev: 31446 $ -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:template match="restriction">
     <head>
@@ -225,8 +225,6 @@
               </xsl:choose>
             </td>
           </tr>
-        </table>
-        <table>
           <tr>
             <td class="title">
               <div>Dispositions juridiques</div>

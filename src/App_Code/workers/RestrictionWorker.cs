@@ -1,5 +1,6 @@
-﻿/* $Rev: 31340 $ */
+﻿/* $Rev: 31446 $ */
 using ESRI.ArcGIS.SOAP;
+using LayerInfoJson;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -256,11 +257,14 @@ public class RestrictionWorker
             case "uniqueValue":
                 Field fieldInfo = this.layerInfo.GetFieldInfo(layerInfo, renderer.field1);
 
-                string value = attributes[fieldInfo.AliasName];
-                if (fieldInfo.Domain != null)
+                string value = GetFieldValue(layerInfo, attributes, renderer.field1);
+                if (!string.IsNullOrEmpty(renderer.field2) && !string.IsNullOrEmpty(renderer.fieldDelimiter))
                 {
-                    CodedValueDomain domain = (CodedValueDomain)fieldInfo.Domain;
-                    value = (string)domain.CodedValues.First<CodedValue>(cv => cv.Name == value).Code;
+                    value = string.Format("{0}{1}{2}", value, renderer.fieldDelimiter, GetFieldValue(layerInfo, attributes, renderer.field2));
+                }
+                if (!string.IsNullOrEmpty(renderer.field3) && !string.IsNullOrEmpty(renderer.fieldDelimiter))
+                {
+                    value = string.Format("{0}{1}{2}", value, renderer.fieldDelimiter, GetFieldValue(layerInfo, attributes, renderer.field3));
                 }
                 if (renderer.uniqueValueInfos.Count(uvi => uvi.value == value) > 0)
                 {
@@ -321,6 +325,18 @@ public class RestrictionWorker
         return legend;
     }
 
+    private string GetFieldValue(MapLayerInfo layerInfo, IDictionary<string, string> attributes, string field)
+    {
+        Field fieldInfo = this.layerInfo.GetFieldInfo(layerInfo, field);
+        string value = attributes[fieldInfo.AliasName];
+        if (fieldInfo.Domain != null)
+        {
+            CodedValueDomain domain = (CodedValueDomain)fieldInfo.Domain;
+            value = (string)domain.CodedValues.First<CodedValue>(cv => cv.Name == value).Code;
+        }
+        return value;
+    }
+
     private void MergeResults(IList<RestrictionResult> intersectResults, IList<RestrictionResult> mapResults, IList<RestrictionResult> addLegendResults, IList<int> ids)
     {
         foreach (int id in ids)
@@ -338,7 +354,7 @@ public class RestrictionWorker
                         IList<RestrictionLegend> allLegends = new List<RestrictionLegend>();
                         foreach (RestrictionResult other in mapResults.Where(or => or.LayerId == originId))
                         {
-                            if (allLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0)
+                            if (other.Lawstatus == intersect.Lawstatus && allLegends.Count(rl => string.Compare(rl.TypeCode, other.Legend.TypeCode) == 0) == 0)
                             {
                                 allLegends.Add(other.Legend);
                             }

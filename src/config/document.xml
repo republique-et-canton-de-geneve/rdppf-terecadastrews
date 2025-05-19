@@ -345,4 +345,12 @@
     <OfficialNumber>RSG M 5 10.01</OfficialNumber>
     <Index>740</Index>
   </Law>
+    <Law id="LRoutes">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_10.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur les routes (LRoutes)</Title>
+    <Abbreviation>LRoutes</Abbreviation>
+    <OfficialNumber>RRSG 1 10</OfficialNumber>
+    <Index>750</Index>
+  </Law>
 </DocumentConfig>

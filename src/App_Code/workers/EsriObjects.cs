@@ -112,6 +112,9 @@ namespace LayerInfoJson
         public string type;
         public string label;
         public string field1;
+        public string field2;
+        public string field3;
+        public string fieldDelimiter;
         public UniqueValueInfo[] uniqueValueInfos;
     }
 
