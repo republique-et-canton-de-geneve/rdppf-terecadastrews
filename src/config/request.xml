@@ -478,7 +478,7 @@
     <RestrictionOnLandownership layer="OTC_LIM_CONST_LROUTES_S" complete="false" additionalLayers="OTC_LIM_CONST_LROUTES_L" additionalLegends="OTC_LIM_CONST_LROUTES_AXES">
     <Theme>
       <Code>ch.GE.LimitesRoutesCantComm</Code>
-      <Text>Limite des constructions des routes cantonales et communale - LRoutes Art. 11 (information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Text>Alignements de construction des routes cantonales et communales - LRoutes Art. 11 (information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
       <Index>130</Index>
     </Theme>
     <Lawstatus field="STATUT_JUR" />
@@ -744,7 +744,7 @@
   <RestrictionOnLandownership layer="FFP_CADASTRE_FORET" complete="false">
     <Theme>
       <Code>ch.GE.CadastreForestier</Code>
-      <Text>Cadastre forestier (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Text>Cadastre de la forêt (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
       <Index>740</Index>
     </Theme>
     <Lawstatus />
