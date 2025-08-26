@@ -478,7 +478,7 @@
     <RestrictionOnLandownership layer="OTC_ALIGN_CONST_LROUTES_S" complete="false" additionalLayers="OTC_ALIGN_CONST_LROUTES_L" additionalLegends="OTC_ALIGN_CONST_LROUTES_AXES">
     <Theme>
       <Code>ch.GE.LimitesRoutesCantComm</Code>
-      <Text>Alignements de construction des routes cantonales et communales - LRoutes Art. 11 (information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Text>Alignements de construction des routes cantonales et communales - LRoutes Art. 11 (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
       <Index>130</Index>
     </Theme>
     <Lawstatus field="STATUT_JUR" />
@@ -792,7 +792,7 @@
   <RestrictionOnLandownership layer="DPS_OUVRAGES_PROTEGES_LPMNS" complete="false" additionalLegends="DPS_OUVRAGES_PROT_ZONE_RISQUE">
     <Theme>
       <Code>ch.GE.OuvragesSouterrains</Code>
-      <Text>Ouvrages souterains - LPMNS Art. 41 a-j (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Text>Ouvrages souterrains - LPMNS Art. 41 a-j (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
       <Index>910</Index>
     </Theme>
     <Lawstatus />
