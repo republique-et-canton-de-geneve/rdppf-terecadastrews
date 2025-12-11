@@ -1,4 +1,4 @@
-﻿/* $Rev: 31340 $ */
+﻿/* $Rev: 31768 $ */
 using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
@@ -43,31 +43,45 @@ public class GetReportReq : CommonReq
     {
         Stopwatch timer = Stopwatch.StartNew();
 
+        System.Globalization.CultureInfo ci = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        ci.NumberFormat.NumberDecimalSeparator = ".";
+        System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+
         IList<MapWorker> mapWorkers = new List<MapWorker>();
         Extent geomExtent = this.queryWorker.GetGeometryExtent(feature.geometry);
         this.printParams = new MapPrintParams(XmlHelper.GetMapPrintConfig(), geomExtent);
+        WMSService wmsService = printParams.GetWMSService();
 
         RestrictionResult[] restrictionResults = this.restrWorker.RunAnalyse(feature, this.printParams.GetMapExtent());
 
         Helper.LogInfo(this.GetType().ToString(), "Données du rapport, analyse", timer.ElapsedMilliseconds);
         timer.Restart();
 
+        if (wmsService == null)
+        {
+            int[] mainIds = this.GetMapLayerIds(new string[] { "addMapLayer", "mainMapLayer" });
+            mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.mainBasemap, null, mainIds, new string[] { }));
+            int[] restrIds = this.GetMapLayerIds(new string[] { "addMapLayer", "restrictionMapLayer" });
+            mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restrBasemap, null, restrIds, new string[] { }));
+        }
+        else
+        {
+            mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.mainBasemap, null, new int[] { }, new string[] { }));
+        }
+
         string marker = "markerMapLayer";
         if (feature.type == ParcelleType.DDP)
         {
             marker = "markerDDPMapLayer";
         }
-
-        int[] ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "mainMapLayer" });
         int markerId = this.GetMapLayerIds(new string[] { marker })[0];
-        string markerlayerDefs = string.Format("\"{0}\":\"OBJECTID={1}\"", markerId, feature.attributes["OBJECTID"]);
-        mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.marker, string.Empty, ids, new string[] { markerlayerDefs }));
+        string layerDefs = string.Format("\"{0}\":\"OBJECTID={1}\"", markerId, feature.attributes["OBJECTID"]);
+        mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.marker, string.Empty, new int[] { markerId }, new string[] { layerDefs }));
 
-        ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "restrictionMapLayer" });
         IList<string> addedLayerIds = new List<string>();
         foreach (RestrictionResult restriction in restrictionResults.Where(rr => rr.isFirst))
         {
-            IList<int> idList = new List<int>(ids);
+            IList<int> idList = new List<int>();
 
             int id = restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerId(restriction.LayerId, true) : restriction.LayerId;
             string uniqueId = GetMapWorkerId(id, restriction.Lawstatus);
@@ -81,16 +95,14 @@ public class GetReportReq : CommonReq
                 XmlNode node = XmlHelper.GetNodeByAttribute(this.requestConfig, "RestrictionOnLandownership", "layer",
                     restriction.isAdditionalResult ? this.restrWorker.GetOriginalLayerName(restriction.LayerId, true) : restriction.LayerName);
                 string statusFieldName = XmlHelper.GetXmlAttribute(node.SelectSingleNode("Lawstatus"), "field", false);
-
                 if (!string.IsNullOrEmpty(statusFieldName))
                 {
-                    IList<string> layerDefs = new List<string>(new string[] { markerlayerDefs });
-                    layerDefs.Add(string.Format("\"{0}\":\"{1}='{2}'\"", id, statusFieldName, restriction.Lawstatus));
-                    mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restriction, uniqueId, idList.ToArray(), layerDefs.ToArray()));
+                    layerDefs = string.Format("\"{0}\":\"{1}='{2}'\"", id, statusFieldName, restriction.Lawstatus);
+                    mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restriction, uniqueId, idList.ToArray(), new string[] { layerDefs }));
                 }
                 else
                 {
-                    mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restriction, uniqueId, idList.ToArray(), new string[] { markerlayerDefs }));
+                    mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.restriction, uniqueId, idList.ToArray(), new string[] { }));
                 }
                 addedLayerIds.Add(uniqueId);
             }
@@ -121,31 +133,53 @@ public class GetReportReq : CommonReq
         Helper.LogInfo(this.GetType().ToString(), "Données du rapport, calcul des surfaces", timer.ElapsedMilliseconds);
         timer.Restart();
 
-        // récupération des cartes
-        string mainMapUrl = string.Empty;
-        IDictionary<string, string> dictRestrictionMapUrls = new Dictionary<string, string>();
+        // Récupération des plans
+        byte[] mainBasemapData = new byte[] { };
+        byte[] restrBasemapData = new byte[] { };
+        byte[] markerData = new byte[] { };
+
+        Bitmap bmScaleBar = new ScaleBar(printParams).DrawBar(GetReportFontName());
+        Bitmap bmNorthArrow = new Bitmap(Path.Combine(Path.Combine(WebHelper.GetConfigValue("ApplicationPath"), "images"), "NorthArrow.png"));
 
         this.CreateWorkingDirectory(this.GetIdentifier(feature));
 
-        Bitmap bmScaleBar = new ScaleBar(printParams).DrawBar(GetReportFontName());
-
+        IDictionary<string, byte[]> dictRestrictionImageData = new Dictionary<string, byte[]>();
         Parallel.ForEach(mapWorkers, worker =>
         {
-            byte[] imageData = worker.GetExtractMapAsImage(geomExtent);
+            byte[] imageData = worker.GetReportMap(geomExtent, wmsService);
             switch (worker.GetWorkerType())
             {
+                case MapWorker.MapWorkerTypes.mainBasemap:
+                    mainBasemapData = imageData;
+                    if (wmsService != null)
+                    {
+                        restrBasemapData = imageData;
+                    }
+                    break;
+                case MapWorker.MapWorkerTypes.restrBasemap:
+                    restrBasemapData = imageData;
+                    break;
                 case MapWorker.MapWorkerTypes.marker:
-                    mainMapUrl = this.AddObjectsToMap("main", imageData, bmScaleBar);
+                    markerData = imageData;
                     break;
                 default:
                     string uniqueId = worker.GetEntityId();
-                    dictRestrictionMapUrls.Add(uniqueId, this.AddObjectsToMap(string.Format("restr_{0}", uniqueId), imageData, bmScaleBar));
+                    dictRestrictionImageData.Add(uniqueId, imageData);
                     break;
             }
         });
 
         Helper.LogInfo(this.GetType().ToString(), "Données du rapport, récupération des cartes", timer.ElapsedMilliseconds);
         timer.Restart();
+
+        string mainMapUrl = this.ComposeMap("main", mainBasemapData, markerData, null, bmNorthArrow, bmScaleBar);
+
+        IDictionary<string, string> dictRestrictionMapUrls = new Dictionary<string, string>();
+        foreach (string key in dictRestrictionImageData.Keys)
+        {
+            string mapUrl = this.ComposeMap(key, restrBasemapData, markerData, dictRestrictionImageData[key], bmNorthArrow, bmScaleBar);
+            dictRestrictionMapUrls.Add(key, mapUrl);
+        }
 
         // add concerned themes
         IList<RestrictionTheme> themes = GetThemes();
@@ -211,7 +245,7 @@ public class GetReportReq : CommonReq
         else
         {
             OerebLawStatus status = GetOerebLawStatus(lawStatus);
-            if(status == null)
+            if (status == null)
             {
                 throw new WsUserException(string.Format(Resources.Resource.ERROR_LAWSTATUS, lawStatus, layerId));
             }
@@ -542,43 +576,64 @@ public class GetReportReq : CommonReq
         return list.ToArray();
     }
 
-    private string AddObjectsToMap(string name, byte[] data, Bitmap bmScaleBar)
+    private string ComposeMap(string name, byte[] baseMap, byte[] markerMap, byte[] restrictionMap, Bitmap bmNorthArrow, Bitmap bmScaleBar)
     {
         string fileName = name + ".png";
-        using (MemoryStream ms = new MemoryStream(data))
+        using (MemoryStream baseMapStream = new MemoryStream(baseMap))
         {
-            using (Bitmap bmData = new Bitmap(ms))
-            using (Bitmap bm = bmData.Clone(new Rectangle(0, 0, bmData.Width, bmData.Height), PixelFormat.Format32bppArgb))
+            Bitmap bmBaseMap = new Bitmap(baseMapStream);
+            using (Bitmap bm = bmBaseMap.Clone(new Rectangle(0, 0, bmBaseMap.Width, bmBaseMap.Height), PixelFormat.Format32bppArgb))
             {
-                Bitmap bmNorthArrow = new Bitmap(Path.Combine(Path.Combine(WebHelper.GetConfigValue("ApplicationPath"), "images"), "NorthArrow.png"));
-                Bitmap scClone = (Bitmap)bmScaleBar.Clone();
+                Graphics compose = Graphics.FromImage(bm);
+                compose.InterpolationMode = InterpolationMode.High;
+                compose.CompositingQuality = CompositingQuality.HighQuality;
+                compose.SmoothingMode = SmoothingMode.AntiAlias;
+
+                // restriction
+                if (restrictionMap != null)
+                {
+                    using (MemoryStream restrMapStream = new MemoryStream(restrictionMap))
+                    {
+                        Bitmap bmRestr = new Bitmap(restrMapStream);
+
+                        ColorMatrix matrix = new ColorMatrix();
+                        matrix.Matrix33 = this.printParams.GetRdppfOpacity();
+
+                        ImageAttributes attributes = new ImageAttributes();
+                        attributes.SetColorMatrix(matrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+                        compose.DrawImage(bmRestr, new Rectangle(0, 0, bm.Width, bm.Height), 0, 0, bmRestr.Width, bmRestr.Height, GraphicsUnit.Pixel, attributes);
+                    }
+                }
+
+                // marker
+                using (MemoryStream markerMapStream = new MemoryStream(markerMap))
+                {
+                    Bitmap bmMarker = new Bitmap(markerMapStream);
+                    bmMarker.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
+                    compose.DrawImage(bmMarker, 0, 0);
+                }
 
                 bmNorthArrow.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
-                scClone.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
+                bmScaleBar.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
 
                 Rectangle rect = this.printParams.GetScaleBarDrawRectangle();
                 Point pt = this.printParams.GetNorthArrowDrawPoint();
-
                 if (this.printParams.GetNorthArrowAlignment() == "H")
                 {
                     pt.Y = rect.Y + (rect.Height / 2) - ((int)(bmNorthArrow.Height * this.printParams.GetNorthArrowScale()) / 2);
                 }
                 else if (this.printParams.GetNorthArrowAlignment() == "V")
                 {
-                    pt.X = rect.X + (scClone.Width / 2);
+                    pt.X = rect.X + (bmScaleBar.Width / 2);
                 }
-
-                Graphics compose = Graphics.FromImage(bm);
-                compose.InterpolationMode = InterpolationMode.High;
-                compose.CompositingQuality = CompositingQuality.HighQuality;
-                compose.SmoothingMode = SmoothingMode.AntiAlias;
 
                 // North arrow
                 compose.DrawImage(bmNorthArrow, pt.X - (bmNorthArrow.Width / 2), pt.Y,
                     (int)(bmNorthArrow.Width * this.printParams.GetNorthArrowScale()),
                     (int)(bmNorthArrow.Height * this.printParams.GetNorthArrowScale()));
                 // scale bar
-                compose.DrawImage(scClone, rect.X, rect.Y);
+                compose.DrawImage(bmScaleBar, rect.X, rect.Y);
                 // map outline
                 compose.DrawRectangle(new Pen(Color.Black, GetReportReq.MAP_OUTLINE_WIDTH),
                     1, 1, bm.Width - GetReportReq.MAP_OUTLINE_WIDTH, bm.Height - GetReportReq.MAP_OUTLINE_WIDTH);
@@ -588,7 +643,7 @@ public class GetReportReq : CommonReq
         }
         return string.Format("{0}/{1}", this.workUrl, fileName);
     }
-
+    
     private string GetSymbolUrl(string name, byte[] data)
     {
         using (MemoryStream ms = new MemoryStream(data))

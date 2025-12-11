@@ -6,6 +6,7 @@ using System.Linq;
 public class MapPrintParams
 {
     private int scale;
+    private float rdppfOpacity;
     private Rectangle scaleBarRect;
     private Point northArrowPt;
     private double northArrowScale;
@@ -17,6 +18,7 @@ public class MapPrintParams
     {
         this.printConfig = cfg;
         this.scale = this.ComputeScale(geomExtent);
+        rdppfOpacity = cfg.RdppfOpacity;
         this.center = this.GetCenter(geomExtent);
 
         // compute draw rectangle for scale bar
@@ -45,6 +47,11 @@ public class MapPrintParams
     public int GetMapHeight()
     {
         return Helper.mmToDots(this.printConfig.Height, this.printConfig.Dpi);
+    }
+
+    public float GetRdppfOpacity()
+    {
+        return this.rdppfOpacity;
     }
 
     public Rectangle GetScaleBarDrawRectangle()
@@ -86,6 +93,11 @@ public class MapPrintParams
             ymin = this.center.y - h,
             ymax = this.center.y + h
         };
+    }
+
+    public WMSService GetWMSService()
+    {
+        return this.printConfig.WMSServices.Where(s => this.scale >= s.MinScale && this.scale <= s.MaxScale).FirstOrDefault();
     }
 
     private Point GetPointFromConfig(string cfg, int dpi)

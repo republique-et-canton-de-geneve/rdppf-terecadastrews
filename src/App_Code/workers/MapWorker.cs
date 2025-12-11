@@ -1,11 +1,11 @@
-﻿/* $Rev: 30620 $ */
+﻿/* $Rev: 31768 $ */
 using System.Collections.Specialized;
 using System.Net;
 using Topomat.Web.Common;
 
 public class MapWorker
 {
-    public enum MapWorkerTypes { basemap, marker, restriction };
+    public enum MapWorkerTypes { mainBasemap, restrBasemap, marker, restriction };
 
     private string mapServiceUrl;
     private MapPrintParams printParams;
@@ -28,9 +28,25 @@ public class MapWorker
         this.layerDefs = layerDefs;
     }
 
-    public byte[] GetReportMap(Extent extent)
+    public byte[] GetReportMap(Extent extent, WMSService wmsService)
     {
-        return GetExportImage(extent, this.layerIds, this.layerDefs);
+        if (this.workerType == MapWorkerTypes.mainBasemap || this.workerType == MapWorkerTypes.restrBasemap)
+        {
+            string url = GetWMSExportUrl(wmsService);
+            if (string.IsNullOrEmpty(url))
+            {
+                return GetExportImage(extent, this.layerIds, this.layerDefs);
+            }
+            else
+            {
+                return GetImage(url);
+            }
+
+        }
+        else
+        {
+            return GetExportImage(extent, this.layerIds, this.layerDefs);
+        }
     }
 
     public byte[] GetExtractMapAsImage(Extent extent)
@@ -53,8 +69,17 @@ public class MapWorker
         return this.workerType;
     }
 
+    public byte[] GetImage(string url)
+    {
+        using (WebClient client = new WebClient())
+        {
+            return client.DownloadData(url);
+        }
+    }
+
     private byte[] GetExportImage(Extent geomExtent, int[] layerIds, string[] layerDefs)
     {
+        SetDecimalSeparator();
 
         string token = TokenManager.GetToken();
 
@@ -82,6 +107,8 @@ public class MapWorker
     }
     private string GetExportUrl(Extent geomExtent, int[] layerIds, string[] layerDefs)
     {
+        SetDecimalSeparator();
+
         string url = string.Format("{0}/export", this.mapServiceUrl);
         string[] args = new string[] {
             string.Format("?bbox={0},{1},{2},{3}", geomExtent.xmin, geomExtent.ymin, geomExtent.xmax, geomExtent.ymax),
@@ -106,5 +133,38 @@ public class MapWorker
         }
 
         return url;
+    }
+
+    private string GetWMSExportUrl(WMSService cfg)
+    {
+        SetDecimalSeparator();
+
+        Extent mapExtent = this.printParams.GetMapExtent();
+
+        string url = string.Empty;
+        if (cfg != null)
+        {
+            url = cfg.Url;
+            string[] args = new string[] {
+            "?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&VERSION=1.3.0&CRS=EPSG:2056",
+            string.Format("&LAYERS={0}", cfg.Layers),
+            string.Format("&WIDTH={0}", this.printParams.GetMapWidth()),
+            string.Format("&HEIGHT={0}", this.printParams.GetMapHeight()),
+            string.Format("&BBOX={0},{1},{2},{3}", mapExtent.xmin, mapExtent.ymin, mapExtent.xmax, mapExtent.ymax),
+        };
+            foreach (string arg in args)
+            {
+                url += arg;
+            }
+        }
+
+        return url;
+    }
+
+    private void SetDecimalSeparator()
+    {
+        System.Globalization.CultureInfo ci = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        ci.NumberFormat.NumberDecimalSeparator = ".";
+        System.Threading.Thread.CurrentThread.CurrentCulture = ci;
     }
 }

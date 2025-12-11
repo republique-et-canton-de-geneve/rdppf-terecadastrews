@@ -1,4 +1,4 @@
-﻿/* $Rev: 31340 $ */
+﻿/* $Rev: 31768 $ */
 using ExtractDataModel_v20;
 using System;
 using System.Collections.Generic;
@@ -77,7 +77,7 @@ public class GetExtractReq : CommonReq
         }
 
         int[] ids = this.GetMapLayerIds(new string[] { "addMapLayer", "mainMapLayer" });
-        mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.basemap, string.Empty, ids, string.Empty));
+        mapWorkers.Add(InitMapWorker(this.printParams, MapWorker.MapWorkerTypes.mainBasemap, string.Empty, ids, string.Empty));
 
         ids = this.GetMapLayerIds(new string[] { marker, "addMapLayer", "mainMapLayer" });
         int markerId = this.GetMapLayerIds(new string[] { marker })[0];
@@ -126,7 +126,7 @@ public class GetExtractReq : CommonReq
                 byte[] imageData = worker.GetExtractMapAsImage(geomExtent);
                 switch (worker.GetWorkerType())
                 {
-                    case MapWorker.MapWorkerTypes.basemap:
+                    case MapWorker.MapWorkerTypes.mainBasemap:
                         mainMapImage = imageData;
                         break;
                     case MapWorker.MapWorkerTypes.marker:
@@ -146,7 +146,7 @@ public class GetExtractReq : CommonReq
                 string url = worker.GetExtractMapAsUrl(geomExtent);
                 switch (worker.GetWorkerType())
                 {
-                    case MapWorker.MapWorkerTypes.basemap:
+                    case MapWorker.MapWorkerTypes.mainBasemap:
                         mainMapUrl = url;
                         break;
                     case MapWorker.MapWorkerTypes.marker:

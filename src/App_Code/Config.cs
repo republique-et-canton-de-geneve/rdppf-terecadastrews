@@ -1,4 +1,5 @@
-﻿/* $Rev: 19264 $ */
+﻿/* $Rev: 31768 $ */
+using System.Web.Services;
 using System.Xml.Serialization;
 
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
@@ -29,8 +30,18 @@ public class MapPrintConfig
     public double Height { get; set; }
     public string Scales { get; set; }
     public int Dpi { get; set; }
+    public float RdppfOpacity { get; set; }
+    public WMSService[] WMSServices { get; set; }
     public ScaleBarConfig ScaleBar { get; set; }
     public NorthArrowConfig NorthArrow { get; set; }
+}
+
+public class WMSService
+{
+    public string Url { get; set; }
+    public int MinScale { get; set; }
+    public int MaxScale { get; set; }
+    public string Layers { get; set; }
 }
 
 public class ScaleBarConfig
