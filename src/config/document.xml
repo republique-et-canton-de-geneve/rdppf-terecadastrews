@@ -49,6 +49,10 @@
     <Lawstatus>1</Lawstatus>
     <Title>Disposition juridique complémentaire</Title>
   </LegalProvision>
+  <LegalProvision id="LIEN_DJ_COMP" field="Lien WEB vers une disposition juridique complémentaire">
+    <Lawstatus>1</Lawstatus>
+    <Title>Disposition juridique complémentaire</Title>
+  </LegalProvision>
   <LegalProvision id="LIEN_CONSTAT_NATURE_FOREST" field="Lien WEB vers le constat de nature forestière" dateField="Date d'entrée en vigueur">
     <Lawstatus>1</Lawstatus>
     <Title>Constat de nature forestière</Title>
@@ -61,10 +65,26 @@
     <Lawstatus>1</Lawstatus>
     <Title>Informations complémentaires</Title>
   </Hint>
+  <Hint id="LIEN_INFO_COMP" field="Lien WEB vers des informations complémentaires">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
   <Hint id="LIENS_INFOS_COMPL" field="Liens WEB vers des informations complémentaires">
     <Lawstatus>1</Lawstatus>
     <Title>Informations complémentaires</Title>
   </Hint>
+  <Hint id="FICHEINFORMATIVE" field="FICHEINFORMATIVE">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
+  <Hint id="LIEN_PRESENTATION" field="LIEN_PRESENTATION">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>
+  <Hint id="LIEN_PLAN" field="LIEN_PLAN">
+    <Lawstatus>1</Lawstatus>
+    <Title>Informations complémentaires</Title>
+  </Hint>  
   <Hint id="LIEN_CONCEPT_ENERG_TER" field="Lien WEB vers le concept énergétique territorial">
     <Lawstatus>1</Lawstatus>
     <Title>Concept énergétique territorial</Title>
@@ -324,5 +344,13 @@
     <Abbreviation>RForêt</Abbreviation>
     <OfficialNumber>RSG M 5 10.01</OfficialNumber>
     <Index>740</Index>
+  </Law>
+    <Law id="LRoutes">
+    <TextAtWeb>https://silgeneve.ch/legis/data/rsg_l1_10.htm</TextAtWeb>
+    <Lawstatus>1</Lawstatus>
+    <Title>Loi sur les routes (LRoutes)</Title>
+    <Abbreviation>LRoutes</Abbreviation>
+    <OfficialNumber>RRSG 1 10</OfficialNumber>
+    <Index>750</Index>
   </Law>
 </DocumentConfig>

@@ -475,6 +475,21 @@
       <OfficeAtWeb>https://www.astra.admin.ch/astra/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>
+    <RestrictionOnLandownership layer="OTC_ALIGN_CONST_LROUTES_S" complete="false" additionalLayers="OTC_ALIGN_CONST_LROUTES_L" additionalLegends="OTC_ALIGN_CONST_LROUTES_AXES">
+    <Theme>
+      <Code>ch.GE.LimitesRoutesCantComm</Code>
+      <Text>Alignements de construction des routes cantonales et communales - LRoutes Art. 11 (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Index>130</Index>
+    </Theme>
+    <Lawstatus field="STATUT_JUR" />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId></LegalProvisionId>
+    <LawId>LRoutes</LawId>
+    <ResponsibleOffice>
+      <Name>Office cantonal des transports</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-transports-oct</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
   <RestrictionOnLandownership layer="RDPPF_CH_ZONES_RESERVEES_FER" complete="false">
     <Theme>
       <Code>ch.ProjektierungszonenEisenbahnanlagen</Code>
@@ -624,12 +639,12 @@
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId>LIEN_PLAN_CONSEIL_ETAT</LegalProvisionId>
     <LegalProvisionId>LIEN_ARRETE_CONSEIL_ETAT</LegalProvisionId>
-    <LegalProvisionId>LIEN_DISPO_JURID_COMPL</LegalProvisionId>
+    <LegalProvisionId>LIEN_DJ_COMP</LegalProvisionId>
     <LawId>LEaux</LawId>
     <LawId>OEaux</LawId>
     <LawId>LEaux-GE</LawId>
     <LawId>REaux-GE</LawId>
-    <HintId>LIEN_INFOS_COMPL</HintId>
+    <HintId>LIEN_INFO_COMP</HintId>
     <ResponsibleOffice>
       <Name>Service de géologie, sols et déchets</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/ocev-service-geologie-sols-dechets</OfficeAtWeb>
@@ -729,13 +744,16 @@
   <RestrictionOnLandownership layer="FFP_CADASTRE_FORET" complete="false">
     <Theme>
       <Code>ch.GE.CadastreForestier</Code>
-      <Text>Cadastre forestier (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Text>Cadastre de la forêt (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
       <Index>740</Index>
     </Theme>
     <Lawstatus />
     <MetadataOfGeographicalBaseData />
     <LegalProvisionId />
-    <LawId />
+    <LawId>LFo</LawId>
+    <LawId>OFo</LawId>
+    <LawId>LForêt</LawId>
+    <LawId>RForêt</LawId>
     <ResponsibleOffice>
       <Name>Office cantonal de l'agriculture et de la nature</Name>
       <OfficeAtWeb>https://www.ge.ch/organisation/office-cantonal-agriculture-nature-ocan</OfficeAtWeb>
@@ -771,4 +789,22 @@
       <OfficeAtWeb>https://www.bfe.admin.ch/bfe/fr/home.html</OfficeAtWeb>
     </ResponsibleOffice>
   </RestrictionOnLandownership>  
+  <RestrictionOnLandownership layer="DPS_OUVRAGES_PROTEGES_LPMNS" complete="false" additionalLegends="DPS_OUVRAGES_PROT_ZONE_RISQUE">
+    <Theme>
+      <Code>ch.GE.OuvragesSouterrains</Code>
+      <Text>Ouvrages souterrains - LPMNS Art. 41 a-j (Information supplémentaire selon l'art. 8b, al. 1, let. b OCRDP)</Text>
+      <Index>910</Index>
+    </Theme>
+    <Lawstatus />
+    <MetadataOfGeographicalBaseData />
+    <LegalProvisionId />
+    <LawId>LPMNS</LawId>
+    <HintId>FICHEINFORMATIVE</HintId>
+    <HintId>LIEN_PRESENTATION</HintId>
+    <HintId>LIEN_PLAN</HintId>
+    <ResponsibleOffice>
+      <Name>Office du patrimoine et des sites</Name>
+      <OfficeAtWeb>https://www.ge.ch/organisation/office-du-patrimoine-sites</OfficeAtWeb>
+    </ResponsibleOffice>
+  </RestrictionOnLandownership>
 </RequestConfig>

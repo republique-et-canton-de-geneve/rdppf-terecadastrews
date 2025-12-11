@@ -6,7 +6,7 @@ using System.Drawing.Drawing2D;
 public class ScaleBar
 {
     public static int LINE_WIDTH = 2;
-    public static int HALO_WIDTH = 3;
+    public static int HALO_WIDTH = 10;
     public static int MARGIN_LEFT = 10;
     public static int MARGIN_RIGHT = 60;
     public static int MARGIN_BOTTOM = 40;
